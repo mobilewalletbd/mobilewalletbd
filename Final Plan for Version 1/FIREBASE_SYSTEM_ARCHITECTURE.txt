@@ -1,0 +1,60 @@
+================================================================================
+NEW SYSTEM ARCHITECTURE: FIREBASE FULL STACK
+================================================================================
+DATE: 2026-01-28
+STATUS: FINAL
+GOAL: SIMPLICITY AND RELIABILITY
+
+1. EXECUTIVE SUMMARY
+--------------------
+We have pivoted from a hybrid Azure/Firebase model to a **Full Firebase Stack**. This decision was made to bypass severe regional policy restrictions on Azure Student accounts and to streamline development. Firebase provides a unified ecosystem that is native to Flutter.
+
+2. TECHNOLOGY STACK
+-------------------
+
+### A. Authentication: Firebase Auth
+*   **Role**: Handles Email/Password, Phone OTP, and Google Sign-In.
+*   **Cost**: Free (10k SMS/month free).
+
+### B. Database: Cloud Firestore (NoSQL)
+*   **Role**: Stores User Profiles, Contacts, Teams, and Metadata.
+*   **Cost**: Free Tier (50k reads/day, 20k writes/day).
+*   **Structure**:
+    *   Collection: `users` (docId: uid)
+    *   Collection: `contacts` (docId: auto, fields: ownerId, etc.)
+    *   Collection: `teams` (docId: auto)
+
+### C. File Storage: Cloudinary
+*   **Role**: Stores Business Card Images and Profile Photos.
+*   **Cost**: Free Tier (25 Monthly Credits, which usually covers ~25k images).
+*   **Why**: Avoids Firebase Storage plan upgrade requirements and offers better image optimization/delivery.
+
+### D. Rules & Security: Firebase Security Rules
+*   **Role**: Replaces the need for a separate API layer (Azure Functions) for simple CRUD. 
+*   **Logic**: "Only owners can read/write their own contacts."
+
+3. ARCHITECTURE DIAGRAM (DATA FLOW)
+-----------------------------------
+
+[FLUTTER APP] 
+      |
+      +--- (1) Auth ---> [FIREBASE AUTH]
+      |
+      +--- (2) Data CRUD ---> [CLOUD FIRESTORE] (Protected by Rules)
+      |
+      +--- (3) Image Upload ---> [CLOUDINARY] (Signed/Unsigned Uploads)
+
+4. MIGRATION BENEFITS
+---------------------
+1.  **Single Console**: Manage everything from console.firebase.google.com.
+2.  **Native Integration**: FlutterFire plugins are the fastest way to build Flutter apps.
+3.  **No Region Issues**: Firebase regions are globally available without "RequestDisallowedByAzure" errors.
+4.  **Faster Development**: No need to write/deploy boiler-plate API code for basic database operations.
+
+5. ACTION ITEMS
+---------------
+1.  Enable Firestore in "Production" or "Test" mode.
+2.  Enable Storage.
+3.  Update Flutter dependencies to include `cloud_firestore` and `firebase_storage`.
+4.  Implement `FirestoreService` and `FirebaseStorageService` in the app.
+================================================================================

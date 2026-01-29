@@ -1,0 +1,379 @@
+# V1 MODEL SPECIFICATIONS
+# Generated based on MASTER_PROJECT_PLAN_V1.txt, V1_SYSTEM_ARCHITECTURE.txt, V1_PAGE_SPECIFICATIONS.txt, V1_APP_DESIGN_PLAN.txt & APP_FUNCTIONALITY_METADATA_V1.txt
+# Date: January 29, 2026
+# Last Updated: January 29, 2026 - Added missing models and fields based on comprehensive project planning analysis
+
+================================================================================
+1. CORE DOMAIN ENTITIES
+================================================================================
+
+## 1.1 AuthUser (Domain Entity)
+Represents the authenticated user in the app.
+*   **Path**: `lib/features/auth/domain/entities/auth_user.dart`
+*   **Fields**:
+    *   `String id` (Unique User ID from Firebase)
+    *   `String? email`
+    *   `String? phoneNumber`
+    *   `String? displayName`
+    *   `String? photoUrl`
+    *   `bool emailVerified`
+    *   `DateTime? lastSignIn`
+    *   `String? provider` (google, phone, email, apple)
+    *   `bool isAnonymous`
+    *   `List<String>? customClaims`
+*   **Methods**:
+    *   `copyWith()`
+    *   `toMap()` / `fromMap()` (for simple serialization if needed)
+    *   `isFullyVerified()` (checks emailVerified + phone if applicable)
+
+## 1.2 UserProfile (Database Entity)
+Extended user data stored in Cloud Firestore (Users Collection).
+*   **Path**: `lib/features/settings/domain/entities/user_profile.dart`
+*   **Fields**:
+    *   `String uid` (Matches AuthUser.id)
+    *   `String fullName`
+    *   `String? jobTitle`
+    *   `String? companyName`
+    *   `String? bio`
+    *   `String? avatarUrl` (Cloudinary URL)
+    *   `Map<String, dynamic> preferences` (theme, language, notifications)
+    *   `String? personalCardId` (Reference to CardDesign)
+    *   `String accountStatus` (Enum: ACTIVE, SUSPENDED, PENDING_VERIFICATION)
+    *   `String? kycTier` (Enum: BASIC, PRO, ENTERPRISE)
+    *   `String? timeZone`
+    *   `String? defaultLanguage` (en, bn)
+    *   `DateTime? lastActiveAt`
+    *   `String? deviceId`
+    *   `DateTime createdAt`
+    *   `DateTime updatedAt`
+*   **Methods**:
+    *   `fromJson(Map<String, dynamic> json)`
+    *   `toJson()`
+    *   `copyWith(...)`
+    *   `updatePreferences(Map<String, dynamic> newPrefs)`
+    *   `isActive()` (checks lastActiveAt within 30 days)
+
+================================================================================
+2. CONTACT MANAGEMENT MODELS
+================================================================================
+
+## 2.1 Contact (Local & Remote)
+The core logic unit. Represents a saved contact.
+*   **Path**: `lib/features/contacts/domain/entities/contact.dart`
+*   **Fields**:
+    *   `String id` (UUID)
+    *   `String ownerId` (User who saved this contact)
+    *   `String fullName` (Required)
+    *   `String? jobTitle`
+    *   `String? companyName`
+    *   `List<String> phoneNumbers`
+    *   `List<String> emails`
+    *   `List<String> addresses`
+    *   `List<String> websiteUrls`
+    *   `List<SocialLink> socialLinks` (Custom Type)
+    *   `String category` (Enum: Business, Personal, Friends, Family, Uncategorized)
+    *   `List<String> tags`
+    *   `bool isFavorite`
+    *   `String? notes`
+    *   `String? frontImageUrl` (Cloudinary URL - Front of card)
+    *   `String? backImageUrl` (Cloudinary URL - Back of card)
+    *   `String? frontImageOcrText` (Raw OCR text from front)
+    *   `String? backImageOcrText` (Raw OCR text from back)
+    *   `Map<String, dynamic>? ocrFields` (Structured OCR data)
+    *   `DateTime? lastContactedAt`
+    *   `int? contactCount` (How many times contacted)
+    *   `String? source` (Enum: MANUAL, SCAN, IMPORT, NFC, QR)
+    *   `bool isVerified` (Global directory verification status)
+    *   `double? fraudScore` (0.0 to 1.0)
+    *   `DateTime createdAt`
+    *   `DateTime updatedAt`
+    *   `String? createdBy` (User ID who created this contact)
+    *   `List<String>? sharedWith` (List of user IDs for team sharing)
+*   **Methods**:
+    *   `fromJson(Map<String, dynamic> json)`
+    *   `toJson()`
+    *   `copyWith(...)`
+    *   `matchesQuery(String query)` (Helper for search)
+    *   `addPhoneNumber(String number)`
+    *   `addEmail(String email)`
+    *   `updateLastContacted()`
+    *   `isBusinessContact()` (category == Business)
+
+## 2.2 SocialLink (Value Object)
+*   **Fields**:
+    *   `String platform` (facebook, linkedin, twitter, instagram, whatsapp, etc.)
+    *   `String url`
+    *   `String? handle`
+    *   `String? platformId` (Unique identifier on that platform)
+    *   `bool isPublic` (Whether to show in sharing)
+*   **Methods**:
+    *   `toJson()`
+    *   `fromJson(Map<String, dynamic> json)`
+    *   `isValid()` (URL format validation)
+    *   `getPlatformIcon()` (Returns icon name for UI)
+
+## 2.3 GlobalContact (Shared Directory Entity)
+*   **Purpose**: Source of truth for verified contact information in global directory
+*   **Path**: `lib/features/contacts/domain/entities/global_contact.dart`
+*   **Fields**:
+    *   `String id` (Hashed phone/email)
+    *   `Map<String, dynamic> latestData` (Full contact data JSON)
+    *   `String version` (UUID for version tracking)
+    *   `DateTime versionTimestamp`
+    *   `bool verifiedByOwner`
+    *   `double fraudScore`
+    *   `int updateCount`
+    *   `String? lastUpdaterId` (User ID who last updated)
+    *   `DateTime createdAt`
+    *   `DateTime updatedAt`
+*   **Methods**:
+    *   `toJson()`
+    *   `fromJson(Map<String, dynamic> json)`
+    *   `isFresh()` (checks if updated within last 30 days)
+    *   `needsVerification()` (if fraudScore > 0.7)
+    *   `generateHash(String identifier)` (creates id from phone/email)
+
+## 2.4 TeamMember (Value Object)
+*   **Fields**:
+    *   `String userId`
+    *   `String role` (Enum: ADMIN, MEMBER)
+    *   `DateTime joinedAt`
+    *   `String? addedBy`
+    *   `bool isActive`
+*   **Methods**:
+    *   `toJson()`
+    *   `fromJson(Map<String, dynamic> json)`
+    *   `isAdmin()`
+    *   `isMember()`
+
+================================================================================
+3. DIGITAL CARD MODELS
+================================================================================
+
+## 3.1 CardDesign
+Configuration for the user's personal digital business card.
+*   **Path**: `lib/features/my_card/domain/entities/card_design.dart`
+*   **Fields**:
+    *   `String id`
+    *   `String userId`
+    *   `String themeColor` (Hex code)
+    *   `String layoutStyle` (Enum: Classic, Modern, Minimal)
+    *   `bool showQrCode`
+    *   `String? customLogoUrl`
+    *   `Map<String, bool> visibleFields` (privacy toggle for phone, email, etc.)
+    *   `String? frontCardTemplateId` (Reference to template)
+    *   `String? backCardTemplateId` (Reference to template)
+    *   `List<Map<String, dynamic>>? customFields` (Additional fields)
+    *   `String qrCodeStyle` (Enum: STATIC, DYNAMIC, CUSTOM)
+    *   `bool allowSharing` (Whether others can share this card)
+    *   `DateTime lastModified`
+    *   `String status` (Enum: ACTIVE, DRAFT, ARCHIVED)
+*   **Methods**:
+    *   `toJson()` / `fromJson()`
+    *   `copyWith(...)`
+    *   `isVisible(String fieldName)`
+    *   `getVisibleFields()` (Returns only fields where visible == true)
+    *   `updateFieldVisibility(String field, bool isVisible)`
+    *   `generateQrData()` (Generates data for QR code)
+
+================================================================================
+4. WALLET & TRANSACTION MODELS (Internal Ledger)
+================================================================================
+
+## 4.1 Wallet
+Represents the user's internal balance.
+*   **Path**: `lib/features/wallet/domain/entities/wallet.dart`
+*   **Fields**:
+    *   `String id`
+    *   `String userId`
+    *   `double balance`
+    *   `String currency` (Default: "BDT")
+    *   `String status` (ACTIVE, FROZEN)
+    *   `DateTime lastUpdated`
+*   **Methods**:
+    *   `addBalance(double amount)`
+    *   `subtractBalance(double amount)`
+
+## 4.2 WalletTransaction
+A single entry in the ledger.
+*   **Path**: `lib/features/wallet/domain/entities/wallet_transaction.dart`
+*   **Fields**:
+    *   `String id`
+    *   `String walletId`
+    *   `String type` (Enum: CREDIT, DEBIT)
+    *   `double amount`
+    *   `String? description`
+    *   `String? counterpartyName` (Name of person paid/received from)
+    *   `String? counterpartyId` (Optional Contact ID)
+    *   `String status` (PENDING, COMPLETED, FAILED)
+    *   `DateTime timestamp`
+    *   `String? referenceId` (External transaction ID)
+    *   `String category` (Enum: INTERNAL_TRANSFER, MANUAL_ADD, REWARD)
+    *   `String currencyCode` (Default: BDT, but can support others)
+    *   `String? metadata` (JSON string for additional data)
+    *   `DateTime? completedAt`
+    *   `String? initiatedBy` (User ID who started transaction)
+    *   `bool isReversed`
+*   **Methods**:
+    *   `toJson()` / `fromJson()`
+    *   `formattedAmount()` (Returns string like "+ ৳500.00")
+    *   `isIncome()` (type == CREDIT)
+    *   `isOutcome()` (type == DEBIT)
+    *   `formattedStatus()` (Localized status text)
+    *   `daysSinceCreation()`
+
+================================================================================
+5. SHARED / UTILITY MODELS
+================================================================================
+
+## 5.1 AppError (Failure)
+Standard error handling class.
+*   **Fields**:
+    *   `String message`
+    *   `String code`
+    *   `dynamic exception` (Original error)
+    *   `DateTime timestamp`
+    *   `String? userId` (User context)
+    *   `String? requestId` (For tracing)
+*   **Methods**:
+    *   `toJson()`
+    *   `isNetworkError()`
+    *   `isAuthError()`
+    *   `isValidationError()`
+    *   `getLocalizedMessage()` (Based on user's language preference)
+
+## 5.2 PaginatedResult<T>
+Generic wrapper for lists (Contacts, Transactions).
+*   **Fields**:
+    *   `List<T> items`
+    *   `bool hasMore`
+    *   `String? nextCursor`
+    *   `int? totalCount`
+    *   `int currentPage`
+    *   `int pageSize`
+*   **Methods**:
+    *   `toJson()`
+    *   `isEmpty()`
+    *   `isLastPage()`
+    *   `getNextPageParams()`
+
+## 5.3 Team (Collaboration Entity)
+*   **Purpose**: For basic team collaboration features
+*   **Path**: `lib/features/team/domain/entities/team.dart`
+*   **Fields**:
+    *   `String id`
+    *   `String name`
+    *   `String ownerId` (User ID of team creator)
+    *   `List<TeamMember> members`
+    *   `String description`
+    *   `String status` (Enum: ACTIVE, INACTIVE, ARCHIVED)
+    *   `int sharedContactsCount`
+    *   `String? avatarUrl`
+    *   `DateTime createdAt`
+    *   `DateTime updatedAt`
+*   **Methods**:
+    *   `toJson()` / `fromJson()`
+    *   `copyWith(...)`
+    *   `isAdmin(String userId)`
+    *   `isMember(String userId)`
+    *   `addMember(TeamMember member)`
+    *   `removeMember(String userId)`
+    *   `getActiveMembers()`
+    *   `getMemberCount()`
+
+## 5.4 Notification (User Alerts)
+*   **Purpose**: In-app notifications for contact updates, payments, etc.
+*   **Path**: `lib/features/notifications/domain/entities/notification.dart`
+*   **Fields**:
+    *   `String id`
+    *   `String userId` (Recipient)
+    *   `String type` (Enum: CONTACT_UPDATE, PAYMENT, TEAM_INVITE, SYSTEM)
+    *   `String title`
+    *   `String message`
+    *   `Map<String, dynamic>? data` (Additional context)
+    *   `bool isRead`
+    *   `bool isImportant`
+    *   `String? actionUrl` (Deep link)
+    *   `DateTime createdAt`
+    *   `DateTime? readAt`
+*   **Methods**:
+    *   `toJson()` / `fromJson()`
+    *   `markAsRead()`
+    *   `isUnread()`
+    *   `getTypeIcon()`
+    *   `getFormattedTime()`
+
+## 5.5 AppSettings (User Preferences)
+*   **Purpose**: User's app-wide preferences and settings
+*   **Path**: `lib/features/settings/domain/entities/app_settings.dart`
+*   **Fields**:
+    *   `String userId`
+    *   `String theme` (Enum: LIGHT, DARK, SYSTEM)
+    *   `String language` (Enum: en, bn)
+    *   `bool notificationsEnabled`
+    *   `bool biometricEnabled`
+    *   `String? pinCode` (Encrypted)
+    *   `bool autoSyncEnabled`
+    *   `String defaultViewMode` (Enum: GRID, LIST)
+    *   `bool showFavoritesFirst`
+    *   `int contactsPerPage`
+    *   `bool enableHaptics`
+    *   `bool enableAnimations`
+    *   `String currencyDisplay` (Enum: SYMBOL, CODE, NAME)
+    *   `DateTime lastBackupAt`
+    *   `DateTime updatedAt`
+*   **Methods**:
+    *   `toJson()` / `fromJson()`
+    *   `copyWith(...)`
+    *   `isDarkMode()`
+    *   `shouldShowNotifications()`
+    *   `getCurrencySymbol()`
+
+================================================================================
+REQUIRED GENERATORS
+================================================================================
+The following packages will be used to generate boilerplate:
+*   `freezed`: For immutable data classes and `copyWith`.
+*   `json_serializable`: For `toJson`/`fromJson`.
+*   `riverpod_generator`: For providers.
+*   `isar_generator`: For local database schemas.
+*   `json_annotation`: For JSON serialization annotations.
+
+*Note: Domain Entities should ideally be pure Dart. Data Transfer Objects (DTOs) in the Data Layer will extend or map to these entities and include the specific Isar/Firestore annotations.*
+
+================================================================================
+ADDITIONAL CONSIDERATIONS
+================================================================================
+
+## Implementation Priority Order:
+1. **AuthUser** and **UserProfile** (Authentication & User Management)
+2. **Contact** and **SocialLink** (Core Contact Management)
+3. **Wallet** and **WalletTransaction** (Internal Ledger System)
+4. **CardDesign** (Digital Business Card Creator)
+5. **Team** and **TeamMember** (Basic Collaboration)
+6. **GlobalContact** (Smart Intelligence & Sync)
+7. **Notification** and **AppSettings** (User Experience)
+8. **AppError** and **PaginatedResult** (Infrastructure)
+
+## Database Strategy:
+*   **Local (Isar)**: All entities for offline-first experience
+*   **Remote (Firestore)**: UserProfile, Contact, Wallet, Team, GlobalContact
+*   **Cloudinary**: Card images, avatars, media assets
+
+## Security Considerations:
+*   Sensitive fields (PIN, customClaims) should be encrypted
+*   Use field-level security rules in Firestore
+*   Implement data validation at domain layer
+*   Add audit trails for critical operations
+
+## Performance Optimizations:
+*   Use lazy loading for large lists (Pagination)
+*   Cache frequently accessed entities (UserProfile, AppSettings)
+*   Index critical fields in Isar (userId, createdAt, category)
+*   Implement selective field fetching in repositories
+
+## Future Extensibility:
+*   Consider abstract base classes for common fields (id, createdAt, updatedAt)
+*   Plan for multi-currency support in Wallet entities
+*   Design for potential integration with external contact sources
+*   Keep extension points for advanced team features (roles, permissions)

@@ -1,0 +1,111 @@
+
+================================================================================
+V1 CONTEXT NOTE:
+This document is a REFERENCE for Version 1.0 (Firebase Edition).
+For explicit V1 scope exclusions (e.g., Payment Flows), refer to MASTER_PROJECT_PLAN_V1.txt.
+Any conflicting scope details in this file are overridden by the Master Plan.
+================================================================================
+
+====================================================================
+MOBILE WALLET – SYSTEM ARCHITECTURE PLANNING (V1)
+Smart Contact Wallet / Mobile Wallet – Bangladesh Market
+====================================================================
+
+Document Version: 1.3 (Firebase/Isar Edition)
+Date: January 2026
+Scope: Architecture for V1 "Basic Card System" utilizing Firebase and Isar.
+
+Major References:
+- MASTER_PROJECT_PLAN_V1.txt (The Authority)
+- FIREBASE_SYSTEM_ARCHITECTURE.txt (Firebase Architecture)
+
+====================================================================
+1. ARCHITECTURE OVERVIEW
+====================================================================
+
+1.1 Architectural Style
+- Primary style: **Offline-First, Cloud-Synced**.
+- Frontend: **Flutter** (Cross-platform).
+- Local DB: **Isar** (NoSQL, high performance) for primary CRUD and offline access.
+- Backend/Sync: **Firebase** (Full Stack).
+  - Auth: Firebase Authentication.
+  - Data: Cloud Firestore.
+  - Storage: Cloudinary (for card images) + Firestore for metadata.
+- Integration: Restricted for V1 (No external Payment APIs).
+
+1.2 High‑Level Layers
+- **Presentation Layer (Flutter)**: UI Widgets, Riverpod Controllers.
+- **Domain Layer (Dart)**: Entities, Failures, Use Cases.
+- **Data Layer (Dart)**:
+  - **Local**: Isar Data Sources (CRUD contacts/wallet offline).
+  - **Remote**: Firebase SDK (Firestore / Auth / Cloudinary).
+  - **Repositories**: Coordinate Local <-> Remote data flow.
+- **Backend Layer (Firebase)**:
+  - **Auth**: Firebase Authentication (Email, Phone, Google).
+  - **Database**: Cloud Firestore (Source of unified truth).
+  - **Storage**: Cloudinary (Card Images), Firestore (Metadata).
+
+====================================================================
+2. TECHNOLOGY STACK (V1)
+====================================================================
+
+2.1 Frontend
+- Framework: **Flutter** (Latest Stable)
+- State Management: **Riverpod**
+- Navigation: **GoRouter**
+- Packages: `firebase_core`, `firebase_auth`, `cloud_firestore`, `cloudinary`.
+
+2.2 Backend & Data
+- **Firebase Ecosystem**: Full Firebase stack.
+  - **Auth**: Firebase Authentication (Free tier: 10k SMS/month).
+  - **Database**: Cloud Firestore (Free Tier: 50k reads/day, 20k writes/day).
+  - **Storage**: Cloudinary (Free Tier: 25 monthly credits).
+- **Isar Database**:
+  - The "Source of Truth" for the offline app.
+  - Stores all Contacts, Wallet Transactions, and Logs locally first.
+
+2.3 Image Storage Strategy
+- **Local**: High-res images stored in App Sandbox (accessible offline).
+- **Cloud**: Images compressed (WebP) and uploaded to **Cloudinary**.
+- **Firestore**: Stores image metadata and public URLs.
+
+====================================================================
+3. DATA MODEL (FIRESTORE / ISAR)
+====================================================================
+
+3.1 Core Collections (Firestore)
+- **Collection: users** (Document ID: uid)
+  - id, profile (JSON), preferences.
+- **Collection: contacts** (Document ID: auto-generated)
+  - ownerId, full_name, phones, emails, layout_data (JSON).
+  - media_references: { front_cloudinary_url, back_cloudinary_url }.
+- **Collection: transactions** (Document ID: auto-generated)
+  - Ledger for internal wallet system.
+- **Collection: teams** (Document ID: auto-generated)
+  - Team metadata and member references.
+
+3.2 Sync Strategy
+- **Trigger**: Local change in Isar -> Pushes to Sync Queue.
+- **Process**: Background worker syncs to Firestore.
+- **Conflict Resolution**: Last-Write-Wins (Server Timestamp).
+
+====================================================================
+4. API PRINCIPLES
+====================================================================
+
+- **Authentication**: Bearer Token (JWT) from Firebase Auth in all API calls.
+- **Format**: JSON over HTTPS.
+- **Direct SDK Access**: Flutter app uses Firestore SDK directly for CRUD.
+- **Security**: Firestore Security Rules validate data at the database level.
+
+====================================================================
+5. SCALABILITY & PERFORMANCE
+====================================================================
+
+- **Offline First**: Isar handles 99% of read operations.
+- **Firestore**: Uses Firestore's native offline persistence.
+- **Image CDN**: Cloudinary provides automatic optimization and CDN delivery.
+
+====================================================================
+END OF SYSTEM ARCHITECTURE
+====================================================================

@@ -1,0 +1,241 @@
+
+================================================================================
+V1 CONTEXT NOTE:
+This document is a REFERENCE for Version 1.0.
+For explicit V1 scope exclusions (e.g., Payment Flows), refer to MASTER_PROJECT_PLAN_V1.txt.
+Any conflicting scope details in this file are overridden by the Master Plan.
+================================================================================
+
+====================================================================
+MOBILE WALLET - SECURITY IMPLEMENTATION PLAN
+Smart Contact Wallet / Mobile Wallet - Bangladesh Market
+====================================================================
+
+Document Version: 1.1
+Date: December 2025 (Updated January 2026)
+Scope: End-to-end security architecture for authentication, authorization,
+       data protection, payments, and APIs (V1-V3).
+
+Major References:
+- COMPREHENSIVE_SCALING_PLAN.txt (KYC, regulations, data localization)
+- BUSINESS_COLLABORATION_AND_REVENUE_PLAN.txt (partner APIs and models)
+- UpdatedDesignWithBNR.txt (payment flows, limits, new pages)
+- finalDesign.md (security-related UI elements)
+- FIREBASE_SYSTEM_ARCHITECTURE.txt (Firebase-based architecture)
+
+====================================================================
+1. SECURITY PRINCIPLES
+====================================================================
+
+- Defense in Depth: Multiple independent security layers (client, API, services, DB).
+- Least Privilege: Minimal required permissions for users, services, and admins.
+- Secure by Default: Strong security defaults, opt-in for less secure options.
+- Compliance Alignment: Bangladesh Bank guidelines, KYC/AML, and data localization.
+- Observability & Auditability: Complete traceability of sensitive operations.
+
+====================================================================
+2. AUTHENTICATION & AUTHORIZATION
+====================================================================
+
+2.1 User Authentication (Firebase Authentication)
+- Identity Provider
+  - Managed by Firebase Authentication.
+  - Passwords & Security: Handled by Firebase's enterprise-grade security policies.
+- Multi-Factor Authentication (MFA)
+  - Firebase MFA (Phone/Email/Authenticator App) enabled.
+- Token Model
+  - Standard JWT ID Tokens and Access Tokens.
+  - Secure Token Refresh handled by Firebase Auth SDK.
+
+2.2 Authorization Model (App Layer + Firestore Rules)
+- Firestore Data Access
+  - Security Rules validate user ownership of documents.
+  - Policy: App-Layer Filtering. Firebase Auth `uid` validated against document `ownerId`.
+  - Policy: Shared data uses `teamId` with membership checks in Firestore Rules.
+- Roles
+  - Stored in user documents and `customClaims` in JWT.
+  - Enforced via Firestore Security Rules (e.g., `request.auth.token.admin == true`).
+
+====================================================================
+3. DATA ENCRYPTION AND PROTECTION
+====================================================================
+
+3.1 In-Transit Encryption
+- All external communication over HTTPS (TLS 1.2+; recommended TLS 1.3).
+- HSTS enabled on all public endpoints.
+- Certificate pinning in mobile apps for critical API hosts.
+
+3.2 At-Rest Encryption
+- Database level
+  - Use disk encryption for database volumes (cloud provider managed keys).
+  - Encrypt sensitive columns (e.g., NID hash, tokens, partial account data)
+    using application-level encryption.
+- Object storage
+  - Server-side encryption for all card images and documents (Cloudinary).
+  - Separate containers/buckets for PII and non-PII where possible.
+
+3.3 Key Management
+- Use Firebase Security Rules for document-level access control.
+- Key rotation policy
+  - Rotate master keys annually or on incident.
+  - Rotate application encryption keys quarterly.
+- Strict access controls
+  - Only security/infra services can call key management.
+  - No keys stored in source code or configuration files.
+
+====================================================================
+4. PAYMENT & WALLET SECURITY
+====================================================================
+
+4.1 Compliance and Limits
+- Follow Bangladesh Bank rules (see COMPREHENSIVE_SCALING_PLAN.txt):
+  - Per-transaction, daily, and monthly limits per KYC tier.
+  - Store limits profiles and enforce at payment-service layer.
+- Use strong KYC verification (Porichoy, facial recognition, liveness).
+
+4.2 Transaction Authorization
+- High-risk actions (Send Money, Cash Out, Add Money, Link MFS/Bank):
+  - Require transaction PIN or biometrics (See Security page changes in UpdatedDesignWithBNR.txt).
+  - Optionally require MFA for large or unusual transactions.
+- Transaction Signing
+  - Include nonce, timestamp, and device identifier in each payment request.
+  - Use HMAC with per-device secret for critical operations.
+
+4.3 Fraud Detection & Anomaly Monitoring
+- Real-time rules
+  - Sudden changes in behavior (amount, frequency, destination).
+  - Multiple failed PIN/OTP attempts.
+  - Unusual locations or devices.
+- AI Fraud Prevention:
+  - Scammer Score: ML model analyzes number behavior (rapid adding, mass blocking) to assign risk score.
+  - Community Alerts: "Marked as Spam by 50+ users" badge.
+- Automated responses
+  - Temporarily freeze wallet or specific payment method.
+  - Force re-authentication or KYC re-verification.
+  - Notify user and support team for manual review.
+
+4.4 Reconciliation & Disputes
+- Maintain immutable transaction ledger in Firestore.
+- Store external provider reference IDs for all MFS/bank operations.
+- Implement reconciliation jobs:
+  - Compare internal and external status for each transaction.
+  - Auto-recover or flag inconsistencies.
+- Maintain dispute tickets with full audit trail.
+
+====================================================================
+5. USER DATA PROTECTION & PRIVACY
+====================================================================
+
+5.1 Data Minimization
+- Collect only necessary user and contact information.
+- Avoid storing full PANs or sensitive banking credentials directly; use tokens from providers whenever possible.
+
+5.2 Data Masking
+- Mask sensitive fields in UI and logs:
+  - Phone numbers, account numbers, and IDs show partially (e.g., ****1234).
+- Provide "Hide balance" feature on dashboards (see HOME DASHBOARD changes in UpdatedDesignWithBNR.txt).
+
+5.3 Data Retention and Deletion
+- Transaction history: retain for regulatory minimum (e.g., 5+ years).
+- Logs and analytics: anonymize where possible; limit retention.
+- Account deletion
+  - Mark user as deleted, scrub non-essential PII.
+  - Retain minimal data necessary for compliance.
+
+5.4 Global Directory Privacy (New)
+- Anonymization: All public lookups use Hashed IDs (SHA256).
+- Consent: Users must opt-in to be discoverable in Global Directory.
+- Private Data: Personal notes, tags, and non-verified fields are NEVER synced to Global.
+
+5.5 Data Localization
+- Host primary databases and transaction logs in approved regions.
+- Firebase Firestore regions selected for compliance with Bangladesh data requirements.
+- If using secondary region (e.g., us-central1) for DR, comply with cross-border regulations and anonymize where possible.
+
+====================================================================
+6. API SECURITY BEST PRACTICES
+====================================================================
+
+6.1 Client-Facing APIs (Firestore SDK)
+- Authentication
+  - JWT access tokens in Authorization header (Bearer) for REST endpoints.
+  - Firebase Auth handles authentication for SDK calls directly.
+- Input Validation
+  - Strict schema validation for all data.
+  - Reject unexpected fields and enforce types and ranges via Firestore Rules.
+- Rate Limiting
+  - Firebase enforces rate limits per project.
+  - Additional per-user limits implemented in app logic.
+- Error Handling
+  - Generic error messages externally; detailed messages only in logs.
+  - No leakage of internal IDs, stack traces, or config.
+
+6.2 Service-to-Service Security
+- Firebase Admin SDK for server-side operations.
+- Use service account credentials securely.
+- Implement least-privilege RBAC for backend services.
+
+6.3 Partner API Security (bKash, Nagad, Rocket, Banks)
+- OAuth2 client-credentials or signed requests according to each provider.
+- Maintain per-provider credentials in secure storage.
+- IP whitelisting and VPN/private connectivity where available.
+- Store provider tokens encrypted and never log them.
+
+6.4 Web Application Firewall (WAF)
+- Firebase Cloud Functions can be protected by external WAF.
+- Rules to protect against:
+  - SQL injection, XSS, CSRF, SSRF, path traversal.
+  - Bot and brute-force attacks on auth endpoints.
+
+====================================================================
+7. LOGGING, MONITORING, AND INCIDENT RESPONSE
+====================================================================
+
+7.1 Security Logging
+- Log all security-relevant events:
+  - Logins, logouts, failed auth attempts.
+  - KYC submissions, approvals, rejections.
+  - Wallet operations and payment failures.
+  - Changes to security settings (PIN, biometrics, trusted devices).
+- Ensure logs are immutable and tamper-evident.
+
+7.2 Monitoring & Alerts
+- Build dashboards for:
+  - Failed login rates, OTP/PIN failures.
+  - Unusual transaction spikes or anomalies.
+  - API errors and latencies on payment-related endpoints.
+- Define alert thresholds and on-call rotation.
+
+7.3 Incident Response
+- Incident playbooks for:
+  - Credential leak or suspected compromise.
+  - Fraud spikes or mass unauthorized transactions.
+  - Partner API compromise.
+- Steps include:
+  - Containment (rate limiting, feature flags, freeze accounts).
+  - Eradication (patching, key rotation, provider coordination).
+  - Recovery (restore normal operations with monitoring).
+  - Post-mortem and documentation.
+
+====================================================================
+8. SECURITY ROADMAP BY VERSION (V1-V3)
+====================================================================
+
+- V1 (Basic Card System)
+  - Firebase Authentication, password policies, and JWT handling.
+  - Basic KYC for wallet features (if enabled).
+  - Encryption at rest and in transit, security logging baseline.
+  - Firestore Security Rules for data access control.
+
+- V2 (BNR Integration - bKash, Nagad, Rocket)
+  - Full KYC/AML enforcement and transaction limits.
+  - Transaction PIN/biometrics and enhanced fraud detection.
+  - Secure partner API integrations with monitoring and reconciliation.
+
+- V3 (Full 5-Bank Integration)
+  - Additional controls for higher limits and bank transfers.
+  - Stronger anomaly detection and risk scoring.
+  - Advanced audit, reporting, and regulatory dashboards.
+
+This plan should directly guide the security implementation across backend,
+mobile apps, and partner integrations for all versions of the Mobile Wallet.

@@ -1,0 +1,126 @@
+================================================================================
+UPDATE SYSTEM ARCHITECTURE: FREE TIER DEVELOPMENT STRATEGY
+================================================================================
+DATE: 2026-01-26
+STATUS: DRAFT RECOMMENDATIONS
+TARGET: OPTIMIZE FOR ZERO COST DURING DEVELOPMENT
+
+1. EXECUTIVE SUMMARY & CORE PROBLEM
+-----------------------------------
+The original V1 architecture relies heavily on a central backend (Supabase) for syncing both Data and Images. While Supabase has a generous free tier (1GB Storage, 500MB Database), a "Smart Contact Wallet" with high-resolution card scans will consume the 1GB image storage limit very quickly during testing or with just a few beta users.
+
+To achieve a "Zero Cost" development period while maintaining complex features (Sync, Teams, Web), we must shift the storage burden from OUR backend to the USER'S personal cloud.
+
+2. RECOMMENDED ARCHITECTURAL OPTIONS
+------------------------------------
+
+I propose three options. **Option B is my Strongest Recommendation** for balancing features vs. cost.
+
+### OPTION A: THE "LOCAL-FIRST + PERSONAL CLOUD" (Maximum Free/Privacy)
+-----------------------------------------------------------------------
+*   **Concept**: The app runs entirely on the user's device. There is NO central database for user data.
+*   **Database**: Local `Isar` DB (Primary Source of Truth).
+*   **Storage/Sync**: All data (JSON + Images) is synced to the **User's Google Drive (AppData Folder)**.
+*   **Auth**: Firebase Auth (Free) or Supabase Auth (Free) just to verify identity.
+*   **Pros**:
+    *   **$0 Cost Forever**: You never pay for storage; users use their own 15GB Drive space.
+    *   **Privacy**: You don't hold user data; liabilities are minimal.
+*   **Cons**:
+    *   **No Real-time Collaboration**: "Team" features are nearly impossible to build.
+    *   **No Global Search**: You cannot build the "Global Directory" or "MFS Detection" easily because you don't have a central index of numbers.
+
+### OPTION B: THE "LEAN BACKEND + HYBRID STORAGE" (STRONGLY RECOMMENDED)
+------------------------------------------------------------------------
+*   **Concept**: Use Supabase for *Text/Relational Data* (Contact info, Team links) but DO NOT use it for *Image Storage*.
+*   **Auth**: **Supabase Auth** (Free Tier: 50,000 MAUs - plenty for v1).
+*   **Database**: **Supabase PostgreSQL** (Free Tier: 500MB).
+    *   *Optimization*: 500MB can hold millions of text contacts. We only sync text (Name, Phone, OCR data, Image URLs).
+*   **Image Storage**: **User's Google Drive**.
+    *   *Architecture*: When a user scans a card:
+        1.  Save Image Locally (Device).
+        2.  Upload Image to User's Google Drive (Hidden App Folder).
+        3.  Get the Drive File ID.
+        4.  Save the *Drive File ID* to Supabase Database.
+*   **Why is this better?**
+    *   **Free Dev Period**: You won't hit the 500MB database limit with just text. You won't hit the 1GB storage limit because you aren't using Supabase Storage at all.
+    *   **Features enabled**: You CAN still build "Teams", "Global Search", and "MFS Detection" because the phone numbers and names are in your Supabase DB.
+    *   **Sync**: If I login on a new phone, the app downloads contact list from Supabase, sees the "Drive File IDs", connects to my Drive, and downloads the card images transparently.
+
+### OPTION C: FIREBASE SPARK PLAN (Classic)
+-------------------------------------------
+*   **Concept**: Use Firebase's massive free tier boundaries.
+*   **Database**: Firestore (1GiB free).
+*   **Storage**: Firebase Storage (5GB free).
+*   **Pros**: Higher free limits than Supabase (5GB vs 1GB for images).
+*   **Cons**: NoSQL database is harder to query for complex relationships (Teams/Global Directory) compared to Supabase's SQL. Vendor lock-in.
+
+3. DETAILED SOLUTIONS TO YOUR PROBLEMS
+--------------------------------------
+
+### PROBLEM 1: LOGIN/REGISTER PLANNING (GMAIL OR MANUAL)
+**Recommendation for Version 1:**
+Prioritize **"Google Sign-In"** as the Primary Method.
+
+*   **Why:**
+    1.  **Frictionless**: One tap to sign up. No SMS costs (which are expensive/paid).
+    2.  **Access to Drive**: To use Option B (Hybrid Storage), we NEED access to the user's Google Drive. Google Sign-in scopes allow requesting this permission (`drive.appdata`) immediately.
+    3.  **Verification**: Google emails are already verified.
+
+**The Improved Flow:**
+1.  **Splash Screen**
+2.  **Auth Screen**:
+    *   Big Button: "Continue with Google" (Preferred).
+    *   Small Link: "Or use Email/Password" (Manual).
+3.  **If Google**:
+    *   App asks permission: "View and manage its own configuration data in your Google Drive".
+    *   User accepts -> Account Created in Supabase -> Keys for Drive saved locally.
+4.  **If Manual (Email/Pass)**:
+    *   User enters Email/Pass.
+    *   *Limitation*: They won't have Image Sync until they link a Google Account later in settings (for Drive storage).
+
+### PROBLEM 2: BACKEND DATABASE & IMAGE STORAGE
+**The "Hybrid" Architecture Implementation Plan:**
+
+1.  **Database (Supabase - Free Tier)**:
+    *   Table: `profiles` (id, email, name...)
+    *   Table: `contacts` (id, owner_id, name, phone, email, **drive_file_id_front**, **drive_file_id_back**) -> *Notice: We store IDs, not blobs.*
+    *   Table: `teams` ...
+
+2.  **Image Storage (Google Drive)**:
+    *   When user authenticates, create a folder in their Drive AppData: `SmartContactWallet_Images`.
+    *   Images are named: `contact_{uuid}_front.webp`.
+    *   **Benefits**:
+        *   Unlimited storage (User's quota).
+        *   Secure (You can't see it, only the app and user can).
+        *   GDPR/Privacy Compliant (User owns the file).
+
+### PROBLEM 3: LOCAL/CLOUD BACKUP
+**Unified solution with Option B:**
+*   **Auto-Backup**: Since we are using Google Drive for image storage, we are effectively *already* looking up the data to the cloud.
+*   **Restoration**:
+    *   **JSON Data**: Restores from Supabase (Instant).
+    *   **Images**: Lazy loads from Google Drive as you scroll.
+*   **Local Backup (Manual)**:
+    *   Add a "Export Data" button in settings.
+    *   Generates a `.zip` file containing: `contacts.json` + `images/` folder.
+    *   User can save this to phone storage or share it.
+
+4. NEXT STEPS: ACTION PLAN
+--------------------------
+1.  **Update `pubspec.yaml`**: Add `googleapis` and `google_sign_in` packages.
+2.  **Configure Google Cloud Console**:
+    *   Enable **Google Drive API**.
+    *   Enable **Google People API** (optional, for importing contacts).
+3.  **Update Supabase Config**:
+    *   Disable "Storage" buckets (or keep them only for public assets like default avatars).
+    *   Focus Database schema on storing *references* to external files.
+4.  **Develop `GoogleDriveService`**:
+    *   Methods: `uploadImage`, `downloadImage`, `deleteImage`.
+
+5. SUMMARY QUOTES
+-----------------
+> "Use Supabase for the Brain (Logic/Text), use Google Drive for the Heavy Lifting (Images)."
+
+> "Google Sign-in is not just for Login anymore; it's our gateway to free storage."
+
+This plan ensures you can run comfortably with **0 costs** during development and even when you launch to your first 1,000 users.

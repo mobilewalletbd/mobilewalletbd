@@ -1,0 +1,179 @@
+================================================================================
+V1 CONTEXT NOTE:
+This document is a REFERENCE for Version 1.0.
+For explicit V1 scope exclusions (e.g., Payment Flows), refer to MASTER_PROJECT_PLAN_V1.txt.
+Any conflicting scope details in this file are overridden by the Master Plan.
+================================================================================
+
+====================================================================
+MOBILE WALLET – PERFORMANCE OPTIMIZATION STRATEGY
+Smart Contact Wallet / Mobile Wallet – Low‑Resource Devices & Scale
+====================================================================
+
+Document Version: 1.0
+Date: December 2025
+Scope: End‑to‑end performance strategy for mobile clients and backend,
+       focusing on low‑storage, low‑memory, and low‑bandwidth devices.
+
+References:
+- APP_DESIGN_PLAN.txt and finalDesign.md (UI complexity, modules)
+- COMPREHENSIVE_SCALING_PLAN.txt (architecture for millions of users)
+- UpdatedDesignWithBNR.txt (BNR and bank integrations impact)
+
+====================================================================
+1. PERFORMANCE GOALS
+====================================================================
+
+- App startup time (cold start): < 3 seconds on mid‑range devices; < 5 seconds on low‑end devices.
+- API P95 latency: < 300 ms for standard reads, < 800 ms for complex writes (e.g., payments).
+- App bundle size: Target < 25 MB initial download; optional modules loaded on demand.
+- Smooth UI: Maintain 60 FPS where possible; avoid long main‑thread blocking.
+
+====================================================================
+2. CLIENT‑SIDE CODE OPTIMIZATION
+====================================================================
+
+2.1 App Bundle & Storage
+- Use a cross‑platform framework (e.g., Flutter) with:
+  - Split APKs/app bundles by architecture to reduce download size.
+  - Code shrinking and tree‑shaking to remove unused code and assets.
+- Modularize features by version and usage:
+  - V1: Core contact + basic wallet features included by default.
+  - V2: BNR linking and advanced wallet pages loaded lazily.
+  - V3: Bank integration modules as optional, lazily loaded flows.
+- Local data management
+  - Use a lightweight local DB (e.g., SQLite) for offline cache with capped size.
+  - Implement configurable cache eviction (LRU) for contact images and logs.
+
+2.2 Rendering & State Management
+- Adopt efficient state management (e.g., BLoC/Provider for Flutter, Redux for web):
+  - Avoid rebuilding entire trees on small state changes.
+  - Use selectors and memoization for lists (contacts, transactions).
+- Pagination & Virtualization
+  - Paginate contact lists and transaction histories.
+  - Use list virtualization/infinite scrolling to limit memory usage.
+- Background Work
+  - Offload heavy operations (OCR, large JSON parsing) to background isolates/threads.
+
+====================================================================
+3. IMAGE & ASSET COMPRESSION
+====================================================================
+
+3.1 Card & Document Images
+- Capture
+  - Use reasonable resolution for OCR (not full camera resolution) with cropping.
+  - Provide built‑in card alignment guides (as per PAGE_LIST_WITH_CONTENT and PAGE_LAYOUT_STRUCTURE).
+- Compression
+  - Compress images on device before upload (JPEG/WebP with quality ~70–80%).
+  - For thumbnails and previews, generate smaller derivatives server‑side.
+- Storage
+  - Store originals in object storage; serve compressed variants through CDN.
+  - Use caching headers to allow long‑term client caching.
+
+3.2 Static Assets (Icons, Illustrations)
+- Prefer vector assets (SVGs / vector drawables) where possible.
+- Use sprite sheets or icon fonts for frequently used icons.
+- Lazy load rarely used illustrations (e.g., some onboarding pages, help screens).
+
+====================================================================
+4. CACHING STRATEGY (CLIENT & SERVER)
+====================================================================
+
+4.1 Client‑Side Caching
+- Cache key datasets
+  - Logged‑in user profile, KYC status, preferences.
+  - Recent contacts and frequently used contacts.
+  - Wallet summary and recent transactions.
+- Offline Mode
+  - Allow read‑only access to cached contacts and recent transactions.
+  - Queue write operations (add contact, edit, new transaction) and sync when online.
+
+4.2 Server‑Side Caching (Redis)
+- Short‑lived caches (seconds to minutes)
+  - Wallet balances for read endpoints.
+  - Frequently accessed configuration (limits, fees, providers list).
+- Longer‑lived caches (minutes to hours)
+  - Static lists: supported banks, districts/divisions, fee tables.
+- Cache Invalidation
+  - Event‑driven: update cache on relevant DB changes.
+  - TTL‑based fallback where eventing is not available.
+
+4.3 CDN & Edge Caching
+- Store card thumbnails, illustrations, composite images at CDN edge.
+- Use immutable cache keys (hash in URL) and long TTL for static assets.
+
+====================================================================
+5. MEMORY MANAGEMENT TECHNIQUES
+====================================================================
+
+5.1 Mobile App
+- Avoid loading large lists fully into memory.
+- Clear image caches on memory warning / backgrounding the app.
+- Use pooling for heavy UI components (e.g., cards) instead of constant rebuilds.
+- Release references to completed network calls and large models after use.
+
+5.2 Backend Services
+- Use streaming APIs for large responses (e.g., export operations).
+- Limit ORM eager loading; rely on pagination and projection queries.
+- Set appropriate JVM/Node.js memory limits and monitor garbage collection.
+
+====================================================================
+6. DATABASE QUERY OPTIMIZATION
+====================================================================
+
+6.1 Schema & Indexing
+- Create composite indexes on:
+  - (user_id, created_at) for transactions.
+  - (user_id, name, tags) for contacts.
+  - (provider, status, user_id) for mfs_accounts and bank_accounts.
+- Avoid unbounded queries; always require pagination parameters.
+
+6.2 Query Patterns
+- Read‑optimized endpoints
+  - Use read replicas for reports and analytics if needed.
+  - Use projections to return only necessary columns.
+- Write‑optimized endpoints
+  - Wrap complex multi‑step operations (payments) in transactions where possible.
+  - Use outbox/event pattern for reliable event publishing.
+
+6.3 Background Jobs
+- Offload heavy analytics, reconciliation, and bulk exports to background workers.
+- Run large jobs during off‑peak hours where possible.
+
+====================================================================
+7. PERFORMANCE CONSIDERATIONS FOR USER EXPERIENCE
+====================================================================
+
+7.1 Perceived Performance
+- Use skeleton loaders and shimmer effects for lists (contacts, transactions).
+- Show immediate visual feedback on actions (button pressed states, toasts).
+- Use optimistic UI for safe operations (e.g., editing contact details), with rollback on error.
+
+7.2 Network Awareness
+- Detect connection type and quality (Wi‑Fi vs mobile; high vs low bandwidth).
+- Switch to low‑bandwidth mode automatically on poor networks:
+  - Reduce image resolutions further.
+  - Defer non‑critical background syncs.
+
+7.3 Version‑Specific Impact
+- V1
+  - Optimize contact and OCR workflows; ensure scanning does not freeze UI.
+- V2
+  - Optimize BNR payment flows and limit additional overhead from provider calls.
+  - Use parallelization where possible (e.g., pre‑fetch balances).
+- V3
+  - Apply routing logic efficiently for bank vs MFS; cache provider capabilities.
+
+====================================================================
+8. LOAD & STRESS TESTING STRATEGY
+====================================================================
+
+- Define performance test scenarios for:
+  - Mass contact creation and search.
+  - Peak payment periods (salary days, festivals) with concurrent BNR and bank traffic.
+  - Large transaction history queries and exports.
+- Use realistic data distributions from COMPREHENSIVE_SCALING_PLAN.txt.
+- Establish performance baselines and regression thresholds per release.
+
+This strategy ensures Mobile Wallet remains responsive on low‑spec devices
+while supporting increasing traffic from BNR and bank integrations.

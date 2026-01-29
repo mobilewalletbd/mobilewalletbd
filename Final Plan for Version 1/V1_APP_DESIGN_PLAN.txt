@@ -1,0 +1,2309 @@
+================================================================================
+V1 CONTEXT NOTE:
+This document is a REFERENCE for the Visual Design System of Version 1.0.
+For explicit V1 scope exclusions (e.g., Payment Flows), refer to MASTER_PROJECT_PLAN_V1.txt.
+Any conflicting scope details in this file are overridden by the Master Plan.
+================================================================================
+
+================================================================================
+                   MOBILE WALLET - COMPREHENSIVE APP DESIGN PLAN
+                   Smart Contact Wallet / Mobile Wallet
+================================================================================
+
+Document Version: 2.0
+Date: December 2025
+Scope: Complete UI/UX design specifications including specialized modules
+       (Authentication, Scan, Wallet, Team, etc.) and component library.
+
+References:
+- PAGE_LIST_WITH_CONTENT.txt (60-page functional list)
+- PAGE_LAYOUT_STRUCTURE.txt (Composite image planning)
+- UpdatedDesignWithBNR.txt (BNR and Bank Integration flows)
+
+================================================================================
+                        PART 1: BRAND IDENTITY & FOUNDATION
+================================================================================
+
+1. BRAND CORE
+-------------
+• App Name: Smart Contact Wallet
+• Primary Purpose: Contact Management + Mobile Wallet + Business Networking
+• Target Audience: General Users, Business Professionals, SME Owners in Bangladesh
+• Design Personality: Trustworthy, Professional, Clean, Fast, Accessible
+
+2. COLOR PALETTE
+----------------
+PRIMARY SYSTEM:
+• Primary Green: #0BBF7D (Emerald Green - Action, Success, Brand)
+• Primary Green Dark: #099D66 (Hover states)
+• Primary Green Light: #4DCE9F (Success states, light backgrounds)
+• Accent/Action: #0BBF7D (Primary Action brand color)
+
+SECONDARY SYSTEM:
+• Deep Blue: #1A1F36 (Deep Midnight Blue - Headers, Primary Text)
+• Sky Blue: #4DABF7 (Information, Links, Interactive elements)
+• Warm Gold: #FFC107 (Favorites, Premium features, Ratings)
+• Coral Accent: #FF4D4F (Destructive actions, Errors, Alerts)
+
+NEUTRAL SYSTEM:
+• Black: #1A1A2E (Primary Text)
+• Dark Gray: #4A4A5A (Secondary Text, Icons)
+• Medium Gray: #8E8E9A (Placeholders, Disabled states)
+• Light Gray: #E5E5E5 (Borders, Dividers)
+• Off White: #F5F5F7 (Page Backgrounds, Inputs)
+• White: #FFFFFF (Card Surfaces, Modals)
+
+GRADIENTS (For specific UI elements like cards):
+• Brand Gradient: #00A86B to #008f5d (Diagonal)
+• Blue Gradient: #1E3A5F to #162E4D (Team cards)
+• Gold Gradient: #FFB84D to #FF9F1C (Premium/Favorite cards)
+
+3. TYPOGRAPHY
+-------------
+FONT FAMILY: Inter (Google Fonts) - Clean, Modern, Highly legible
+FALLBACK: Roboto, San Francisco (System default)
+
+SCALE:
+• Headline 1: 24px Bold (App Headers, Major Titles)
+• Headline 2: 20px SemiBold (Section Headers, Modal Titles)
+• Subtitle 1: 18px SemiBold (Card Titles, Navigation)
+• Body 1: 16px Regular (Input text, Primary content)
+• Body 2: 14px Regular (Secondary content, Descriptions)
+• Caption: 12px Medium/Regular (Labels, Helper text)
+• Button: 14px SemiBold (Action buttons)
+
+NUMERIC FONT (Optional): JetBrains Mono or Roboto Mono
+• Use for: OTP codes, Card numbers, Wallet balances
+• Reason: Fixed width ensures alignment and readability of data
+
+4. ICONOGRAPHY
+--------------
+STYLE: Filled (for active states) / Outlined (for inactive/general)
+STROKE WIDTH: 1.5px or 2px
+CORNER RADIUS: 2px rounded corners
+SIZE SYSTEM:
+• Small: 16px (Dense lists, inline icons)
+• Medium: 20px (Input fields, Secondary actions)
+• Standard: 24px (Navigation, Toolbars, FAB icons)
+• Large: 32px or 48px (Features, Empty states)
+
+5. SPACING & LAYOUT SYSTEM
+--------------------------
+GRID: 8px baseline grid (Everything divisible by 4 or 8)
+MARGINS:
+• Screen edge: 16px or 24px
+• Card padding: 16px or 20px
+• Section spacing: 24px or 32px
+• Element spacing: 8px, 12px, 16px
+
+CORNER RADIUS:
+• Small: 4px (Checkboxes, Tags)
+• Medium: 8px (Buttons, Inputs)
+• Large: 12px (Cards, Modals, Dialogs)
+• Extra Large: 16px or 24px (Bottom Sheets, Floating Actions)
+
+SHADOWS:
+• Level 1 (Cards): 0 2px 4px rgba(0,0,0,0.05)
+• Level 2 (Floating/Modals): 0 4px 12px rgba(0,0,0,0.08)
+• Level 3 (Dropdowns): 0 8px 16px rgba(0,0,0,0.12)
+
+================================================================================
+                        PART 2: GLOBAL COMPONENT LIBRARY
+================================================================================
+
+6. BUTTONS
+----------
+PRIMARY BUTTON:
+• Height: 48px
+• Background: Primary Green (#0BBF7D)
+• Text: White, Inter SemiBold 14px
+• Radius: 12px
+• Shadow: Level 1 (optional)
+
+SECONDARY BUTTON (Outline):
+• Height: 48px
+• Border: 1.5px Primary Green (#0BBF7D)
+• Background: Transparent
+• Text: Primary Green, Inter SemiBold 14px
+• Radius: 12px
+
+TEXT BUTTON:
+• Height: Auto
+• Text: Primary Green or Dark Gray
+• Font: Inter Medium 14px
+
+FLOATING ACTION BUTTON (FAB):
+• Size: 56x56px
+• Background: Primary Green
+• Icon: White, 24px
+• Shadow: Level 2
+• Position: Bottom Right (fixed)
+
+7. INPUT FIELDS
+---------------
+DEFAULT STATE:
+• Height: 56px (Standard touch target)
+• Background: Off White (#F5F5F7) OR White with Border
+• Border: 1px Light Gray (#E5E5E5)
+• Radius: 12px
+• Label: Top aligned (floating) or Standard top label
+• Placeholder: Medium Gray
+
+ACTIVE/FOCUS STATE:
+• Border: 2px Primary Green (#0BBF7D)
+• Background: White
+
+ERROR STATE:
+• Border: 2px Coral Accent (#FF6B6B)
+• Helper text: Coral Accent
+
+8. CARDS (CONTACT / WALLET)
+---------------------------
+CONTACT CARD (Grid View):
+• Dimensions: Flexible (approx 160x200px)
+• Background: White
+• Radius: 16px
+• Shadow: Level 1
+• Image Area: Top 60% of card, rounded top corners
+• Content Area: Name, Title, Quick Actions below
+
+WALLET CARD (Payment Method):
+• Dimensions: Full width x 200px (aspect ratio 1.586)
+• Background: Gradient (Brand or Blue)
+• Radius: 16px
+• Content: Chip icon, Bank Logo, Masked Number, Name, Expiry
+• Text: White/Metallic
+
+8A. MY CARD CREATOR UI (NEW)
+----------------------------
+CANVAS AREA:
+• Centered Card Preview (Live Render).
+• Interactive Elements: Draggable Logo, Tap-to-Edit Text Fields.
+
+EDITOR TOOLBAR (Bottom Sheet):
+• Tabs: [Layout] [Theme] [Logo] [Content] [QR].
+• Theme Picker: Color Swatches (Brand/Gradient/Solid).
+• Logo Uploader: "Upload PNG/SVG" + Size Slider.
+
+8B. GLOBAL SYNC ALERTS (TOASTS)
+-------------------------------
+• Style: Top-floating Banner (Info Blue).
+• Text: "New info available for [Name]."
+• Actions: [Update] [Ignore].
+
+9. NAVIGATION BARS
+------------------
+BOTTOM NAVIGATION (Main):
+• Height: 60-80px
+• Background: White
+• Shadow: Top border or subtle shadow
+• Items: Home, Contacts, Scan (Center FAB), Wallet, Settings
+• Active State: Primary Green icon + Label
+• Inactive State: Medium Gray icon + Label
+
+TOP HEADER Bar:
+• Height: 56px
+• Background: White or Transparent
+• Elements: Back Button (Left), Title (Center), Actions (Right)
+
+10. BOTTOM NAVIGATION SHELL
+---------------------------
+(Applies to all major modules except full-screen flows)
+
+CONTAINER:
+• Fixed at bottom of screen
+• Height: 80px
+• Background: White (#FFFFFF)
+• Top border: 1px Light Gray (#E5E5E5)
+• Shadow: 0 -2px 10px rgba(0,0,0,0.03)
+
+ITEMS (Left to Right):
+1. SETTINGS BUTTON (Left):
+   - Icon: Gear/Cog ("settings")
+   - Action: Navigate to Settings module
+   - Color: Dark Gray -> Primary Green (Active)
+
+2. FAB (Center - Prominent):
+   - Position: Physically centered, slightly raised (overlays content)
+   - Size: 56x56px or 64x64px
+   - Background: Primary Green (#00A86B)
+   - Icon: Plus (+) White
+   - Interaction On Tap: Expands fan menu with options:
+     * Add Contact
+     * Scan Card
+     * QR Code
+     * Manual Add
+   - Shadow: 0 4px 12px rgba(0, 168, 107, 0.4)
+
+3. SEARCH BUTTON (Right):
+   - Icon: Magnifying Glass ("search")
+   - Action: Navigate to Search module
+   - Color: Dark Gray -> Primary Green (Active)
+
+11. COMMON LAYOUT SHELL
+-----------------------
+(Applies to V1)
+Every screen (unless full-screen modal) must follow:
+HEADER:
+• Standard AppBar (56px)
+• Title: Page Name
+• Leading: Back Arrow (if deep) or Menu (if top)
+• Trailing: Contextual actions (e.g., Save, Filter)
+
+BODY:
+• Background: Off White (#F5F5F7)
+• Padding: 16px horizontal default
+
+FOOTER:
+• The Bottom Navigation Shell (Settings - FAB - Search) exists on top-level pages.
+• Inner pages may hide it or replace with action buttons (e.g., "Save").
+
+================================================================================
+                        PART 3: MODULE-SPECIFIC DESIGNS
+================================================================================
+
+================================================================================
+10. AUTHENTICATION MODULE DESIGNS
+================================================================================
+
+10.1 SPLASH SCREEN
+──────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A minimalist, high-impact branding screen containing the app logo and a subtle
+loading animation in a clean white environment.
+
+LAYOUT STRUCTURE:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ (Empty Space - 35% height)                                                  │
+│                                                                             │
+│ [LOGO ZONE]                                                                 │
+│ • App Icon (120x120px)                                                      │
+│ • App Name "Smart Contact Wallet" (Headline 1)                              │
+│                                                                             │
+│ (Empty Space)                                                               │
+│                                                                             │
+│ [LOADER ZONE]                                                               │
+│ • Spinner / Progress Bar                                                    │
+│ • "Loading..." (Caption)                                                    │
+│                                                                             │
+│ (Empty Space - 10% height)                                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+COMPONENT SPECIFICATIONS:
+• Background: White (#FFFFFF)
+• App Icon:
+  - Dimensions: 120×120px
+  - Style: Vector logo with primary green gradient
+  - Animation: Scale in (0.8 → 1.0) over 600ms ease-out
+• App Name:
+  - Font: Inter Bold, 24px
+  - Color: Primary Green (#00A86B)
+  - Margin top: 24px
+• Loader:
+  - Type: Circular indeterminate spinner
+  - Color: Primary Green (#00A86B)
+  - Size: 32×32px
+  - Position: 48px above bottom edge
+
+10.2 WELCOME / LOGO PAGE
+────────────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+The primary entry point after splash. Features the branding prominently at the
+top, followed by clear actionable buttons for Log In / Sign Up, and alternative
+Social Login options at the bottom.
+
+LAYOUT STRUCTURE:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ BRANDING ZONE (0-450px from top)                                            │
+│ • Large Illustration or Logo (Centered)                                     │
+│ • Welcome Text: "Manage Contacts & Wallet"                                  │
+│ • Subtext: "The smartest way to network."                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ACTION ZONE (450-650px)                                                     │
+│ • LOG IN Button (Primary)                                                   │
+│ • SIGN UP Button (Outline)                                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ SOCIAL ZONE (650-Bottom)                                                    │
+│ • "or continue with" divider                                                │
+│ • Row of Social Icons: Google, Facebook, Apple                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+COMPONENT SPECIFICATIONS:
+
+1. BRANDING:
+   • Logo: 100×100px, centered horizontally, Y: 120px
+   • Welcome Title:
+     - Font: Inter Bold, 28px
+     - Color: Black (#1A1A2E)
+     - Alignment: Center
+     - Y: 240px
+   • Subtext:
+     - Font: Inter Regular, 16px
+     - Color: Dark Gray (#4A4A5A)
+     - Alignment: Center
+     - Y: 280px
+
+2. BUTTONS:
+   • Container Width: 327px (24px margin L/R)
+   • LOG IN Button:
+     - Style: Primary Button (Green filled)
+     - Y: 450px
+   • SIGN UP Button:
+     - Style: Secondary Button (Green outline)
+     - Y: 512px (16px gap)
+
+3. DIVIDER:
+   • Y: 580px
+   • Line: 1px Light Gray (#E5E5E5)
+   • Text: "or continue with" background White, centered
+   • Font: Inter Regular, 12px, Medium Gray
+
+4. SOCIAL ICONS:
+   • Container: Row, Space Evenly
+   • Y: 620px
+   • Icons: Google (G logo), Facebook (F logo), Apple (Apple logo)
+   • Size: 48x48px circle container
+   • Shadow: Level 1
+   • Line color: Light Gray (#E5E5E5)
+   • Text: "or continue with"
+   • Text font: Inter Regular, 12px
+   • Text color: Medium Gray (#8E8E9A)
+   • Text padding: 16px horizontal from lines
+
+8. SOCIAL LOGIN BUTTONS:
+   • Container: 192px wide (3 buttons × 48px + 2 gaps × 24px), centered
+   • Position: Y: 570px from top
+   • Each button:
+     - Dimensions: 48×48px circular
+     - Border: 1px Light Gray (#E5E5E5)
+     - Background: White (#FFFFFF)
+     - Shadow: 0 2px 4px rgba(0, 0, 0, 0.05)
+     - Icon size: 24×24px, centered
+   • Google button: Google "G" logo, brand colors
+   • Facebook button: Facebook "f" icon, #1877F2
+   • Apple button: Apple logo, Black (#1A1A2E)
+   • Spacing between buttons: 24px
+
+INTERACTION STATES:
+• Button hover: Slight scale up (1.02x), 150ms ease-out
+• Button pressed: Scale down (0.98x), background color change
+• Social button pressed: Light gray background (#F5F5F7)
+
+10.3 LOGIN SCREEN
+─────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A focused, form-centric login screen with a welcoming header message and
+clear input fields. The design prioritizes ease of use with properly sized
+touch targets, visible labels, and accessible password visibility toggle.
+Social login options are available as an alternative authentication method.
+
+LAYOUT STRUCTURE:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ NAVIGATION BAR (44-100px from top)                                          │
+│ • Back button: 44×44px touch target, left-aligned at X: 8px                │
+│ • Title: "Log In" centered, Inter SemiBold, 18px                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ WELCOME MESSAGE ZONE (120-200px from top)                                   │
+│ • Primary text: "Welcome back!" - Headline 1, Black (#1A1A2E)               │
+│ • Secondary text: "Enter your credentials to continue." - Body, Gray       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ FORM ZONE (220-420px from top)                                              │
+│ • Email/Phone field: 56px height, full-width with 24px margins             │
+│ • Password field: 56px height, includes visibility toggle icon             │
+│ • Forgot Password link: Right-aligned, below password field                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ACTION ZONE (450-520px from top)                                            │
+│ • LOG IN button: Primary button, full-width                                │
+│ • Sign Up prompt: Centered text with link below button                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ SOCIAL LOGIN ZONE (580-700px from top)                                      │
+│ • Divider with "or continue with" text                                     │
+│ • Social buttons row: Google, Facebook, Apple                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+COMPONENT SPECIFICATIONS:
+
+1. NAVIGATION BAR:
+   • Height: 56px (excluding status bar)
+   • Background: White (#FFFFFF)
+   • Back button:
+     - Icon: "back" arrow, 24×24px
+     - Color: Black (#1A1A2E)
+     - Touch target: 44×44px
+     - Position: X: 8px, centered vertically
+   • Title: "Log In"
+     - Font: Inter SemiBold, 18px
+     - Color: Black (#1A1A2E)
+     - Position: Centered horizontally
+
+2. WELCOME MESSAGE:
+   • Position: X: 24px (left-aligned), Y: 120px from top
+   • Primary heading:
+     - Text: "Welcome back!"
+     - Font: Inter Bold, 24px (Headline 1)
+     - Line height: 32px
+     - Color: Black (#1A1A2E)
+   • Secondary text:
+     - Text: "Enter your credentials to continue."
+     - Font: Inter Regular, 14px (Body)
+     - Line height: 20px
+     - Color: Dark Gray (#4A4A5A)
+     - Margin top: 8px
+
+3. EMAIL/PHONE INPUT FIELD:
+   • Dimensions: 327×56px
+   • Position: X: 24px, Y: 220px from top
+   • Label: "Email or Phone"
+     - Font: Inter Medium, 12px
+     - Color: Dark Gray (#4A4A5A)
+     - Position: 8px above field
+   • Input field:
+     - Background: White (#FFFFFF)
+     - Border: 1px Light Gray (#E5E5E5)
+     - Border radius: 12px
+     - Padding: 16px horizontal
+     - Text: Inter Regular, 16px, Black (#1A1A2E)
+     - Placeholder: Inter Regular, 16px, Medium Gray (#8E8E9A)
+   • Focus state: Border 2px Primary Green (#00A86B)
+
+4. PASSWORD INPUT FIELD:
+   • Dimensions: 327×56px
+   • Position: X: 24px, Y: 312px from top (24px below email field)
+   • Label: "Password"
+     - Same styling as email label
+   • Input field:
+     - Same styling as email field
+     - Text displayed as bullets (••••••••)
+   • Visibility toggle icon:
+     - Icon: "eye" (show) / "eye-off" (hide)
+     - Size: 24×24px
+     - Color: Medium Gray (#8E8E9A)
+     - Position: Right-aligned, 16px from right edge, centered vertically
+     - Touch target: 44×44px
+
+5. FORGOT PASSWORD LINK:
+   • Text: "Forgot Password?"
+   • Font: Inter Medium, 14px
+   • Color: Primary Green (#00A86B)
+   • Position: Right-aligned to input field, 12px below password field
+   • Touch target: Full text width + 8px padding
+
+6. LOG IN BUTTON:
+   • Dimensions: 327×48px
+   • Position: X: 24px, Y: 450px from top
+   • Background: Primary Green (#00A86B)
+   • Text: "LOG IN"
+     - Font: Inter SemiBold, 14px
+     - Color: White (#FFFFFF)
+     - Alignment: Center
+   • Border radius: 12px
+   • Shadow: 0 4px 12px rgba(0, 168, 107, 0.3)
+   • Disabled state: Background Light Gray (#E5E5E5), text Medium Gray
+
+7. SIGN UP PROMPT:
+   • Position: Centered, 24px below LOG IN button
+   • Text: "Don't have an account? " + "Sign Up"
+   • Regular text: Inter Regular, 14px, Dark Gray (#4A4A5A)
+   • Link text: Inter SemiBold, 14px, Primary Green (#00A86B)
+
+8. SOCIAL LOGIN SECTION:
+   • Same specifications as Welcome Screen social login
+   • Position: Y: 580px from top
+
+VALIDATION STATES:
+• Error state:
+  - Border: 2px Error Red (#DC3545)
+  - Error message: 12px below field, Inter Regular, 12px, Error Red
+• Success state:
+  - Border: 2px Success Green (#28A745)
+  - Checkmark icon appears in field (optional)
+
+10.4 REGISTER SCREEN
+────────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A comprehensive registration form designed for new user account creation.
+The scrollable form presents all required fields in a logical, easy-to-follow
+sequence. Password requirements are clearly displayed, and the form includes
+real-time validation feedback to guide users through the registration process.
+
+LAYOUT STRUCTURE:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ NAVIGATION BAR (0-100px from top)                                           │
+│ • Back button: Left-aligned, 44×44px touch target                          │
+│ • Title: "Sign Up" - centered, Inter SemiBold, 18px                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ HEADER ZONE (100-160px from top)                                            │
+│ • Title: "Create your account" - Headline 1, left-aligned                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ SCROLLABLE FORM ZONE (160-680px, scrollable content)                        │
+│ • Full Name field: Required (*), 56px height                               │
+│ • Contact Number field: With country code prefix (+880), 56px height       │
+│ • Email field: Required (*), 56px height                                   │
+│ • Date of Birth field: With calendar picker icon, 56px height              │
+│ • Password field: With visibility toggle, requirements below, 56px height  │
+│ • Password requirements: Visual checklist below password field             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ACTION ZONE (fixed at bottom, 680-778px)                                    │
+│ • REGISTER button: Primary button, full-width with 24px margins            │
+│ • Login prompt: "Already have an account? Log In" centered below           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+COMPONENT SPECIFICATIONS:
+
+1. NAVIGATION BAR:
+   • Same specifications as Login Screen navigation bar
+   • Title: "Sign Up"
+
+2. PAGE HEADER:
+   • Text: "Create your account"
+   • Font: Inter Bold, 24px (Headline 1)
+   • Color: Black (#1A1A2E)
+   • Position: X: 24px, Y: 110px from top
+
+3. FULL NAME FIELD:
+   • Dimensions: 327×56px
+   • Position: X: 24px, Y: 170px from top
+   • Label: "Full Name *" (asterisk in Error Red #DC3545)
+   • Same input styling as Login Screen
+   • Validation: Required, minimum 2 characters
+
+4. CONTACT NUMBER FIELD:
+   • Total dimensions: 327px wide
+   • Position: X: 24px, Y: 250px from top (24px gap)
+   • Label: "Contact Number *"
+   • Country code prefix:
+     - Dimensions: 72×56px
+     - Background: Off White (#F5F5F7)
+     - Border: 1px Light Gray (#E5E5E5)
+     - Border radius: 12px (left side only)
+     - Text: "+880", Inter Medium, 16px, Black
+     - Dropdown arrow: 16×16px, Medium Gray
+   • Phone number input:
+     - Dimensions: 247×56px (remaining width minus 8px gap)
+     - Position: Right of country code with 8px gap
+     - Same styling as standard input
+     - Placeholder: "1712345678"
+
+5. EMAIL FIELD:
+   • Dimensions: 327×56px
+   • Position: X: 24px, Y: 330px from top
+   • Label: "Email *"
+   • Same input styling as Login Screen
+   • Validation: Valid email format required
+
+6. DATE OF BIRTH FIELD:
+   • Dimensions: 327×56px
+   • Position: X: 24px, Y: 410px from top
+   • Label: "Date of Birth"
+   • Placeholder: "DD/MM/YYYY"
+   • Calendar icon:
+     - Icon: "calendar" from icon set
+     - Size: 24×24px
+     - Color: Medium Gray (#8E8E9A)
+     - Position: Right-aligned, 16px from right edge
+     - Touch target: 44×44px
+   • Triggers native date picker on tap
+
+7. PASSWORD FIELD:
+   • Dimensions: 327×56px
+   • Position: X: 24px, Y: 490px from top
+   • Label: "Password *"
+   • Same styling as Login Screen password field
+   • Visibility toggle icon included
+
+8. PASSWORD REQUIREMENTS:
+   • Position: X: 24px, Y: 12px below password field
+   • Layout: Horizontal row of requirement indicators
+   • Each requirement:
+     - Bullet point: 6×6px circle
+     - Text: Inter Regular, 12px
+     - Unmet: Medium Gray (#8E8E9A)
+     - Met: Success Green (#28A745)
+   • Requirements:
+     - "• 8+ characters"
+     - "• 1 number"
+     - "• 1 symbol"
+   • Spacing between items: 16px
+
+9. REGISTER BUTTON:
+   • Dimensions: 327×48px
+   • Position: X: 24px, Y: 680px from top (fixed position)
+   • Background: Primary Green (#00A86B)
+   • Text: "REGISTER", Inter SemiBold, 14px, White
+   • Border radius: 12px
+   • Shadow: 0 4px 12px rgba(0, 168, 107, 0.3)
+   • Disabled until all required fields valid
+
+10. LOGIN PROMPT:
+    • Position: Centered, Y: 740px from top (12px below button)
+    • Text: "Already have an account? " + "Log In"
+    • Regular text: Inter Regular, 14px, Dark Gray
+    • Link text: Inter SemiBold, 14px, Primary Green
+
+SCROLL BEHAVIOR:
+• Form content scrolls vertically when keyboard appears
+• Active field remains visible above keyboard
+• Register button may be hidden when scrolling, reappears on scroll up
+• Keyboard-aware scroll adjustment: 16px padding above keyboard
+
+10.5 FORGOT PASSWORD SCREEN
+───────────────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A minimal, focused screen for password recovery. Features a clean layout
+with an explanatory message, single email input field, and prominent action
+button. The design reassures users with clear instructions and simple flow.
+
+LAYOUT STRUCTURE:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ NAVIGATION BAR (0-100px)                                                    │
+│ • Back button: Left-aligned, 44×44px touch target                          │
+│ • Title: "Reset Password" - centered, Inter SemiBold, 18px                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ILLUSTRATION ZONE (100-280px)                                               │
+│ • Lock/key illustration: 120×120px, centered                                │
+│ • Colors: Primary Green (#00A86B) with Light Gray accents                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ CONTENT ZONE (280-450px)                                                    │
+│ • Heading: "Forgot your password?" - Headline 1, centered                  │
+│ • Description: Multi-line, Body text, centered, Medium Gray                │
+│ • Email input field: 56px height, 24px margins                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ACTION ZONE (480-560px)                                                     │
+│ • Send Reset Link button: Primary button, full-width                       │
+│ • Back to Login link: Centered text below button                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+COMPONENT SPECIFICATIONS:
+
+1. ILLUSTRATION:
+   • Dimensions: 120×120px
+   • Position: Centered horizontally, Y: 140px from top
+   • Style: Flat illustration with lock and key motif
+   • Primary color: Primary Green (#00A86B)
+   • Background elements: Light Gray (#E5E5E5)
+
+2. HEADING:
+   • Text: "Forgot your password?"
+   • Font: Inter Bold, 24px (Headline 1)
+   • Color: Black (#1A1A2E)
+   • Position: Centered, Y: 290px from top
+
+3. DESCRIPTION:
+   • Text: "Enter your email address and we'll send you a link to reset your password."
+   • Font: Inter Regular, 14px (Body)
+   • Line height: 20px
+   • Color: Dark Gray (#4A4A5A)
+   • Position: Centered, Y: 330px, max-width 300px
+   • Text alignment: Center
+
+4. EMAIL FIELD:
+   • Dimensions: 327×56px
+   • Position: X: 24px, Y: 400px from top
+   • Label: "Email"
+   • Same styling as Login Screen email field
+
+5. SEND RESET LINK BUTTON:
+   • Dimensions: 327×48px
+   • Position: X: 24px, Y: 480px from top
+   • Background: Primary Green (#00A86B)
+   • Text: "SEND RESET LINK", Inter SemiBold, 14px, White
+   • Border radius: 12px
+
+6. BACK TO LOGIN LINK:
+   • Text: "Back to Login"
+   • Font: Inter Medium, 14px
+   • Color: Primary Green (#00A86B)
+   • Position: Centered, Y: 544px from top
+
+10.6 OTP VERIFICATION SCREEN
+────────────────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A verification screen featuring individual digit input boxes for OTP entry.
+The design includes a phone illustration, clear instructions showing the
+masked phone number, and a countdown timer for code resend. Auto-advance
+between input fields creates a smooth user experience.
+
+LAYOUT STRUCTURE:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ NAVIGATION BAR (0-100px)                                                    │
+│ • Back button: Left-aligned, 44×44px                                       │
+│ • Title: "Verify OTP" - centered, Inter SemiBold, 18px                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ILLUSTRATION ZONE (100-260px)                                               │
+│ • Phone/SMS illustration: 100×100px, centered                               │
+│ • Flat design style with brand colors                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ INSTRUCTION ZONE (260-340px)                                                │
+│ • Primary text: "Enter the 6-digit code sent to"                           │
+│ • Phone number: "+880 17•••••678" (masked) - highlighted                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ OTP INPUT ZONE (360-440px)                                                  │
+│ • 6 individual digit boxes: 48×56px each                                   │
+│ • Spacing: 12px between boxes                                              │
+│ • Auto-advance focus on digit entry                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ RESEND ZONE (460-500px)                                                     │
+│ • Countdown timer: "Resend code in 00:45"                                  │
+│ • Resend link appears when timer expires                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ACTION ZONE (520-620px)                                                     │
+│ • VERIFY button: Primary button, full-width                                │
+│ • Change number link: Centered below button                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+COMPONENT SPECIFICATIONS:
+
+1. ILLUSTRATION:
+   • Dimensions: 100×100px
+   • Position: Centered horizontally, Y: 130px from top
+   • Content: Smartphone with message bubble showing verification icon
+   • Primary color: Primary Green (#00A86B)
+   • Secondary elements: Light Gray (#E5E5E5), Sky Blue (#4DABF7)
+
+2. INSTRUCTION TEXT:
+   • Line 1: "Enter the 6-digit code sent to"
+     - Font: Inter Regular, 14px (Body)
+     - Color: Dark Gray (#4A4A5A)
+     - Position: Centered, Y: 270px
+   • Line 2: "+880 17•••••678"
+     - Font: Inter SemiBold, 16px
+     - Color: Black (#1A1A2E)
+     - Position: Centered, Y: 295px
+
+3. OTP INPUT BOXES:
+   • Number of boxes: 6
+   • Box dimensions: 48×56px each
+   • Total width: 348px (6 × 48px + 5 × 12px gaps)
+   • Position: Centered horizontally, Y: 360px
+   • Box styling:
+     - Background: White (#FFFFFF)
+     - Border: 2px Light Gray (#E5E5E5)
+     - Border radius: 12px
+     - Focus border: 2px Primary Green (#00A86B)
+     - Filled border: 2px Primary Green (#00A86B)
+   • Text:
+     - Font: JetBrains Mono SemiBold, 24px
+     - Color: Black (#1A1A2E)
+     - Alignment: Center
+   • Behavior:
+     - Auto-focus first box on screen load
+     - Auto-advance to next box on digit entry
+     - Backspace returns to previous box
+     - Paste support for full OTP
+
+4. COUNTDOWN TIMER:
+   • Format: "Resend code in 00:45"
+   • Font: Inter Regular, 14px
+   • Color: Medium Gray (#8E8E9A)
+   • Position: Centered, Y: 460px
+   • When expired:
+     - Text changes to "Resend Code"
+     - Color: Primary Green (#00A86B)
+     - Font: Inter Medium, 14px
+     - Tappable link
+
+5. VERIFY BUTTON:
+   • Dimensions: 327×48px
+   • Position: X: 24px, Y: 520px
+   • Background: Primary Green (#00A86B)
+   • Text: "VERIFY", Inter SemiBold, 14px, White
+   • Disabled state: Light Gray (#E5E5E5), until all 6 digits entered
+
+6. CHANGE NUMBER LINK:
+   • Text: "Change number?"
+   • Font: Inter Medium, 14px
+   • Color: Primary Green (#00A86B)
+   • Position: Centered, Y: 584px
+
+ANIMATION & FEEDBACK:
+• Correct OTP: Boxes flash green, success haptic, auto-proceed
+• Incorrect OTP: Boxes shake animation, error haptic, red border briefly
+• Timer: Countdown updates every second
+
+================================================================================
+11. ONBOARDING MODULE DESIGNS
+================================================================================
+
+11.1 PERMISSIONS REQUEST SCREEN
+───────────────────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A friendly permissions request screen that explains why the app needs access
+to device features. Each permission is presented in a card format with clear
+descriptions of benefits. Users can toggle permissions individually, with a
+skip option for those who prefer to grant permissions later.
+
+LAYOUT STRUCTURE:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ HEADER ZONE (44-120px)                                                      │
+│ • Skip button: Right-aligned, "Skip" text in Medium Gray                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ILLUSTRATION ZONE (120-260px)                                               │
+│ • Permission illustration: 120×120px, centered                              │
+│ • Shows devices/permissions concept                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ MESSAGE ZONE (260-340px)                                                    │
+│ • Heading: "We need a few permissions" - Headline 1                        │
+│ • Subheading: "To give you the best experience" - Body, Medium Gray        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ PERMISSION CARDS ZONE (360-600px)                                           │
+│ • Camera permission card: Icon + title + description + toggle              │
+│ • Contacts permission card: Same layout                                    │
+│ • Notifications permission card: Same layout                               │
+│ • Card height: 72px each, 12px vertical spacing                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ACTION ZONE (640-720px)                                                     │
+│ • CONTINUE button: Primary button, full-width                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+COMPONENT SPECIFICATIONS:
+
+1. SKIP BUTTON:
+   • Text: "Skip"
+   • Font: Inter Medium, 14px
+   • Color: Medium Gray (#8E8E9A)
+   • Position: Right-aligned, X: 24px from right edge, Y: 60px from top
+   • Touch target: 44×44px
+
+2. ILLUSTRATION:
+   • Dimensions: 120×120px
+   • Position: Centered horizontally, Y: 140px from top
+   • Content: Abstract devices with permission icons floating
+   • Colors: Primary Green (#00A86B), Sky Blue (#4DABF7), Light Gray
+
+3. MESSAGE TEXT:
+   • Heading: "We need a few permissions"
+     - Font: Inter Bold, 24px
+     - Color: Black (#1A1A2E)
+     - Position: Centered, Y: 280px
+   • Subheading: "To give you the best experience"
+     - Font: Inter Regular, 14px
+     - Color: Medium Gray (#8E8E9A)
+     - Position: Centered, Y: 312px
+
+4. PERMISSION CARDS:
+   • Container: 327×72px per card
+   • Position: X: 24px, starting Y: 360px
+   • Vertical spacing: 12px between cards
+   • Card styling:
+     - Background: White (#FFFFFF)
+     - Border: 1px Light Gray (#E5E5E5)
+     - Border radius: 16px
+     - Padding: 16px
+   • Card content (left to right):
+     - Icon: 24×24px, Primary Green (#00A86B)
+     - Text container: flex-grow
+       - Title: Inter SemiBold, 16px, Black
+       - Description: Inter Regular, 12px, Medium Gray
+     - Toggle switch: 51×31px, right-aligned
+
+   Permission 1 (Camera):
+   • Icon: camera icon
+   • Title: "Camera"
+   • Description: "For scanning business cards"
+
+   Permission 2 (Contacts):
+   • Icon: contacts icon
+   • Title: "Contacts"
+   • Description: "To import your contacts"
+
+   Permission 3 (Notifications):
+   • Icon: notification bell icon
+   • Title: "Notifications"
+   • Description: "For payment and contact updates"
+
+5. TOGGLE SWITCH:
+   • Dimensions: 51×31px
+   • OFF state:
+     - Track: Light Gray (#E5E5E5)
+     - Thumb: White (#FFFFFF), 27px diameter
+   • ON state:
+     - Track: Primary Green (#00A86B)
+     - Thumb: White (#FFFFFF), positioned right
+   • Animation: 200ms ease-out slide
+
+6. CONTINUE BUTTON:
+   • Dimensions: 327×48px
+   • Position: X: 24px, Y: 640px
+   • Background: Primary Green (#00A86B)
+   • Text: "CONTINUE", Inter SemiBold, 14px, White
+   • Border radius: 12px
+
+11.2 INTRO CAROUSEL
+───────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+An engaging 3-4 slide carousel introducing the app's key features. Each slide
+features a large illustration, headline, and brief description. Navigation
+includes swipe gestures, pagination dots, and Next/Skip buttons.
+
+LAYOUT STRUCTURE (PER SLIDE):
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ HEADER ZONE (44-80px)                                                       │
+│ • Skip button: Right-aligned                                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ILLUSTRATION ZONE (80-480px, 60% of screen)                                 │
+│ • Full-width illustration: edge-to-edge                                    │
+│ • Height: ~400px, aspect ratio maintained                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ CONTENT ZONE (500-620px, 40% of screen)                                     │
+│ • Headline: Feature title                                                  │
+│ • Description: Brief feature explanation                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ NAVIGATION ZONE (660-750px)                                                 │
+│ • Pagination dots: Centered horizontally                                   │
+│ • Next/Get Started button: Primary button                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+SLIDE CONTENT:
+
+SLIDE 1: "Scan & Save"
+• Illustration: Hand holding phone scanning a business card
+• Headline: "Scan & Save Instantly"
+• Description: "Capture business cards with your camera and save contacts in seconds."
+
+SLIDE 2: "Connect & Share"
+• Illustration: Two phones exchanging contact via QR code
+• Headline: "Share Effortlessly"
+• Description: "Share your contact via QR code, NFC, or messaging apps."
+
+SLIDE 3: "Pay Securely"
+• Illustration: Secure payment with shield and lock icons
+• Headline: "Pay with Confidence"
+• Description: "Make secure payments and manage your wallet all in one place."
+
+SLIDE 4: "Stay Organized"
+• Illustration: Organized contact cards with categories
+• Headline: "Never Lose a Contact"
+• Description: "Organize, categorize, and access your contacts anytime, anywhere."
+
+COMPONENT SPECIFICATIONS:
+
+1. SKIP BUTTON:
+   • Same as Permissions screen
+   • Hidden on last slide
+
+2. ILLUSTRATION:
+   • Dimensions: 375px wide × ~400px tall
+   • Position: Full-width, Y: 80px from top
+   • Style: Flat vector illustration with brand colors
+   • Animation: Subtle entrance animation (fade + slight scale)
+
+3. HEADLINE:
+   • Font: Inter Bold, 28px
+   • Color: Black (#1A1A2E)
+   • Position: Centered, Y: 510px from top
+   • Max width: 300px, centered
+
+4. DESCRIPTION:
+   • Font: Inter Regular, 16px
+   • Line height: 24px
+   • Color: Dark Gray (#4A4A5A)
+   • Position: Centered, Y: 550px from top
+   • Max width: 300px, text-align: center
+
+5. PAGINATION DOTS:
+   • Number of dots: 4 (matching slide count)
+   • Dot dimensions: 8×8px
+   • Active dot: 24×8px (elongated pill), Primary Green (#00A86B)
+   • Inactive dot: 8×8px circle, Light Gray (#E5E5E5)
+   • Spacing: 8px between dots
+   • Position: Centered horizontally, Y: 660px from top
+
+6. NEXT BUTTON:
+   • Dimensions: 327×48px
+   • Position: X: 24px, Y: 700px from top
+   • Background: Primary Green (#00A86B)
+   • Text (slides 1-3): "NEXT"
+   • Text (slide 4): "GET STARTED"
+   • Font: Inter SemiBold, 14px, White
+
+GESTURES & ANIMATION:
+• Swipe left/right: Navigate between slides
+• Slide transition: 300ms ease-out horizontal scroll
+• Auto-advance: Optional, 5 seconds per slide with pause on interaction
+
+================================================================================
+12. HOME/DASHBOARD MODULE DESIGNS
+================================================================================
+
+12.1 HOME DASHBOARD
+───────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+The main hub of Smart Contact Wallet featuring a personalized greeting, category-based
+contact organization, and quick access to all app features. A clean card-grid layout
+displays contact cards with front/back preview capability. Floating action buttons
+provide instant access to core functions.
+
+LAYOUT STRUCTURE:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ STATUS BAR ZONE (0-44px)                                                    │
+│ • System status bar: 44px (iOS) / 24px (Android)                           │
+│ • Background: Transparent overlay on Primary Green header                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ HEADER BAR (44-100px)                                                       │
+│ • Left: Hamburger menu (≡) - 24×24px icon                                  │
+│ • Right: Notification bell with badge indicator                            │
+│ • Background: Primary Green (#00A86B)                                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ PROFILE SECTION (100-180px)                                                 │
+│ • Avatar: 48×48px circular, left-aligned                                   │
+│ • Greeting: "Welcome back!" + User name + Phone number                    │
+│ • Background: Primary Green gradient to White                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ CATEGORY TAB BAR (180-232px)                                                │
+│ • Horizontal scrollable pills: All, Business, Friends, Family, etc.       │
+│ • Height: 40px, pill height: 32px                                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ CONTACT CARD GRID (232-700px, scrollable)                                   │
+│ • 2-column grid layout with 12px gap                                       │
+│ • Each card: ~165×200px with card image, name, F/B toggle                  │
+│ • Infinite scroll with pagination                                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ FAB CLUSTER ZONE (Fixed, bottom-right)                                      │
+│ • 4 FABs: Add Contact (+), Wallet (💳), Search (🔍), Settings (⚙)         │
+│ • Position: 16px from bottom, 16px from right                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+COMPONENT SPECIFICATIONS:
+
+1. HEADER BAR:
+   • Height: 56px
+   • Background: Primary Green (#00A86B)
+   • Menu icon:
+     - Dimensions: 24×24px
+     - Position: X: 16px, Y: centered in header
+     - Color: White (#FFFFFF)
+     - Touch target: 44×44px
+   • Notification bell:
+     - Dimensions: 24×24px
+     - Position: X: 24px from right, Y: centered
+     - Color: White (#FFFFFF)
+     - Badge: 8px red dot (#FF6B6B) for unread notifications
+
+2. PROFILE SECTION:
+   • Container height: 80px
+   • Background: Gradient from Primary Green (#00A86B) at top to White at bottom
+   • Avatar:
+     - Dimensions: 48×48px circular
+     - Position: X: 16px, Y: 16px from section top
+     - Border: 2px White (#FFFFFF)
+     - Shadow: 0 2px 4px rgba(0,0,0,0.1)
+   • Text container (right of avatar):
+     - Greeting: "Welcome back!"
+       - Font: Inter Regular, 12px
+       - Color: White (#FFFFFF) with 80% opacity
+     - User Name: "Mohammad Rahman"
+       - Font: Inter SemiBold, 18px
+       - Color: White (#FFFFFF)
+     - Phone: "+880 1712345678"
+       - Font: Inter Regular, 12px
+       - Color: White (#FFFFFF) with 60% opacity
+
+3. CATEGORY TAB BAR:
+   • Container height: 52px
+   • Padding: 16px horizontal, 8px vertical
+   • Background: White (#FFFFFF)
+   • Tab pills:
+     - Height: 32px
+     - Padding: 12px horizontal, 8px vertical
+     - Border radius: 16px (full pill)
+     - Spacing: 8px between pills
+     - Active state:
+       - Background: Primary Green (#00A86B)
+       - Text: Inter SemiBold, 14px, White
+     - Inactive state:
+       - Background: Off White (#F5F5F7)
+       - Text: Inter Regular, 14px, Dark Gray (#4A4A5A)
+   • Categories: All, Business, Friends, Family, Uncategorized
+
+4. CONTACT CARD GRID:
+   • Grid columns: 2
+   • Gap: 12px horizontal, 16px vertical
+   • Padding: 16px on all sides
+   • Card dimensions: (screenWidth - 44) / 2 ≈ 165px × 200px
+   • Card styling:
+     - Background: White (#FFFFFF)
+     - Border radius: 16px
+     - Shadow: 0 4px 12px rgba(0,0,0,0.08)
+     - Padding: 12px
+   • Card content:
+     - Card image container: Full width × 120px
+       - Border radius: 12px
+       - Background: Light Gray (#E5E5E5) placeholder
+     - Contact name:
+       - Font: Inter SemiBold, 14px
+       - Color: Black (#1A1A2E)
+       - Position: Below image, 8px margin-top
+       - Max: 1 line, ellipsis overflow
+     - Front/Back toggle:
+       - Two pill buttons: "F" and "B"
+       - Dimensions: 24×24px each
+       - Spacing: 4px between
+       - Active: Primary Green (#00A86B) bg, White text
+       - Inactive: Light Gray (#E5E5E5) bg, Dark Gray text
+       - Font: Inter SemiBold, 12px
+
+5. FAB CLUSTER:
+   • Position: Fixed, bottom-right corner
+   • Main FAB (Add Contact):
+     - Dimensions: 56×56px
+     - Background: Primary Green (#00A86B)
+     - Icon: + (plus), 24px, White
+     - Shadow: 0 6px 16px rgba(0,168,107,0.3)
+   • Secondary FABs (expanded state):
+     - Dimensions: 48×48px each
+     - Background: Deep Blue (#1E3A5F)
+     - Icons: Wallet, Search, Settings - 20px, White
+     - Vertical spacing: 12px
+     - Animation: Fan out vertically on main FAB tap
+   • Position from bottom: 16px (above home indicator)
+   • Position from right: 16px
+
+STATE VARIATIONS:
+• Empty state: Illustration + "No contacts yet" + "Add your first contact" CTA
+• Loading state: Skeleton cards with shimmer animation
+• Error state: Error illustration + "Couldn't load contacts" + Retry button
+
+12.2 CONTACT LIST VIEW
+──────────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+An alternative alphabetically-sorted list view for users who prefer a traditional
+contact browsing experience. Features a sticky search bar, alphabetical section
+headers, and swipe actions for quick operations.
+
+LAYOUT STRUCTURE:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ SEARCH BAR ZONE (44-108px)                                                  │
+│ • Sticky search input with filter icon                                     │
+│ • Height: 56px with 8px top/bottom padding                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ CONTACT LIST (108-812px, scrollable)                                        │
+│ • Alphabetical section headers (A, B, C...)                                │
+│ • Contact rows with avatar, name, company                                  │
+│ • Swipe left for delete, swipe right for favorite                          │
+│ • Alphabet scrubber on right edge                                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+COMPONENT SPECIFICATIONS:
+
+1. SEARCH BAR:
+   • Container: 343×48px (16px horizontal margins)
+   • Background: Off White (#F5F5F7)
+   • Border radius: 12px
+   • Left icon: Search (magnifying glass), 20px, Medium Gray (#8E8E9A)
+   • Placeholder: "Search contacts..."
+     - Font: Inter Regular, 14px
+     - Color: Medium Gray (#8E8E9A)
+   • Right icon: Filter funnel, 20px, Medium Gray
+   • Padding: 12px horizontal
+
+2. SECTION HEADERS:
+   • Height: 28px
+   • Background: Off White (#F5F5F7)
+   • Text: Single letter (A, B, C...)
+     - Font: Inter SemiBold, 14px
+     - Color: Medium Gray (#8E8E9A)
+   • Padding: 16px left
+   • Sticky behavior: Sticks to top during scroll
+
+3. CONTACT ROW:
+   • Height: 72px
+   • Padding: 16px horizontal
+   • Background: White (#FFFFFF)
+   • Content:
+     - Avatar: 48×48px circular
+       - Border: 1px Light Gray (#E5E5E5)
+       - Fallback: Initials on Primary Green Light (#4DC591)
+     - Text container (12px left of avatar):
+       - Name: Inter SemiBold, 16px, Black (#1A1A2E)
+       - Company: Inter Regular, 14px, Dark Gray (#4A4A5A)
+     - Right chevron: 16×16px, Light Gray (#E5E5E5)
+   • Divider: 1px Light Gray, 72px left inset
+
+4. SWIPE ACTIONS:
+   • Swipe left (Delete):
+     - Background: Coral Accent (#FF6B6B)
+     - Icon: Trash, 24px, White
+     - Reveal width: 80px
+   • Swipe right (Favorite):
+     - Background: Warm Gold (#FFB84D)
+     - Icon: Star, 24px, White
+     - Reveal width: 80px
+
+5. ALPHABET SCRUBBER:
+   • Position: Right edge, 12px from edge
+   • Letters: A-Z + # (for numbers)
+   • Font: Inter Medium, 10px
+   • Color: Primary Green (#00A86B)
+   • Spacing: 3px vertical between letters
+   • Haptic feedback on letter change
+
+12.3 FAVORITES PAGE
+───────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A dedicated view showing only starred/favorite contacts. Features the same
+card grid layout as Home but with a persistent star indicator on each card.
+
+LAYOUT STRUCTURE:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ HEADER (44-100px)                                                           │
+│ • Title: "Favorites" - centered                                            │
+│ • Back button: Left-aligned                                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ FAVORITES GRID (100-812px, scrollable)                                      │
+│ • Same card grid as Home Dashboard                                         │
+│ • Star icon overlay on each card (top-right)                               │
+│ • Empty state when no favorites                                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+COMPONENT SPECIFICATIONS:
+
+1. HEADER:
+   • Height: 56px
+   • Background: White (#FFFFFF)
+   • Back button: Chevron left, 24px, Black (#1A1A2E)
+   • Title: "Favorites"
+     - Font: Inter SemiBold, 18px
+     - Color: Black (#1A1A2E)
+     - Position: Centered
+   • Bottom border: 1px Light Gray (#E5E5E5)
+
+2. FAVORITE CARD:
+   • Same as Contact Card from 12.1
+   • Star icon overlay:
+     - Dimensions: 24×24px
+     - Position: 8px from top-right corner
+     - Color: Warm Gold (#FFB84D) filled
+     - Touch target: 44×44px
+
+3. EMPTY STATE:
+   • Illustration: Star with dotted outline, 120×120px
+   • Headline: "No favorites yet"
+     - Font: Inter SemiBold, 20px
+     - Color: Black (#1A1A2E)
+   • Description: "Star your important contacts for quick access"
+     - Font: Inter Regular, 14px
+     - Color: Dark Gray (#4A4A5A)
+   • Position: Centered vertically and horizontally
+
+12.4 RECENT ACTIVITY
+────────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A chronological timeline showing all contact-related activities such as
+adds, edits, calls, and shares. Grouped by date with clear visual
+differentiation between activity types.
+
+LAYOUT STRUCTURE:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ HEADER (44-100px)                                                           │
+│ • Title: "Recent Activity" - centered                                      │
+│ • Back button: Left-aligned                                                │
+│ • Filter: Right-aligned dropdown                                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ACTIVITY TIMELINE (100-812px, scrollable)                                   │
+│ • Date section headers: "Today", "Yesterday", "Dec 20, 2024"              │
+│ • Activity items with icon, description, time                              │
+│ • Vertical timeline connector line                                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+COMPONENT SPECIFICATIONS:
+
+1. DATE HEADERS:
+   • Height: 32px
+   • Text: "Today", "Yesterday", or date format
+     - Font: Inter SemiBold, 14px
+     - Color: Medium Gray (#8E8E9A)
+   • Padding: 16px left, 8px vertical
+   • Background: Off White (#F5F5F7)
+
+2. ACTIVITY ITEM:
+   • Height: 64px
+   • Padding: 16px horizontal
+   • Layout: Icon | Text container | Timestamp
+   • Activity icon:
+     - Dimensions: 32×32px circular
+     - Background: Based on activity type
+       - Added: Primary Green Light (#4DC591)
+       - Edited: Sky Blue (#4DABF7)
+       - Called: Deep Blue (#1E3A5F)
+       - Deleted: Coral Accent (#FF6B6B)
+     - Icon: 16px, White
+   • Text container:
+     - Primary: "Added John Doe"
+       - Font: Inter Regular, 14px
+       - Color: Black (#1A1A2E)
+     - Secondary: Contact category or details
+       - Font: Inter Regular, 12px
+       - Color: Dark Gray (#4A4A5A)
+   • Timestamp:
+     - Font: Inter Regular, 12px
+     - Color: Medium Gray (#8E8E9A)
+     - Format: "2:30 PM" or "2h ago"
+
+3. TIMELINE CONNECTOR:
+   • Width: 2px
+   • Color: Light Gray (#E5E5E5)
+   • Position: 28px from left edge (center of icons)
+
+12.5 NOTIFICATIONS
+──────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A notification center showing app alerts, payment updates, and contact
+reminders. Features unread indicators, grouped by time, with swipe
+actions for dismissal and marking as read.
+
+LAYOUT STRUCTURE:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ HEADER (44-100px)                                                           │
+│ • Title: "Notifications" - centered                                        │
+│ • Back button: Left-aligned                                                │
+│ • "Mark all read": Right-aligned text button                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ NOTIFICATION LIST (100-812px, scrollable)                                   │
+│ • Grouped sections: New, Earlier Today, Yesterday, etc.                    │
+│ • Notification cards with type icon, content, time                         │
+│ • Swipe to dismiss                                                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+COMPONENT SPECIFICATIONS:
+
+1. HEADER:
+   • Height: 56px
+   • Background: White (#FFFFFF)
+   • Title: "Notifications"
+     - Font: Inter SemiBold, 18px
+     - Color: Black (#1A1A2E)
+   • Mark all read button:
+     - Font: Inter Medium, 14px
+     - Color: Primary Green (#00A86B)
+
+2. SECTION HEADERS:
+   • Height: 28px
+   • Text: "New", "Earlier Today", "Yesterday"
+     - Font: Inter SemiBold, 12px
+     - Color: Medium Gray (#8E8E9A)
+     - Text transform: Uppercase
+   • Padding: 16px left
+   • Background: Off White (#F5F5F7)
+
+3. NOTIFICATION ITEM:
+   • Min height: 80px
+   • Padding: 16px
+   • Background: White (#FFFFFF)
+   • Unread indicator:
+     - 8px circular dot
+     - Color: Primary Green (#00A86B)
+     - Position: 8px from left edge, vertically centered
+   • Icon:
+     - Dimensions: 40×40px circular
+     - Background based on type:
+       - Payment: Primary Green (#00A86B)
+       - Contact: Sky Blue (#4DABF7)
+       - Reminder: Warm Gold (#FFB84D)
+       - Alert: Coral Accent (#FF6B6B)
+   • Content:
+     - Title: Inter SemiBold, 14px, Black (#1A1A2E)
+     - Message: Inter Regular, 13px, Dark Gray (#4A4A5A)
+       - Max 2 lines, ellipsis overflow
+   • Timestamp:
+     - Font: Inter Regular, 12px
+     - Color: Medium Gray (#8E8E9A)
+     - Position: Top-right corner
+
+4. SWIPE TO DISMISS:
+   • Swipe left: Full-width reveal with red dismiss
+   • Background: Coral Accent (#FF6B6B)
+   • Icon: X mark, 24px, White
+   • Animation: Item slides off and collapses
+
+EMPTY STATE:
+• Illustration: Bell with checkmark, 100×100px
+• Headline: "All caught up!"
+• Description: "You have no new notifications"
+
+================================================================================
+13. CONTACT MANAGEMENT MODULE DESIGNS
+================================================================================
+
+13.1 ADD CONTACT - CHOOSE METHOD
+────────────────────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A clean method selection screen presenting three distinct options for adding
+contacts. Large, tappable cards with icons and descriptions guide users to their
+preferred input method. The design emphasizes ease of choice with visual hierarchy.
+
+LAYOUT STRUCTURE:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ HEADER (44-100px)                                                           │
+│ • Back button: Left-aligned chevron                                        │
+│ • Title: "Add Contact" - centered                                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ PROMPT ZONE (100-160px)                                                     │
+│ • Question: "How would you like to add a contact?"                         │
+│ • Centered horizontally                                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ METHOD CARDS ZONE (180-600px)                                               │
+│ • Three large option cards stacked vertically                              │
+│ • 16px vertical spacing between cards                                      │
+│ • Each card: icon + title + description                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+COMPONENT SPECIFICATIONS:
+
+1. HEADER:
+   • Height: 56px
+   • Background: White (#FFFFFF)
+   • Back button:
+     - Icon: Chevron left, 24px
+     - Color: Black (#1A1A2E)
+     - Position: X: 16px, Y: centered
+   • Title: "Add Contact"
+     - Font: Inter SemiBold, 18px
+     - Color: Black (#1A1A2E)
+     - Position: Centered
+
+2. PROMPT TEXT:
+   • Text: "How would you like to add a contact?"
+   • Font: Inter Regular, 16px
+   • Color: Dark Gray (#4A4A5A)
+   • Position: Centered, Y: 130px
+   • Max width: 300px
+
+3. METHOD CARDS:
+   • Container: 343×120px (16px horizontal margins)
+   • Background: White (#FFFFFF)
+   • Border: 1px Light Gray (#E5E5E5)
+   • Border radius: 16px
+   • Shadow: 0 2px 8px rgba(0,0,0,0.06)
+   • Padding: 24px
+   • Pressed state: Background Off White (#F5F5F7), scale 0.98
+   • Card layout (vertical center):
+     - Icon container: 48×48px circular
+       - Background: Primary Green Light (#4DC591) at 15% opacity
+       - Icon: 24px, Primary Green (#00A86B)
+     - Text container (16px right of icon):
+       - Title: Inter SemiBold, 18px, Black (#1A1A2E)
+       - Description: Inter Regular, 14px, Dark Gray (#4A4A5A)
+
+   CARD 1 - Scan Card:
+   • Position: Y: 180px
+   • Icon: Camera icon
+   • Title: "Scan Card"
+   • Description: "Quick scan using camera"
+
+   CARD 2 - Manual Entry:
+   • Position: Y: 316px
+   • Icon: Edit/Pencil icon
+   • Title: "Manual Entry"
+   • Description: "Enter details manually"
+
+   CARD 3 - Import from Phone:
+   • Position: Y: 452px
+   • Icon: Smartphone icon
+   • Title: "Import from Phone"
+   • Description: "Import existing contacts"
+
+13.2 ADD CONTACT - MANUAL FORM
+──────────────────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A comprehensive form for manually entering contact information. Features a clean,
+scrollable layout with labeled input fields, category selection, and save functionality.
+
+COMPONENT SPECIFICATIONS:
+
+1. HEADER:
+   • Height: 56px
+   • Back button: Chevron left, 24px, Black
+   • Title: "Manual Entry", Inter SemiBold, 18px
+   • Save button: Inter SemiBold, 16px, Primary Green (#00A86B)
+
+2. INPUT FIELDS (All fields):
+   • Container: 343×56px (16px horizontal margins)
+   • Background: White (#FFFFFF)
+   • Border: 1px Light Gray (#E5E5E5)
+   • Focus border: 2px Primary Green (#00A86B)
+   • Border radius: 12px
+   • Label: Inter Medium, 14px, Dark Gray (#4A4A5A)
+   • Input text: Inter Regular, 16px, Black (#1A1A2E)
+   • Vertical spacing: 16px between fields
+
+3. FIELD LIST:
+   • Name (required): Red asterisk (*) indicator
+   • Position/Title: Single line
+   • Company: Single line with suggestions
+   • Phone Number: +880 prefix, add button (+) 24×24px
+   • Address: Single line
+   • Email: Email keyboard, add button (+)
+   • Category: Dropdown (Business, Friends, Family, Uncategorized)
+   • Notes: Multi-line, 343×100px
+
+4. ADD CONTACT BUTTON:
+   • Dimensions: 343×48px
+   • Position: Fixed, 24px from bottom
+   • Background: Primary Green (#00A86B)
+   • Text: "ADD CONTACT", Inter SemiBold, 14px, White
+   • Border radius: 12px
+
+
+13.3 AUTO SCAN - CARD SCANNER
+─────────────────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A camera-based card scanning interface with a clear alignment frame overlay.
+Features real-time card detection, flash toggle, and manual capture option.
+
+COMPONENT SPECIFICATIONS:
+
+1. HEADER:
+   • Height: 56px
+   • Background: Semi-transparent Black (rgba(0,0,0,0.6))
+   • Title: "Scan Front" / "Scan Back", Inter SemiBold, 18px, White
+   • Flash icon: 24×24px, Yellow when on (#FFB84D)
+
+2. CARD ALIGNMENT FRAME:
+   • Dimensions: 300×190px (business card ratio 3.5:2)
+   • Position: Centered, Y: 280px from top
+   • Border: 3px Primary Green (#00A86B), dashed when searching
+   • Border radius: 12px
+   • Corner markers: 24×24px, Primary Green, 4px thick
+   • Animation: Pulse when card detected
+
+3. INSTRUCTION TEXT:
+   • Text: "Hold steady for best results"
+   • Font: Inter Regular, 14px
+   • Color: White (#FFFFFF)
+   • Position: Centered, Y: 540px
+
+4. CAPTURE BUTTON:
+   • Dimensions: 72×72px circular
+   • Background: White (#FFFFFF)
+   • Inner circle: 56×56px, Primary Green (#00A86B)
+   • Position: Centered horizontally, Y: 620px
+   • Shadow: 0 4px 12px rgba(0,0,0,0.2)
+
+5. MANUAL ENTRY LINK:
+   • Text: "Enter Manually"
+   • Font: Inter Medium, 14px
+   • Color: White (#FFFFFF)
+   • Position: Centered, Y: 720px
+
+6. SCAN BACK VARIANT:
+   • Header title: "Scan Back"
+   • Additional link: "Skip Back Side"
+
+13.4 OCR CONFIRMATION
+─────────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A review screen showing scanned card images and extracted OCR data with
+confidence indicators. Users can verify and edit extracted information.
+
+COMPONENT SPECIFICATIONS:
+
+1. IMAGE PREVIEW:
+   • Container: 163×100px per thumbnail (front/back)
+   • Gap: 12px between
+   • Border radius: 12px
+   • Shadow: 0 2px 8px rgba(0,0,0,0.1)
+   • Tap for full-screen preview
+
+2. OCR FIELD ROW:
+   • Height: 72px
+   • Field label: Inter Regular, 12px, Medium Gray (#8E8E9A)
+   • Confidence indicators (right of label):
+     - High (●): Primary Green (#00A86B)
+     - Medium (◐): Warm Gold (#FFB84D)
+     - Low (○): Coral Accent (#FF6B6B)
+   • Value: Inter Regular, 16px, Black (#1A1A2E)
+   • Container: 343×48px, editable on tap
+
+3. SAVE CONTACT BUTTON:
+   • Dimensions: 343×48px
+   • Background: Primary Green (#00A86B)
+   • Text: "SAVE CONTACT", Inter SemiBold, 14px, White
+
+4. SCAN AGAIN LINK:
+   • Text: "Scan Again"
+   • Font: Inter Medium, 14px
+   • Color: Primary Green (#00A86B)
+
+13.5 CONTACT DETAILS
+────────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A comprehensive contact profile view with card images, contact information,
+quick action buttons, and QR code for easy sharing.
+
+COMPONENT SPECIFICATIONS:
+
+1. HEADER ACTION BUTTONS:
+   • Dimensions: 32×32px each
+   • Star (favorite): Outline/Filled, Warm Gold (#FFB84D)
+   • Edit: Pencil icon, Dark Gray (#4A4A5A)
+   • Delete: Trash icon, Coral Accent (#FF6B6B)
+
+2. CARD IMAGE:
+   • Container: 280×175px, centered
+   • Border radius: 16px
+   • Shadow: 0 4px 16px rgba(0,0,0,0.12)
+   • Front/Back toggle: 80×32px each
+     - Active: Primary Green bg, White text
+     - Inactive: Light Gray bg, Dark Gray text
+
+3. CONTACT NAME & TITLE:
+   • Name: Inter Bold, 24px, Black (#1A1A2E)
+   • Subtitle: Inter Regular, 14px, Dark Gray (#4A4A5A)
+
+4. QUICK ACTION BUTTONS:
+   • Three equal buttons: Call, SMS, Email
+   • Container: 343×56px total
+   • Background: Off White (#F5F5F7)
+   • Icons: 20px, Primary Green (#00A86B)
+   • Labels: Inter Medium, 12px, Dark Gray
+
+5. DETAIL ROWS:
+   • Height: 56px per row
+   • Label: Inter Regular, 12px, Medium Gray
+   • Value: Inter Regular, 16px, Black
+   • Fields: Phone, Email, Address, Website, Notes
+   • Action icons: Copy, Map, Link (20px, right-aligned)
+
+6. QR CODE:
+   • Dimensions: 120×120px, centered
+   • Border: 1px Light Gray, 12px radius
+
+7. SHARE CONTACT BUTTON:
+   • Dimensions: 343×48px
+   • Background: Primary Green (#00A86B)
+   • Text: "SHARE CONTACT", Inter SemiBold, 14px, White
+
+13.6 SHARE CONTACT BOTTOM SHEET
+───────────────────────────────
+
+VISUAL DESCRIPTION:
+A bottom sheet presenting multiple sharing options with a large QR code.
+
+COMPONENT SPECIFICATIONS:
+
+1. SHEET STYLING:
+   • Background: White (#FFFFFF)
+   • Border radius: 24px (top corners only)
+   • Shadow: 0 -4px 20px rgba(0,0,0,0.15)
+   • Handle: 40×4px, Light Gray (#E5E5E5)
+
+2. QR CODE:
+   • Dimensions: 160×160px, centered
+   • Label: "Scan to add contact", Inter Regular, 14px
+
+3. SHARE OPTIONS:
+   • Row height: 56px
+   • Icon: 24×24px, Primary Green (#00A86B)
+   • Label: Inter Regular, 16px, Black (#1A1A2E)
+   • Options: Copy Link, Share via NFC, Export as vCard,
+     Export as PDF, Share via... (system sheet)
+
+13.7 DUPLICATE MERGE
+────────────────────
+
+VISUAL DESCRIPTION:
+Side-by-side comparison screen for merging duplicate contacts.
+
+COMPONENT SPECIFICATIONS:
+
+1. HEADER:
+   • Title: "Merge Contacts"
+   • Cancel button: Left, Inter Medium, 16px
+   • Merge button: Right, Primary Green (#00A86B)
+
+2. COMPARISON VIEW:
+   • Two contact cards side-by-side
+   • Field-by-field comparison rows
+   • Radio selection for conflicting values
+   • "Keep Both" button at bottom
+
+================================================================================
+14. WALLET MODULE DESIGNS
+================================================================================
+
+14.1 WALLET HOME
+────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+The main wallet dashboard displaying balance, quick action tiles, and saved
+payment cards. Features a clean layout with prominent balance display and
+2x2 action grid for common operations.
+
+LAYOUT STRUCTURE:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ HEADER (44-100px)                                                           │
+│ • Menu icon: Left-aligned                                                  │
+│ • Title: "Wallet" - centered                                               │
+│ • History icon: Right-aligned                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ BALANCE SECTION (100-180px)                                                 │
+│ • Label: "Balance"                                                         │
+│ • Amount: "৳ 15,250.00" - large display                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ACTION TILES (200-380px)                                                    │
+│ • 2x2 grid: Add Card, Send Money, Pay, Receive                             │
+│ • Each tile: ~165×80px                                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ MY CARDS SECTION (400-700px, scrollable)                                    │
+│ • Section header: "My Cards"                                               │
+│ • List of saved payment cards                                              │
+│ • Add New Card button at bottom                                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+COMPONENT SPECIFICATIONS:
+
+1. HEADER:
+   • Height: 56px
+   • Background: White (#FFFFFF)
+   • Menu icon: Hamburger, 24px, Black (#1A1A2E)
+   • Title: "Wallet", Inter SemiBold, 18px, Black
+   • History icon: Clock, 24px, Black (#1A1A2E)
+
+2. BALANCE SECTION:
+   • Container: 343px wide, centered
+   • Label: "Balance"
+     - Font: Inter Regular, 14px
+     - Color: Medium Gray (#8E8E9A)
+   • Amount: "৳ 15,250.00"
+     - Font: Inter Bold, 32px
+     - Color: Black (#1A1A2E)
+   • Background card:
+     - Height: 80px
+     - Background: Gradient Primary Green to Primary Green Dark
+     - Border radius: 16px
+     - Text color: White
+
+3. ACTION TILES:
+   • Grid: 2 columns, 2 rows
+   • Gap: 12px horizontal, 12px vertical
+   • Tile dimensions: (screenWidth - 44) / 2 ≈ 165×80px
+   • Tile styling:
+     - Background: White (#FFFFFF)
+     - Border: 1px Light Gray (#E5E5E5)
+     - Border radius: 16px
+     - Shadow: 0 2px 8px rgba(0,0,0,0.06)
+   • Tile content (centered):
+     - Icon: 32px, Primary Green (#00A86B)
+     - Label: Inter SemiBold, 14px, Black
+   • Tiles:
+     - Add Card: Plus icon, "ADD CARD"
+     - Send Money: Arrow up-right, "SEND"
+     - Pay: Credit card, "PAY"
+     - Receive: Arrow down-left, "RECEIVE"
+
+4. MY CARDS SECTION:
+   • Header: "My Cards"
+     - Font: Inter SemiBold, 18px
+     - Color: Black (#1A1A2E)
+     - Padding: 16px horizontal
+   • Card item:
+     - Container: 343×80px
+     - Background: Gradient based on card type
+       - VISA: Blue gradient
+       - Mastercard: Orange-red gradient
+     - Border radius: 12px
+     - Content:
+       - Card type icon: 24px
+       - Card brand: Inter SemiBold, 16px, White
+       - Masked number: "•••• •••• •••• 1234"
+         - Font: JetBrains Mono, 14px, White
+       - Holder name and expiry: Inter Regular, 12px, White 80%
+
+5. ADD NEW CARD BUTTON:
+   • Container: 343×56px
+   • Background: Off White (#F5F5F7)
+   • Border: 2px dashed Light Gray (#E5E5E5)
+   • Border radius: 12px
+   • Icon: Plus, 20px, Medium Gray
+   • Text: "Add New Card", Inter Medium, 14px, Medium Gray
+
+14.2 SEND MONEY
+───────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A send money interface with recipient selection, recent contacts carousel,
+and a custom numeric keypad for amount entry.
+
+COMPONENT SPECIFICATIONS:
+
+1. HEADER:
+   • Back button, Title: "Send Money"
+
+2. RECIPIENT FIELD:
+   • Container: 343×56px
+   • Placeholder: "Search contact or enter number"
+   • Left icon: Search, 20px
+
+3. RECENT CONTACTS:
+   • Horizontal scrollable row
+   • Avatar: 48×48px circular
+   • Name: Inter Regular, 12px, below avatar
+   • Spacing: 16px between
+
+4. AMOUNT DISPLAY:
+   • Position: Centered
+   • Currency symbol: "৳"
+   • Amount: Inter Bold, 48px, Black
+   • Initial: "৳ 0.00"
+
+5. NUMERIC KEYPAD:
+   • Grid: 3 columns, 4 rows
+   • Key dimensions: ~111×56px
+   • Keys: 1-9, ".", 0, Backspace
+   • Key styling:
+     - Background: Off White (#F5F5F7)
+     - Font: Inter SemiBold, 24px
+     - Border radius: 12px
+     - Pressed state: Light Gray background
+
+6. CONTINUE BUTTON:
+   • Dimensions: 343×48px
+   • Background: Primary Green (#00A86B)
+   • Text: "CONTINUE", Inter SemiBold, 14px, White
+   • Disabled: Light Gray when amount is 0
+
+14.3 PAYMENT CONFIRMATION
+─────────────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A confirmation screen showing transaction summary before final authorization.
+
+COMPONENT SPECIFICATIONS:
+
+1. TRANSACTION SUMMARY:
+   • Container: 343×auto, centered
+   • Recipient avatar: 64×64px
+   • Recipient name: Inter SemiBold, 18px
+   • Amount: Inter Bold, 32px, Primary Green
+
+2. FEE BREAKDOWN:
+   • Row height: 40px
+   • Label: Inter Regular, 14px, Medium Gray
+   • Value: Inter SemiBold, 14px, Black
+   • Total row: Inter Bold, 16px
+
+3. AUTHENTICATION:
+   • PIN input or biometric prompt
+   • Fingerprint/Face ID icon: 48×48px
+
+4. CONFIRM BUTTON:
+   • Dimensions: 343×48px
+   • Background: Primary Green (#00A86B)
+   • Text: "CONFIRM", Inter SemiBold, 14px, White
+
+14.4 RECEIVE MONEY
+──────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A receive money screen with large QR code for scanning and sharing options.
+
+COMPONENT SPECIFICATIONS:
+
+1. QR CODE:
+   • Dimensions: 220×220px, centered
+   • Border: 8px White padding
+   • Container: 240×240px with shadow
+
+2. AMOUNT INPUT (Optional):
+   • Container: 200×56px, centered
+   • Placeholder: "Enter amount (optional)"
+
+3. SHARE QR BUTTON:
+   • Dimensions: 343×48px
+   • Background: Primary Green (#00A86B)
+   • Text: "SHARE QR"
+
+4. COPY LINK BUTTON:
+   • Dimensions: 343×48px
+   • Background: Off White (#F5F5F7)
+   • Text: "Copy Payment Link", Primary Green
+
+14.5 TRANSACTION HISTORY
+────────────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A chronological list of all wallet transactions with filtering capabilities.
+
+COMPONENT SPECIFICATIONS:
+
+1. FILTER TABS:
+   • Options: All, Sent, Received
+   • Tab styling same as category tabs (12.1)
+
+2. TRANSACTION ITEM:
+   • Height: 72px
+   • Direction icon: 32×32px circular
+     - Sent: Arrow up, Coral Accent (#FF6B6B)
+     - Received: Arrow down, Primary Green (#00A86B)
+   • Content:
+     - Name: Inter SemiBold, 16px, Black
+     - Date/time: Inter Regular, 12px, Medium Gray
+   • Amount:
+     - Sent: "- ৳ 500", Coral Accent
+     - Received: "+ ৳ 1,000", Primary Green
+   • Status badge: Pending/Complete/Failed
+
+================================================================================
+15-19. ADDITIONAL MODULES SPECIFICATIONS
+================================================================================
+
+15. SEARCH MODULE
+─────────────────
+
+SCREEN DIMENSIONS: 375×812px (iPhone 12/13) or 360×640px (Android)
+
+VISUAL DESCRIPTION:
+A universal search interface for finding contacts, transactions, and content.
+
+COMPONENT SPECIFICATIONS:
+
+1. SEARCH BAR:
+   • Container: 343×48px, auto-focus on screen open
+   • Background: Off White (#F5F5F7)
+   • Left icon: Search, 20px, Medium Gray
+   • Right icon: Filter funnel, 20px
+   • Placeholder: "Search contacts, payments..."
+
+2. RECENT SEARCHES:
+   • Section header: "Recent"
+   • Items: Icon + search term + clear button
+   • Max items: 5
+
+3. CATEGORY FILTERS:
+   • Horizontal pills: All, Contacts, Payments
+   • Same styling as 12.1 category tabs
+
+4. SEARCH RESULTS:
+   • Contact result: Avatar + Name + Company
+   • Payment result: Direction icon + Name + Amount
+   • Highlight matching text with Primary Green
+
+16. SHARE MODULE
+────────────────
+
+VISUAL DESCRIPTION:
+Interfaces for sharing contact information via various methods.
+
+COMPONENT SPECIFICATIONS:
+
+1. QR CODE GENERATOR:
+   • QR code: 200×200px, centered
+   • Share button: Primary button below
+   • Download option: Secondary button
+
+2. NFC TAP INTERFACE:
+   • Animation: Phone with radiating waves
+   • Instruction: "Hold phones close together"
+   • Status: Waiting/Connected/Sent
+
+3. PDF PREVIEW:
+   • Contact card preview at 50% scale
+   • Share/Download buttons below
+
+4. VCARD EXPORT:
+   • Preview of vCard content
+   • Export to Contacts app option
+
+17. TEAM MODULE
+───────────────
+
+VISUAL DESCRIPTION:
+Team collaboration features for business users.
+
+COMPONENT SPECIFICATIONS:
+
+1. TEAM DASHBOARD:
+   • Team name and avatar: 64×64px
+   • Member count: "5 members"
+   • Shared contacts count
+
+2. MEMBER LIST:
+   • Row height: 72px
+   • Avatar: 48×48px
+   • Name + role badge (Admin/Member)
+
+3. INVITE INTERFACE:
+   • Email input field
+   • QR code for team join
+   • Copy invite link button
+
+4. ROLE ASSIGNMENT:
+   • Toggle: Admin/Member role
+   • Permissions list with checkboxes
+
+18. SETTINGS MODULE
+───────────────────
+
+VISUAL DESCRIPTION:
+Application settings organized in grouped sections.
+
+COMPONENT SPECIFICATIONS:
+
+1. SECTION GROUPS:
+   • Profile, Account, Preferences, Security, About
+   • Section header: Inter SemiBold, 12px, Medium Gray
+   • Background: Off White (#F5F5F7)
+
+2. SETTINGS ROW:
+   • Height: 56px
+   • Icon: 24px, Dark Gray
+   • Label: Inter Regular, 16px, Black
+   • Value/Toggle: Right-aligned
+   • Chevron for navigation items
+
+3. TOGGLE SWITCH:
+   • Dimensions: 51×31px
+   • On: Primary Green (#00A86B)
+   • Off: Light Gray (#E5E5E5)
+
+4. PROFILE EDIT:
+   • Avatar picker: 80×80px with camera overlay
+   • Form fields for name, email, phone
+
+5. SECURITY OPTIONS:
+   • PIN setup: 6-digit entry
+   • Biometric toggle: Face ID / Fingerprint
+   • Change password option
+
+19. HELP & SUPPORT MODULE
+─────────────────────────
+
+VISUAL DESCRIPTION:
+Help resources and support contact options.
+
+COMPONENT SPECIFICATIONS:
+
+1. FAQ ACCORDION:
+   • Row height: 56px collapsed
+   • Question: Inter SemiBold, 16px, Black
+   • Answer: Inter Regular, 14px, Dark Gray
+   • Expand icon: Chevron, rotates on expand
+
+2. SEARCH HELP:
+   • Search bar at top
+   • Suggested topics as pills
+
+3. CONTACT FORM:
+   • Subject dropdown
+   • Message text area: 343×120px
+   • Attach screenshot option
+   • Submit button
+
+4. CHAT SUPPORT:
+   • Chat bubble interface
+   • Agent status indicator
+   • Typing indicator animation
+
+================================================================================
+                    PART 4: DESIGN GUIDELINES
+================================================================================
+
+================================================================================
+20. INTERACTION PATTERNS
+================================================================================
+
+TOUCH TARGETS:
+- Minimum: 44x44px (iOS) / 48x48dp (Android)
+- Recommended: 48x48px
+
+GESTURES:
+- Tap: Primary action
+- Long press: Context menu
+- Swipe right: Mark as favorite (contacts)
+- Swipe left: Delete/Archive
+- Pull down: Refresh
+- Pinch: Zoom (card images)
+
+FEEDBACK:
+- Touch ripple: 200ms
+- Button press: Scale to 0.95
+- Haptic feedback on key actions
+
+================================================================================
+21. ANIMATION & TRANSITIONS
+================================================================================
+
+TIMING:
+- Quick: 150ms (micro-interactions)
+- Standard: 250ms (transitions)
+- Complex: 350ms (page transitions)
+
+EASING:
+- Default: ease-out (cubic-bezier(0, 0, 0.2, 1))
+- Enter: ease-out
+- Exit: ease-in
+
+PAGE TRANSITIONS:
+- Push: Slide from right
+- Pop: Slide to right
+- Modal: Slide from bottom
+
+LOADING STATES:
+- Skeleton screens for content
+- Spinner for actions
+- Progress bar for uploads
+
+================================================================================
+22. ACCESSIBILITY GUIDELINES
+================================================================================
+
+CONTRAST:
+- Text: Minimum 4.5:1 (AA)
+- Large text: Minimum 3:1
+- Icons: Minimum 3:1
+
+SCREEN READERS:
+- All images have alt text
+- Buttons have labels
+- Form fields have labels
+- Logical focus order
+
+MOTION:
+- Respect reduced motion preferences
+- Provide alternatives to animations
+
+TEXT:
+- Minimum 12px (never smaller)
+- Support dynamic type (iOS) / font scaling (Android)
+- Maximum 80 characters per line
+
+================================================================================
+23. DARK MODE SPECIFICATIONS
+================================================================================
+
+DARK MODE COLORS:
+┌────────────────────────────────────────────────────────────────────────────────┐
+│ Element              │ Light Mode      │ Dark Mode                             │
+├──────────────────────┼─────────────────┼───────────────────────────────────────┤
+│ Background Primary   │ #FFFFFF         │ #1A1A2E                               │
+│ Background Secondary │ #F5F5F7         │ #252540                               │
+│ Surface (Cards)      │ #FFFFFF         │ #2D2D44                               │
+│ Text Primary         │ #1A1A2E         │ #F5F5F7                               │
+│ Text Secondary       │ #4A4A5A         │ #B0B0C0                               │
+│ Dividers             │ #E5E5E5         │ #3D3D5C                               │
+│ Primary Green        │ #00A86B         │ #4DC591 (lighter for visibility)      │
+└──────────────────────┴─────────────────┴───────────────────────────────────────┘
+
+================================================================================
+24. DESIGN FILE DELIVERABLES
+================================================================================
+
+FIGMA FILE STRUCTURE:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Smart Contact Wallet - Design System                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ├── 📄 Cover                                                                │
+│ ├── 📁 Foundation                                                           │
+│ │   ├── Colors                                                              │
+│ │   ├── Typography                                                          │
+│ │   ├── Spacing                                                             │
+│ │   └── Icons                                                               │
+│ ├── 📁 Components                                                           │
+│ │   ├── Buttons                                                             │
+│ │   ├── Inputs                                                              │
+│ │   ├── Cards                                                               │
+│ │   ├── Navigation                                                          │
+│ │   └── Modals                                                              │
+│ ├── 📁 Screens                                                              │
+│ │   ├── 01_Authentication                                                   │
+│ │   ├── 02_Onboarding                                                       │
+│ │   ├── 03_Home                                                             │
+│ │   ├── 04_Contacts                                                         │
+│ │   ├── 05_Wallet                                                           │
+│ │   ├── 06_Search                                                           │
+│ │   ├── 07_Share                                                            │
+│ │   ├── 08_Team                                                             │
+│ │   ├── 09_Settings                                                         │
+│ │   └── 10_Help                                                             │
+│ └── 📁 Prototypes                                                           │
+│     ├── Onboarding Flow                                                     │
+│     ├── Add Contact Flow                                                    │
+│     └── Payment Flow                                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+                              END OF DOCUMENT
+================================================================================
+
+SUMMARY:
+- Design system based on existing sketches and page specifications
+- 60+ page designs across 10 modules
+- Complete component library with specifications
+- Light and dark mode support
+- Accessibility guidelines included
+- Ready for Figma implementation
+
+NEXT STEPS:
+1. Create Figma file with design system
+2. Design high-fidelity screens based on this plan
+3. Build interactive prototypes
+4. Conduct usability testing
+5. Iterate based on feedback
+
+================================================================================
+
+

@@ -1,0 +1,684 @@
+================================================================================
+MASTER PROJECT PLAN - VERSION 1.0 (CONSOLIDATED)
+PROJECT: SMART CONTACT WALLET
+================================================================================
+
+1. PROJECT OVERVIEW & SCOPE
+================================================================================
+This document serves as the SINGLE SOURCE OF TRUTH for Version 1.0 of the Smart
+Contact Wallet application. It consolidates all previous planning, design, and
+technical specifications into one execution-ready blueprint.
+
+1.1 CORE OBJECTIVE (V1)
+-----------------------
+To build a "Basic Card System" - a modern, digital replacement for physical
+business cards (Rolodex) with internal wallet bookkeeping capabilities.
+
+1.2 EXPLICIT SCOPE DEFINITION - VERSION 1.0
+-------------------------------------------
+[INCLUDED - DETAILED FEATURE LIST]
+
+(A) Authentication & Onboarding
+    - Splash Screen & Welcome (Social Login Options)
+    - Registration with Phone (+880) & Email
+    - OTP Verification Flow
+    - Password Resets & Secure Storage
+    - Intro Carousel (3-4 slides explaining value)
+
+(B) Contact Management (The Core)
+    - Smart Scanning: Camera capture (Front/Back) with OCR & Field Mapping
+    - **Smart Intelligence**: 
+      * **MFS Detection**: Badge contacts registered on bKash/Nagad/Rocket (Lookup).
+      * **Validity Check**: "Verify" button to check if contact info is outdated (Community/LinkedIn).
+    - Manual Entry: Comprehensive form (Name, Phones, Emails, Address, Company, Socials)
+    - Organization: Smart Categories (Business, Personal), Tags, Favorites
+    - Actions: One-tap Call, SMS, Email, WhatsApp, Map View
+    - Management: Edit, Delete, Merge Duplicates, View History
+    - Search: Global text search + Filters (Company, Tag, Category)
+
+(C) Digital Business Card & Creator
+    - **My Card Creator**: Self-service tools to design personal cards.
+      * **Customization**: Upload Logo, Headshot, Theme Colors, Layouts.
+      * **Custom Fields**: Bio, specialized social links.
+      * **Dynamic QR**: Updates automatically if contact info changes.
+    - Personal Profile: Create own digital card (Front/Back)
+    - Sharing: 
+      * **NFC Exchange**: "Bump" phones to swap cards instantly.
+      * QR Code (Static/Dynamic), vCard (.vcf) Export, PDF Export, Share Link
+
+(C-1). Global Intelligence & Sync
+    - **Global Directory**: Anonymized "Source of Truth" for valid contact info.
+    - **Smart Alerts**: "Newer info found" toast if a contact updates their profile.
+    - **Identity Verification**: "Verified" badge for self-created "My Cards".
+    - **AI Fraud Alert**: AI analysis to flag potential scammers or high-risk numbers.
+
+(D) Internal Wallet (Bookkeeping Only)
+    - Dashboard: View Balance & Recent Transactions
+    - **Contextual Pay**: "Pay" button directly on Contact Card to trigger transaction.
+    - Actions (Simulation): "Add Money" (Demo), "Send Money" (Peer-to-Peer logic internal), "Payment" (Demo)
+    - History: Filterable transaction log (Sent, Received)
+    - NOTE: No real money moves. This relies on an internal database ledger.
+
+(E) Team & Collaboration (Basic)
+    - Create/Join Team
+    - Directory View (Shared Contacts)
+
+(F) Settings & Security
+    - Profile Management (Avatar, Name)
+    - Security: Biometric Lock (FaceID/Fingerprint), App PIN
+    - Data: Backup & Sync (Cloud/Local), Export Data (CSV)
+    - Appearance: Light/Dark Mode
+
+[EXCLUDED - STRICTLY OUT OF SCOPE]
+    - Real-world Payment Integration (NO bKash, Nagad, Rocket, Stripe, Bank APIs).
+    - Actual KYC Verification (NID scanning / Server verification).
+    - Advanced Team Roles (Permissions, Hierarchies).
+    - Public Directory / Discovery.
+
+1.3 TARGET AUDIENCE
+-------------------
+- Professionals (Business owners, Sales, Freelancers)
+- Tech-savvy users in Bangladesh (primary market) and Global.
+
+================================================================================
+2. SYSTEM ARCHITECTURE (V1)
+================================================================================
+
+2.1 TECHNOLOGY STACK
+--------------------
+- Framework: Flutter (Latest Stable)
+- Language: Dart
+- State Management: **Riverpod** (Modern, robust, testable).
+- Local Database (Offline-First): **Isar** (High performance, ACID compliant, NoSQL).
+  * Why: Ensures full app functionality even without internet.
+- Backend / Cloud (V1): **Microsoft Azure** (Student Encrypted Plan).
+  * **Auth**: Azure Active Directory B2C (Enterprise-grade security, Free Tier).
+  * **Database**: Azure Cosmos DB for NoSQL (Permanent Free Tier).
+  * **Storage**: Azure Blob Storage (Uses Student Credit).
+  * **API**: Azure Functions (Serverless, Event-driven).
+- Backup & Data Portability:
+  * **Unified Cloud Sync**: All data automatically synced to Azure Cosmos/Blob.
+  * **Manual Export**: Export data as JSON/CSV/PDF for user control.
+- Navigation: GoRouter.
+
+2.1.1 AZURE STORAGE STRATEGY (Student Plan Optimized)
+------------------------------------------------------
+1. Local Storage (Primary - Free & Fast): 
+   - High-res card images and data stored in device's local App Directory (Isar).
+   - Ensures instant loading and offline capability.
+2. Cloud Sync (Azure Ecosystem):
+   - **Data**: Synced to **Azure Cosmos DB** (NoSQL Container).
+   - **Images**: Uploaded to **Azure Blob Storage** (Hot Tier).
+   - **Optimization**: Use 'Hot/Cool' storage tiers to manage credit usage efficiently.
+   - **Authentication**: Azure AD B2C handles all token management and security access.
+
+2.2 ARCHITECTURAL PATTERN: FEATURE-FIRST + RIVERPOD
+-----------------------------------------------------
+We follow a strict **Feature-First Layered Architecture**. Code is organized by "what it does" (feature) rather than "what it is" (layer).
+
+### A. Directory Structure
+/lib
+  /src
+    /app.dart                # Main App Widget (Providers/Theme/Routing)
+    /features                # FEATURE MODULES
+      /auth
+        /data                # Repositories, DTOs, Data Sources
+        /domain              # Entities, Failures, Value Objects
+        /presentation        # Screens, Widgets, Controllers (Riverpod)
+      /contacts
+      /wallet
+      /settings
+      /shared                # Shared between features (e.g. Card Scanner)
+    /core                    # CORE INFRASTRUCTURE
+      /config                # Environment variables, Constants
+      /error                 # Global Failure classes, Exceptions
+      /theme                 # AppTheme, Colors, Typography
+      /router                # GoRouter configuration
+      /utils                 # Formatters, Validators (Currency, Date)
+    /common_widgets          # Global reusable widgets (Buttons, Inputs)
+
+### B. Layer Responsibilities
+1. **Domain Layer (The Core)**
+   - PURE DART. No Flutter dependencies (ideally).
+   - Contains: Entities (Models), Value Objects.
+   - Purpose: Defines *what* the business data is.
+   
+2. **Data Layer (The Implementation)**
+   - Depends on Domain.
+   - Contains: Repositories (Impl), Data Sources (API/DB clients), DTOs (JSON parsers).
+   - Purpose: Fetches data from Isar/Supabase and converts to Domain Entities.
+   - *Riverpod Providers*: `authRepositoryProvider`, `contactsRepositoryProvider`.
+
+3. **Presentation Layer (The UI)**
+   - Depends on Domain & Application.
+   - Contains: Screens, Widgets, Controllers (AsyncNotifier/StateNotifier).
+   - Purpose: Displays state and captures user events.
+   - *Riverpod Providers*: `authControllerProvider` (manages UI state).
+
+### C. Data Flow
+1. **User Interaction**: User taps "Save Contact".
+2. **Controller**: `ContactController` receives event.
+3. **Repository**: Controller calls `ContactRepository.addContact()`.
+4. **Data Source**: Repository calls `IsarDataSource.write()`.
+5. **State Update**: Controller updates state (Loading -> Success).
+6. **UI Rebuild**: UI listens to Controller and rebuilds to show "Saved".
+
+2.3 DATA MODEL (CORE ENTITIES)
+------------------------------
+1. User
+   - Core: { id (UUID), name, email, phone, profile_photo, auth_provider, settings }
+   - Profile: { avatar_url, default_language (bn/en), time_zone }
+   - Refs: { personal_card_id (Link to CardDesign) }
+   - Status: { kyc_tier (BASIC/PRO), kyc_status, account_status (ACTIVE/SUSPENDED) }
+
+2. Contact (User's Copy)
+   - Core: { id, owner_id, global_contact_id (Ref), full_name, company_name, job_title }
+   - Contact Info: { phones[], emails[], addresses[], websites[], social_links[] }
+   - Organization: { category, tags[], is_favorite, notes, creation_method }
+   - Media: { image_front_url, image_back_url, ocr_data_raw }
+   - Metadata: { created_at, updated_at, last_contacted_at }
+
+3. GlobalContact (Source of Truth)
+   - Core: { id (Hashed Phone/Email), latest_data (JSON), version_timestamp }
+   - Flags: { verified_by_owner (Bool), fraud_score (Float) }
+
+4. CardDesign (My Card)
+   - Core: { id, contact_id, logo_url, theme_color, layout_type, custom_qr_style }
+
+5. Wallet (Internal Ledger)
+   - Core: { id, user_id, currency (BDT), type (PERSONAL/BUSINESS), status (ACTIVE/FROZEN) }
+   - Balances: { balance_available, balance_hold, balance_total }
+
+6. WalletTransaction
+   - Core: { id, wallet_id, type (CREDIT/DEBIT), amount, fee_amount, currency }
+   - Details: { counterparty_name, counterparty_id, description/note, category }
+   - State: { status (PENDING/COMPLETED/FAILED), initiated_at, completed_at }
+   - Metadata: { transaction_method (INTERNAL_TRANSFER/MANUAL_ADD), reference_id }
+
+5. Team (V1 Basic)
+   - Core: { id, name, owner_id, created_at }
+   - Membership: { members[]: { user_id, role (ADMIN/MEMBER), joined_at } }
+   - Stats: { shared_contacts_count }
+
+2.4 SYNC & OFFLINE STRATEGY (CRITICAL)
+--------------------------------------
+A. Offline-First Principles
+   - **Write**: All writes go to Isar (Local DB) first. UI updates immediately (Optimistic).
+   - **Queue**: Background job queues the operation for sync.
+   - **Sync**: When online, queue is processed and sent to Supabase.
+
+B. Strategies
+   - **Up-Sync**: Pushing local changes (New Contact, Edit) to Cloud.
+   - **Down-Sync**: Fetching updates (Profile changes, Team data) from Cloud.
+C. Global Sync Logic (Azure Functions)
+   - **Trigger**: Scan/Edit uploads to queue -> Azure Function triggers.
+   - **Compare**: Function checks `CosmosDB.GlobalContacts` vs `UserContact.version`.
+   - **Prompt UI**: "Newer info found" notification (via Azure Notification Hubs).
+   - **Privacy**: User's private notes stored in Cosmos private partition (`/userId`).
+   - **Override**: Owner-verified data always wins.
+
+================================================================================
+3. SECURITY & PERFORMANCE SPECIFICATIONS
+================================================================================
+
+3.1 SECURITY SPECIFICATIONS (V1 PRIORITY)
+-----------------------------------------
+A. Authentication & Session
+   - **Tokens**: Short-lived JWT Identity Tokens + Rotating Refresh Tokens (Supabase).
+   - **MFA**: OTP via SMS for login/registration (prevent brute force).
+   - **Session**: Device binding (track Device ID). Auto-logout on token expiry.
+
+B. Data Encryption & Privacy
+   - **At Rest**: Isar Database encryption (AES-256) for local sensitive data.
+   - **In Transit**: All API calls over TLS 1.2+ (HTTPS).
+   - **Backups**: Google Drive uploads are user-encrypted.
+   - **Privacy**: Masking sensitive fields (e.g., +880 17**-***456) in UI.
+
+C. Access Control (RBAC)
+   - **User Role**: Standard access to own contacts.
+   - **Team Admin**: Permission to add/remove members (future prep).
+
+D. API & RLS POLICIES (SUPABASE)
+--------------------------------
+   - **Principle**: No Backend Middleware. Security is enforced at the Database Layer.
+   - **Policy 1 (Private)**: `auth.uid() = user_id` for Contacts/Wallets.
+   - **Policy 2 (Shared)**: `auth.uid() IN (select member_id from team_members)` for Team Directories.
+   - **Edge Functions**: Used only for complex logic (e.g., inviting a user to a team).
+
+3.2 PERFORMANCE OPTIMIZATION STRATEGY (DETAILED)
+----------------------------------------------
+I. PERFORMANCE GOALS
+   - **Startup**: < 1.5s (Cold Start) on mid-range devices.
+   - **Responsiveness**: 60 FPS UI rendering; < 300ms API latency.
+   - **Bundle Size**: < 25MB initial download (Split APKs).
+
+II. CLIENT-SIDE OPTIMIZATION
+   - **App Bundle**: Use Split APKs (per architecture) + Code Shrinking (Tree-shaking).
+   - **Modular Loading**: Load features lazily (e.g., Scan library only when needed).
+   - **Lists**: Use `ListView.builder` with `const` widgets and virtualization.
+   - **State Management**: Use Riverpod `select()` to avoid rebuilding entire widget trees.
+   - **Background Work**: Isolate critical tasks (OCR, large JSON parsing) from UI thread.
+
+III. IMAGE & ASSET COMPRESSION (CRITICAL)
+   - **Capture Resolution**: Crop to card ratio before processing (don't use full sensor).
+   - **Compression**: WebP format (Quality ~75%) on device before upload.
+   - **Thumbnails**: Server generated derivatives; Load low-res first.
+   - **Caching**: `cached_network_image` with long TTL.
+   - **Assets**: Prefer SVGs over PNGs.
+
+IV. CACHING STRATEGY
+   - **Local DB (Isar)**: Acts as L1 Cache. All reads hit Isar first.
+   - **Memory**: Cache frequently accessed user profiles & recent transactions (Riverpod KeepAlive).
+   - **Network**: Standard HTTP Caching headers (ETag) for static resources.
+
+V. MEMORY MANAGEMENT
+   - **Lists**: Pagination (Infinite Scroll) to limit items in memory.
+   - **Images**: Aggressive eviction of large image caches on low-memory warnings.
+   - **Pooling**: Reuse heavy objects where possible.
+
+VI. DATABASE & QUERY (SUPABASE/ISAR)
+   - **Indexing**: Composite indexes on (user_id + created_at) for fast sorting.
+   - **Pagination**: STRICT pagination on all lists (limit: 20/50).
+   - **Projections**: Fetch only needed columns (e.g., list view needs name/avatar, not full bio).
+
+VII. UX PERFORMANCE
+   - **Perceived Speed**: Skeleton loaders (Shimmer) vs Spinner.
+   - **Optimistic UI**: Update UI immediately on "Save/Like", rollback on error.
+   - **Feedback**: Instant tap feedback (Ripple/Toast).
+   - **Low Data Mode**: Auto-disable sync/high-res images on weak connections.
+
+VIII. LOAD TESTING
+    - **Scenario**: 1000 concurrent "Add Contact" ops to verify sync stability.
+    - **Device Test**: Verify 60FPS on lowest supported Android device (e.g., 2GB RAM).
+
+================================================================================
+4. UI/UX DESIGN SPECIFICATIONS (DETAILED)
+================================================================================
+
+4.1 BRAND & DESIGN SYSTEM
+-------------------------
+A. Color Palette (Modern & Trustworthy)
+   - **Primary**: Emerald Green (#0BBF7D) - *Action, Success, Brand*
+   - **Secondary**: Deep Midnight Blue (#1A1F36) - *Headers, Primary Text*
+   - **Accent**: Warm Gold (#FFC107) - *Favorites, Premium features*
+   - **Background**: Off-White (#F8F9FB), Card White (#FFFFFF)
+   - **Error**: Coral Red (#FF4D4F), **Warning**: Amber (#FAAD14)
+
+B. Typography (Font: Inter / Roboto)
+   - **H1 (Page Titles)**: 24px Bold (Dark Blue)
+   - **H2 (Section Headers)**: 18px SemiBold (Dark Blue)
+   - **Body (Content)**: 14px Regular (Slate Grey #64748B)
+   - **Inputs/Buttons**: 16px Medium
+   - **Caption**: 12px Regular (Light Grey)
+
+C. Components & Values
+   - **Radius**: 12px (Cards), 8px (Buttons), 16px (Dialogs).
+   - **Shadows**: Soft diffuse shadows (0px 4px 20px rgba(0,0,0,0.05)).
+   - **Padding**: 16px (standard horizontal), 24px (standard vertical).
+
+4.2 COMMON LAYOUT (PAGES 9-60)
+------------------------------
+All pages (except Auth/Onboarding) share this scaffold:
+
+[HEADER - 56px]
+   - Left: Brand Logo (Home) OR Back Button (Inner Pages)
+   - Center: Page Title (e.g., "My Wallet")
+   - Right: Notification Bell (Home) OR Action Icon (e.g., Save)
+
+[BODY]
+   - Scrollable content area. Background: #F8F9FB.
+
+[BOTTOM NAV - 80px] (Fixed)
+   - **Left**: Settings Icon (Grid/Gear) -> *Navigates to Settings*
+   - **Center**: FLOATING ACTION BUTTON (Fab) -> *Primary Action*
+     * Size: 56px, Color: Primary Green, Icon: Plus (+)
+     * Interaction: Tap expands circular menu:
+       1. "Add Contact" (Icon: User+)
+       2. "Scan Card" (Icon: Camera)
+       3. "My QR" (Icon: QR Code)
+       4. "Manual Entry" (Icon: Keyboard)
+   - **Right**: Search Icon (Magnifying Glass) -> *Navigates to Global Search*
+
+4.3 MODULE-SPECIFIC DESIGNS
+---------------------------
+A. Authentication (Pages 2-4)
+   - **Style**: Clean white background, centered logo.
+   - **Inputs**: Outlined text fields with floating labels.
+   - **Actions**: Full-width primary buttons ("Log In").
+   - **Feedback**: Inline error text below fields.
+
+B. Home Dashboard (Page 6)
+   - **Header**: "Good Morning, [Name]" + Avatar.
+   - **Tabs**: [All contacts | Business | Friends]. (Pill shapped).
+   - **Layout**: 2-Column Grid of Contact Cards.
+   - **Contact Card**:
+     * Aspect Ratio: Business Card (1.58:1).
+     * Content: Front Image preview + Name/Title below.
+     * Interaction: Tap to view details. Long-press to share.
+
+C. Card Scanner (Page 8)
+   - **Overlay**: Semi-transparent black layer.
+   - **Guide**: Dashed Green Border (3:2 ratio) in center.
+   - **Feedback**: "Hold Steady" text.
+   - **Control**: Large white shutter button. Flash toggle top-right.
+
+D. Wallet (Page 9 - Internal)
+   - **Card**: "Virtual Visa" style card showing visual Balance.
+   - **Actions Row**: 4 Circular Icons: [Add Money] [Send] [History] [More].
+   - **List**: "Recent Transactions" list below. Simple rows:
+     * Icon (Arrow Up/Down), Name, Date, Amount (+/- Green/Red).
+
+E. Contact Details & Management
+   - **Details Page**: Top Card Carousel, Center Profile, Action Row, Body Fields.
+   - **Merge Screen**: Side-by-side comparison of duplicate contacts -> "Merge" / "Keep Both".
+   - **Import**: List of phone contacts with checkboxes to select & import.
+
+F. Search & Filter (Module 5)
+   - **Search Page**: Auto-focus input. "Recent Searches" list below.
+   - **Filter Sheet**: Bottom Sheet with Chips: [Business] [Friends] [Location].
+   - **Results**: Real-time list updates as user types.
+
+G. Share & Export (Module 6)
+   - **QR Screen**: Large personalized QR code.
+   - **PDF Export**: Preview of printable card layout -> "Download/Print".
+   - **NFC Guide**: Animation showing how to tap devices.
+
+H. Team & Collaboration (Module 8)
+   - **Dashboard**: List of Team Members + "Invite Member" button.
+   - **Directory**: Shared contacts accessible by all members.
+   - **Roles**: Basic toggle (Admin/Member) for permissions.
+
+I. Settings & Tools (Module 9)
+   - **List Layout**: Grouped list (Account / App / Data).
+   - **Sub-pages**:
+     * **Profile**: Edit Avatar/Name.
+     * **Categories/Tags**: Manage custom labels.
+     * **Backup**: "Backup to Drive" / "Restore from File".
+     * **Notifications**: Toggles for Push/Email.
+     * **Language**: English / Bangla selector.
+
+J. Help & Support (Module 10)
+   - **FAQ**: Accordion list of common questions.
+   - **Contact Support**: Form + "Start Chat" button.
+
+4.4 INTERACTION PATTERNS
+------------------------
+   - **Transitions**: Slide-left for inner pages. Fade for tabs.
+   - **Loading**: Shimmer effects for lists (Skeleton). No blocking spinners.
+   - **Dialogs**: Bottom Sheets for interactions (Share, Filter) instead of center alerts.
+   - **Haptic**: Subtle vibration on success (Save) or Error.
+
+4.5 COMPLETE PAGE SPECIFICATIONS (DETAILED CONTENT & DESIGN)
+--------------------------------------------------------------
+A. AUTHENTICATION MODULE
+   1. Splash Screen
+      - Content: App Logo, Loading Animation.
+      - Design: Minimal white background, soft fade-in.
+   2. Welcome / Logo Page
+      - Content: Logo, Buttons ("Log In" [Outline], "Sign Up" [Solid Green]), Social Icons (Google, FB).
+      - Design: Centered logo -> Large vertical buttons -> Socials at bottom.
+   3. Log In
+      - Content: Username/Email, Password, "Forgot Password?", "Log In" Button, "Sign Up" Link.
+      - Design: Clean card-style form, rounded fields.
+   4. Register
+      - Content: Name, Phone (+880), Email, DOB, Password.
+      - Design: Single-step clean vertical form.
+   5. Forgot Password
+      - Content: Email field, "Send Reset Link" button.
+      - Design: Minimal modal or centered card.
+   6. OTP / Verification
+      - Content: 6-digit input box, Timer ("Resend in 00:45").
+      - Design: Auto-focus first box, numeric keyboard.
+
+B. ONBOARDING MODULE
+   7. Permission Page
+      - Content: Toggles for Camera, Contacts, Notifications. "Allow" button.
+      - Design: Illustration + clear switch toggles.
+   8. Intro Carousel
+      - Slides: 1. Scan & Save, 2. Connect & Share, 3. Pay Securely.
+      - Design: Full-width illustrations with dot indicators.
+
+C. DASHBOARD MODULE
+   9. Home Dashboard
+      - Header: Profile Pic, "Welcome [Name]", Bell Icon.
+      - Tabs: All / Business / Friends / Uncategorized (Pills).
+      - Body: 2-Column Grid of Contact Cards (Image + Name + F/B Toggle).
+      - FAB: Floating Action Button (Center).
+   10. Contact List View
+       - Content: Search Bar, Sticky Headers (A-Z), Row items (Small Avatar + Name).
+   11. Favorites
+       - Content: Grid/List of starred contacts only.
+   12. Recent Activity
+       - Content: Log of "Added [Name]", "Edited [Name]", "Sent Money to [Name]".
+   13. Notifications
+       - Content: List of alerts (New updates, Team invites).
+
+D. CONTACT MANAGEMENT MODULE
+   14. Add Contact Method
+       - Options: "Scan Card" (Camera Icon), "Manual Entry" (Form Icon), "Import Contacts" (Phone Icon).
+   15. Manual Add Form
+       - Fields: Name*, Position, Company, Phone, Email, Address, Website, Category, Notes.
+       - Action: "Save Contact".
+   16-17. Auto Scan (Front/Back)
+       - View: Camera with 3:2 aspect ratio guide frame.
+       - Action: Shutter button. Flash toggle.
+   18. Scan Preview (OCR)
+       - Content: Scanned Image Preview + Auto-filled Editable Fields.
+       - Feedback: Highlight low-confidence fields in yellow.
+   19. Edit Contact
+       - Same as Manual Form but pre-filled.
+   20. Contact Details
+       - Top: Carousel (Front/Back/QR).
+       - Action Row: Call, SMS, Email, Map.
+       - List: Detailed fields (tap to copy).
+       - Bottom: Edit, Share, Delete.
+   21-22. Full Screen Card View
+       - View: Zoomable image of card Front/Back.
+   23. Share Contact
+       - Content: Digital QR, "Share Link", "Export vCard", "Save to Files".
+   24. Duplicate Merge
+       - View: Side-by-side comparison.
+       - Actions: "Merge" (combines data), "Keep Both".
+   25. Delete Confirmation
+       - Modal: "Are you sure? This cannot be undone."
+   26. Export Contacts
+       - Options: Select Format (CSV/vCard/PDF). Select Contacts (All/Specific).
+
+E. SEARCH MODULE
+   27. Search Page
+       - Content: Search Bar (Auto-focus), "Recent Searches" chips.
+   28. Advanced Filters
+       - Options: Category, Company, Location, Date Added.
+   29. Search Results
+       - View: Live updating list/grid based on query.
+
+F. WALLET MODULE (INTERNAL LEDGER)
+   30. Wallet Home
+       - Card: Balance Display (৳).
+       - Actions: Add Money, Send, Receive, History.
+       - List: Recent Transactions.
+   31. Add Payment Card (Mock)
+       - Fields: Card Number, Expiry, CVV.
+   32. Add Business Card to Wallet
+       - Save a contact as a "Wallet Card".
+   33. Card Details
+       - View: Card visualization + Remove option.
+   34. Send Money (Simulated)
+       - Flow: Select Contact -> Enter Amount -> Confirm.
+   35. Receive Money
+       - View: Personal QR Code + Wallet ID.
+   36. Scan Payment QR
+       - Camera: Scans another user's Wallet QR.
+   37. Transaction History
+       - List: Date, Type, Amount, Status. Filterable.
+
+G. SHARE MODULE
+   38. My Digital Card
+       - View: User's own Business Card profile.
+   39. QR Code Page
+       - View: Large, high-contrast QR for scanning.
+   40. NFC Share
+       - Animation: "Tap phone to share".
+   41. PDF Export
+       - Preview: A4 layout of the card. Action: Download.
+
+H. TEAM MODULE
+   42. Team Dashboard
+       - Content: Team Name, Member List, Shared Card Count.
+   43. Team Directory
+       - List: Contacts shared by team members.
+   44. Invite Member
+       - Form: Enter Email -> "Send Invite".
+   45. Role Management
+       - List: Members with "Admin/Member" toggle.
+
+I. SETTINGS MODULE
+   46. Settings Home
+       - List: Account, App, Data, Help sections.
+   47. Profile Settings
+       - Edit: Avatar, Name, Job Title.
+   48. Account Settings
+       - Edit: Email, Phone, Password.
+   49. Security
+       - Toggles: "App PIN", "Biometric Unlock".
+   50. Backup & Sync
+       - Actions: "Backup Now (Google Drive)", "Restore from Backup".
+   51. Category Management
+       - List: Edit/Delete/Add custom categories.
+   52. Tags Management
+       - List: Color-coded tags.
+   53. Notification Settings
+       - Toggles: Push, Email, Promo.
+   54. Language
+       - Selection: English / Bangla.
+   55. Import / Restore
+       - Action: File picker for .csv/.vcf backup files.
+   56. Privacy
+       - Info: Terms, Privacy Policy, Data Export.
+   57. Logout
+       - Action: Clear session and return to Splash.
+
+J. SUPPORT MODULE
+   58. Help Center
+       - Content: List of help topics.
+   59. FAQ
+       - Content: Expandable questions/answers.
+   60. Contact Support
+       - Content: Message form + "Start Chat" button.
+
+================================================================================
+5. PROJECT STRUCTURE (FLUTTER)
+================================================================================
+The project follows a **Feature-First, Clean Architecture** pattern.
+Each feature is self-contained with its own Domain, Data, and Presentation layers.
+
+Mobile Wallet/
+├── .vscode/                     # Editor settings (extensions.json, launch.json)
+├── android/
+├── ios/
+├── assets/
+│   ├── fonts/                   # Inter, Roboto
+│   ├── icons/                   # App Icons / SVGs
+│   └── images/                  # Placeholders & Static Assets
+├── lib/
+│   ├── main.dart                # Entry Point (Isar init, Supabase init, RunApp)
+│   ├── src/
+│   │   ├── app.dart             # MaterialApp, Theme config, Router Delegate
+│   │   ├── localization/        # l10n (English/Bangla)
+│   │   │
+│   │   ├── core/                # SHARED INFRASTRUCTURE (Global)
+│   │   │   ├── config/          # Env Variables, App Constants
+│   │   │   ├── constants/       # Asset Paths, API Keys
+│   │   │   ├── error/           # Failures, Exceptions, Error Handling
+│   │   │   ├── router/          # GoRouter Config (routes.dart)
+│   │   │   ├── services/        # Third-party Services (SupabaseClient, IsarInstance)
+│   │   │   ├── theme/           # AppTheme, ColorPalette, Typography
+│   │   │   ├── utils/           # Validators, formatters, logic helpers
+│   │   │   └── widgets/         # GLOBAL Reusable Widgets (Buttons, Inputs, Loaders)
+│   │   │
+│   │   ├── features/            # FEATURE MODULES
+│   │   │   ├── authentication/  # Login, Register, OTP
+│   │   │   │   ├── data/
+│   │   │   │   ├── domain/
+│   │   │   │   └── presentation/
+│   │   │   │
+│   │   │   ├── contacts/        # Core: Contact List, OCR, CRUD
+│   │   │   │   ├── data/        # Isar Models, Supabase Repos
+│   │   │   │   ├── domain/      # Contact Entities
+│   │   │   │   └── presentation/# ContactList, DetailView, EditForm
+│   │   │   │
+│   │   │   ├── my_card/         # New: Card Creator & Sharing (NFC/QR)
+│   │   │   │   ├── data/        # CardDesign Models
+│   │   │   │   ├── domain/      # Card Template Entities
+│   │   │   │   └── presentation/# EditorCanvas, ShareSheet, QRWidget
+│   │   │   │
+│   │   │   ├── smart_intelligence/ # New: MFS Detection, Fraud Alerts
+│   │   │   │   ├── data/        # Lookup Services (Mock/Real)
+│   │   │   │   ├── domain/      # FraudScore, ValidityRule
+│   │   │   │   └── presentation/# SafetyBadge, AlertToast
+│   │   │   │
+│   │   │   ├── global_sync/     # New: Sync Logic & Conflict Resolution
+│   │   │   │   ├── data/        # SyncQueue, GlobalDirService
+│   │   │   │   └── presentation/# SyncIndicator, ConflictDialog
+│   │   │   │
+│   │   │   ├── wallet/          # Internal Wallet (Bookkeeping)
+│   │   │   │   ├── data/
+│   │   │   │   ├── domain/
+│   │   │   │   └── presentation/
+│   │   │   │
+│   │   │   └── settings/        # Profile, Security, Preferences
+│   │   │
+│   │   └── common_widgets/      # (Optional) High-level composed widgets
+│   │
+│   └── main_prod.dart           # Production Entry Point
+│   └── config.dart              # Environment Configuration
+│
+├── pubspec.yaml
+├── analysis_options.yaml
+└── README.md
+│   │   │   ├── theme/           # AppTheme, ColorPalette, TypeScale
+│   │   │   └── utils/           # Validators, DateFormatters, CurrencyUtils
+│   │   │
+│   │   ├── common_widgets/      # GLOBAL REUSABLE WIDGETS
+│   │   │   ├── primary_button.dart
+│   │   │   ├── custom_text_field.dart
+│   │   │   ├── async_value_widget.dart
+│   │   │   └── responsive_center.dart
+│   │   │
+│   │   └── features/            # APPLICATION MODULES
+│   │       │
+│   │       ├── auth/            # MODULE 1: AUTHENTICATION
+│   │       │   ├── data/        # Repositories (AuthRepository), DTOs
+│   │       │   ├── domain/      # User Entity, Failure Classes
+│   │       │   └── presentation/# LoginScreen, RegisterScreen, AuthController
+│   │       │
+│   │       ├── onboarding/      # MODULE 2: ONBOARDING
+│   │       │   └── presentation/# IntroCarousel, PermissionsScreen
+│   │       │
+│   │       ├── dashboard/       # MODULE 3: HOME
+│   │       │   └── presentation/# HomeScreen, BottomNav, FAB Menu
+│   │       │
+│   │       ├── contacts/        # MODULE 4: CONTACTS & SEARCH
+│   │       │   ├── data/        # Isar Local Source, Database Schema
+│   │       │   ├── domain/      # Contact Entity, Value Objects
+│   │       │   └── presentation/# AddContact, ContactDetail, Scanner, Search
+│   │       │
+│   │       ├── wallet/          # MODULE 6: INTERNAL WALLET
+│   │       │   ├── data/        # Transaction Ledger
+│   │       │   ├── domain/      # Transaction Entity
+│   │       │   └── presentation/# WalletHome, SendMoney, History
+│   │       │
+│   │       ├── team/            # MODULE 8: TEAMS
+│   │       │   └── presentation/# TeamDashboard, Directory
+│   │       │
+│   │       └── settings/        # MODULE 9: SETTINGS
+│   │           ├── domain/      # Preferences (Theme, Locale)
+│   │           └── presentation/# SettingsList, ProfileEdit, Backup
+│   │
+│   └── main_staging.dart        # Staging Entry Point
+├── analysis_options.yaml        # Linting Rules (Very Strict)
+├── pubspec.yaml                 # Dependencies (Riverpod, Isar, GoRouter)
+└── README.md
+
+END OF MASTER PLAN V1.0
+================================================================================

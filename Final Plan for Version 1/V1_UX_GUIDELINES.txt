@@ -1,0 +1,174 @@
+================================================================================
+V1 CONTEXT NOTE:
+This document is a REFERENCE for Version 1.0.
+For explicit V1 scope exclusions (e.g., Payment Flows), refer to MASTER_PROJECT_PLAN_V1.txt.
+Any conflicting scope details in this file are overridden by the Master Plan.
+================================================================================
+
+====================================================================
+MOBILE WALLET – USER EXPERIENCE (UX) DESIGN GUIDELINES
+Smart Contact Wallet / Mobile Wallet – Bangladesh Market
+====================================================================
+
+Document Version: 1.0
+Date: December 2025
+Scope: UX design principles and patterns to make the application
+       simple, fast, and accessible across all modules and versions.
+
+References:
+- APP_DESIGN_PLAN.txt (UI/UX Design System)
+- finalDesign.md (60‑page detailed design)
+- PAGE_LIST_WITH_CONTENT.txt and PAGE_LAYOUT_STRUCTURE.txt
+- UpdatedDesignWithBNR.txt (new/modified wallet, settings, security pages)
+
+====================================================================
+1. UX PRINCIPLES
+====================================================================
+
+- Clarity: Every screen has a single main goal; primary action is visually dominant.
+- Consistency: Colors, typography, components, and patterns are consistent across modules.
+- Local Relevance: Optimized for Bangladeshi users (language, formats, payment habits).
+- Accessibility: Readable text, sufficient contrast, and touch‑friendly controls.
+- Performance: Fast feedback and minimal friction, especially on low‑end devices.
+
+====================================================================
+2. GLOBAL UI/UX GUIDELINES
+====================================================================
+
+2.1 Layout & Navigation
+- Use consistent navigation structure as defined in APP_DESIGN_PLAN.txt:
+  - Authentication & Onboarding → Home/Dashboard → Modules (Contacts, Wallet, Search, Share, Team, Settings, Help).
+- Home Dashboard (Page 9) is the main entry after login:
+  - Profile header, tabs (All/Business/Friends/Family/Uncategorized), contact grid, FABs.
+- Navigation rules
+  - Back navigation always returns to the previous logical step.
+  - Avoid deep nesting (>3 levels) in navigation.
+  - Use clear breadcrumbs or section headers in Settings and Help.
+
+2.2 Visual Hierarchy
+- Follow the type scale and color usage from finalDesign.md:
+  - Page titles: Headline 1 or 2 at the top.
+  - Primary actions: Primary Green buttons with clear labels.
+  - Secondary actions: Outlined buttons or text links.
+- Use limited accent colors per screen to avoid visual noise.
+
+2.3 Feedback & States
+- All interactive elements must have:
+  - Default, hover/pressed (where relevant), focused, disabled, and loading states.
+- For long‑running operations (OCR, payments, linking accounts):
+  - Show progress indicators with meaningful text (“Verifying with bKash…”, etc.).
+  - Provide a way to cancel or go back where safe.
+
+====================================================================
+3. MODULE‑SPECIFIC UX GUIDELINES
+====================================================================
+
+3.1 Authentication & Onboarding
+- Keep forms short and focused; use progressive disclosure if needed.
+- OTP and verification flows must:
+  - Auto‑advance between input boxes.
+  - Provide clear error messages for invalid codes.
+- Onboarding slides (Intro/How It Works) should show concrete value:
+  - Scan → Save → Share → Pay (aligned with PAGE_LIST_WITH_CONTENT.txt).
+
+3.2 Home / Dashboard
+- Contact Grid Layout
+  - Two‑column grid with card previews, front/back toggles as per APP_DESIGN_PLAN.txt.
+  - Ensure cards remain readable on small screens; truncate long names gracefully.
+- Tabs and Filtering
+  - Horizontal scrollable category tabs with clear active pill.
+  - Preserve filter state when the user navigates back from details.
+- Wallet Widget (V2+)
+  - Compact summary of balances with clear “View Wallet” action.
+  - Provide privacy options (hide/show balances) and remember the user’s choice.
+
+3.3 Contact Management
+- Add Contact
+  - “Choose Method” page with clear icon‑based options (Scan, Manual, Import).
+  - Manual form uses labeled fields and supports smart defaults (e.g., country code).
+- Scanning & OCR
+  - Guide user with visual frame and short text (“Align card inside the box”).
+  - After scan, show editable fields with confidence indicators.
+- Contact Details
+  - Front/Back card view at top, details below.
+  - Provide quick actions row (Call, Message, Email, Pay in V2+).
+  - Show last interactions (recent calls/payments) in a compact list.
+
+3.4 Wallet & Payments
+- Wallet Home
+  - Grid of action tiles: Add Card, Send Money, Receive, Add Money, Cash Out, Link MFS, etc. (per UpdatedDesignWithBNR.txt).
+  - Tiles use consistent iconography and clear labels.
+- Send Money
+  - Step‑by‑step flow: Choose recipient → Choose method → Enter amount → Review → Confirm.
+  - Always show fee breakdown and estimated delivery time.
+  - Clearly highlight the selected payment provider.
+- Receive Money
+  - Simple QR view with ability to change receiving account (wallet/MFS/bank).
+  - Provide copyable payment link and share sheet.
+
+3.5 Settings & Security
+- Group related settings logically (Account, Security, Payments, Notifications).
+- Security settings
+  - Use clear descriptive text for features like “Trusted Devices” or “Payment PIN”.
+  - Provide inline explanations and links to FAQ for complex options.
+- Transaction Limits
+  - Show progress bars for used vs available limits.
+  - Offer clear steps to upgrade limits (KYC upgrade flow).
+
+3.6 Help & Support
+- Keep Help Center organized by topic (Account, Payments, Contacts, Security).
+- Provide quick search and common questions at the top.
+- Integrate contact support options (chat/email/phone) prominently.
+
+====================================================================
+4. ACCESSIBILITY & LOCALIZATION
+====================================================================
+
+4.1 Text & Contrast
+- Minimum font sizes
+  - 14px for body text, 12px only for helper text/labels.
+- Contrast ratios
+  - Follow WCAG AA or better for text and primary interactive elements.
+
+4.2 Touch Targets & Gestures
+- Minimum touch target: 44×44 px for buttons and icons.
+- Use simple, discoverable gestures; avoid gesture‑only actions.
+- Provide visual affordances for swipe actions (e.g., list item actions).
+
+4.3 Language & Localization
+- Support Bangla and English UI with easy toggle in Settings.
+- Use local formats
+  - Bangladeshi date formats where appropriate.
+  - BDT currency with local grouping (৳1,00,000) as per COMPREHENSIVE_SCALING_PLAN.txt.
+- Ensure UI layouts adapt to longer Bangla text without truncation.
+
+====================================================================
+5. PERFORMANCE‑AWARE UX PATTERNS
+====================================================================
+
+- Use skeleton loaders and “pull to refresh” patterns instead of blocking spinners.
+- Save partial form data locally during long flows (registration, KYC, linking accounts).
+- For low‑bandwidth mode:
+  - Offer a simplified UI with fewer images and smaller previews.
+  - Delay loading non‑critical modules (team, advanced analytics).
+
+====================================================================
+6. VERSION‑SPECIFIC UX GUIDANCE (V1–V3)
+====================================================================
+
+- V1 – Basic Card System
+  - Focus on contact scanning and management workflows.
+  - Keep wallet features minimal and clearly labeled as “beta” or “coming soon” if not fully active.
+
+- V2 – BNR Integration (bKash, Nagad, Rocket)
+  - Add clear, branded flows for linking accounts, sending and receiving via MFS.
+  - Avoid overwhelming users: group BNR features under Wallet and Settings → Payments.
+  - Use helper text to explain why multiple providers are helpful (fees, coverage).
+
+- V3 – Full Banking Integration (5 Banks)
+  - Extend Wallet and Payments screens to include bank accounts in a unified way.
+  - Keep selection flows simple: show “Best option” recommendations and clear comparisons.
+  - Provide clear trust and security indicators for bank operations.
+
+These UX guidelines should be applied across all screens and versions, aligned
+with the visual system already defined in APP_DESIGN_PLAN.txt and finalDesign.md.

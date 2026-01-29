@@ -1,0 +1,577 @@
+================================================================================
+AZURE PORTAL SETUP GUIDE FOR SMART CONTACT WALLET
+================================================================================
+**Purpose**: Step-by-step manual configuration guide for Azure resources
+**Audience**: Developers setting up the project for the first time
+**Prerequisites**: Azure Student Account (or regular Azure account)
+**Estimated Time**: 60-90 minutes for complete setup
+
+⚠️⚠️⚠️ CRITICAL UPDATE - JANUARY 27, 2026 ⚠️⚠️⚠️
+
+**AZURE AD B2C IS NO LONGER AVAILABLE FOR NEW CUSTOMERS**
+
+As of May 1, 2025, Microsoft stopped selling Azure AD B2C to new customers.
+This project has been updated to use **FIREBASE AUTHENTICATION** instead.
+
+**WHAT THIS MEANS FOR YOU:**
+- ✅ Section 3 (Azure AD B2C) is now DEPRECATED - DO NOT FOLLOW
+- ✅ Use FIREBASE_AUTH_SETUP_GUIDE.txt for authentication setup instead
+- ✅ All other sections (Cosmos DB, Blob Storage, Functions) remain unchanged
+- ✅ Firebase Auth is FREE and works perfectly with Azure backend
+
+**UPDATED ARCHITECTURE:**
+User → Firebase Auth → Flutter App → Azure Functions → Cosmos DB/Blob Storage
+
+**FOR AUTHENTICATION SETUP, SEE:**
+📖 FIREBASE_AUTH_SETUP_GUIDE.txt (Complete Firebase setup instructions)
+
+**CONTINUE WITH THIS GUIDE FOR:**
+- ✅ Azure Student Account activation
+- ✅ Resource Group creation
+- ✅ Cosmos DB setup (database)
+- ✅ Blob Storage setup (file storage)
+- ✅ Azure Functions setup (backend API)
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+1. AZURE STUDENT ACCOUNT ACTIVATION
+2. CREATE RESOURCE GROUP
+3. AZURE AD B2C TENANT SETUP (⚠️ DEPRECATED - USE FIREBASE INSTEAD)
+4. AZURE COSMOS DB SETUP (DATABASE)
+5. AZURE BLOB STORAGE SETUP (FILE STORAGE)
+6. AZURE FUNCTIONS SETUP (BACKEND API)
+7. EXTRACT CONNECTION STRINGS FOR FLUTTER APP
+8. VERIFICATION & TESTING
+9. TROUBLESHOOTING COMMON ISSUES
+
+================================================================================
+1. AZURE STUDENT ACCOUNT ACTIVATION
+================================================================================
+
+**Step 1.1: Verify Student Status**
+1. Go to: https://azure.microsoft.com/en-us/free/students/
+2. Click "Activate now" or "Start free"
+3. Sign in with your University email (@university.edu address required)
+4. Microsoft will verify your student status automatically
+5. You'll receive:
+   - $100 USD in Azure credits (renewable annually if still a student)
+   - Free services (永久 for some like Cosmos DB free tier)
+   - No credit card required for student account
+
+**Step 1.2: Access Azure Portal**
+1. Navigate to: https://portal.azure.com
+2. Sign in with your student Microsoft account
+3. You should see the Azure Dashboard
+
+**Verification**: Check top-right corner shows your student email and "Subscription: Azure for Students"
+
+================================================================================
+2. CREATE RESOURCE GROUP
+================================================================================
+A Resource Group is a logical container for all your Azure resources.
+
+**Step 2.1: Create Resource Group**
+1. In Azure Portal, click "Resource groups" in left sidebar
+2. Click "+ Create" at the top
+3. Fill in the form:
+   ```
+   Subscription: Azure for Students
+   Resource group name: rg-smartwallet-dev
+   Region: (choose closest to Bangladesh)
+      - Recommended: Southeast Asia (Singapore)
+      - Alternative: Central India (Mumbai)
+   ```
+4. Click "Review + create"
+5. Click "Create"
+
+**Step 2.2: Verify Creation**
+1. Go to "Resource groups" 
+2. You should see "rg-smartwallet-dev" listed
+3. Click on it to open (you'll use this throughout setup)
+
+**Why This Matters**: All resources (Cosmos DB, Storage, Functions) will be grouped here for easy management and billing tracking.
+
+================================================================================
+3. AZURE AD B2C TENANT SETUP (DEPRECATED)
+================================================================================
+
+⚠️ **THIS SECTION HAS BEEN REMOVED** ⚠️
+
+We have migrated from Azure AD B2C to **Firebase Authentication**.
+
+Please refer to:
+📖 **@[Final Plan for Version 1/FIREBASE_AUTH_SETUP_GUIDE.txt]**
+
+This guide now focuses only on:
+- Cosmos DB (Database)
+- Blob Storage (File Storage)
+- Azure Functions (Backend Logic)
+
+(Proceed to Section 4: Azure Cosmos DB Setup)
+
+================================================================================
+4. AZURE COSMOS DB SETUP (DATABASE)
+================================================================================
+Cosmos DB stores all your application data (contacts, users, transactions).
+
+**Step 4.1: Create Cosmos DB Account**
+1. Switch back to your main directory (not B2C tenant)
+   - Click profile → Switch directory → Select default directory
+2. Search "Azure Cosmos DB" in portal search
+3. Click "+ Create"
+4. Select "Azure Cosmos DB for NoSQL" (NOT MongoDB or Cassandra)
+5. Fill in:
+   ```
+   Subscription: Azure for Students
+   Resource group: rg-smartwallet-dev
+   Account name: cosmos-mobilewalletbd-dev (must be globally unique)
+   Location: Southeast Asia (same as resource group)
+      ⚠️ If you get a "RequestDisallowedByAzure" error, your student subscription 
+      is restricted in this region. 
+      TRY THESE REGIONS INSTEAD:
+      - East US (Most reliable for students)
+      - West Europe
+      - Central US
+   Capacity mode: ● Provisioned throughput (Select this!)
+   Apply Free Tier Discount: ☑️ Apply (Check this box if available)
+   
+   (Note: Serverless is sometimes restricted for students. Provisioned is more reliable.)
+   ```
+6. Click "Review + create" → "Create"
+7. **Wait 5-10 minutes** for deployment
+
+**Step 4.2: Apply Free Tier Discount**
+1. Once created, go to the Cosmos DB account
+2. In left menu, click "Cost Management"
+3. Look for "Free tier discount: Not applied"
+4. Click "Apply free tier" (if available)
+   - **Note**: You only get ONE free tier Cosmos account per subscription
+   - Free tier gives: 1000 RU/s + 25GB storage permanently
+
+**Step 4.3: Create Database**
+1. In Cosmos DB account, click "Data Explorer" (left menu)
+2. Click "New Database"
+3. Fill in:
+   ```
+   Database id: smartwallet-db
+   Throughput: ○ Manual, 400 RU/s (will use free tier)
+   ```
+4. Click "OK"
+
+**Step 4.4: Create Containers (Tables)**
+Now create containers for different data types:
+
+**Container 1: Users**
+1. Click "+ New Container"
+2. Fill in:
+   ```
+   Database id: ● Use existing: smartwallet-db
+   Container id: Users
+   Partition key: /userId
+   ```
+3. Click "OK"
+
+**Container 2: Contacts**
+1. Click "+ New Container"
+2. Fill in:
+   ```
+   Database id: ● Use existing: smartwallet-db
+   Container id: Contacts
+   Partition key: /ownerId
+   ```
+3. Click "OK"
+
+**Container 3: GlobalContacts**
+1. Click "+ New Container"
+2. Fill in:
+   ```
+   Database id: ● Use existing: smartwallet-db
+   Container id: GlobalContacts
+   Partition key: /hashId
+   ```
+3. Click "OK"
+
+**Container 4: Transactions**
+1. Click "+ New Container"
+2. Fill in:
+   ```
+   Database id: ● Use existing: smartwallet-db
+   Container id: Transactions
+   Partition key: /walletId
+   ```
+3. Click "OK"
+
+**Step 4.5: Get Connection String**
+1. In Cosmos DB account, click "Keys" (left menu under Settings)
+2. **COPY THESE VALUES** (click 👁️ to reveal):
+   ```
+   URI: https://cosmos-smartwallet-dev.documents.azure.com:443/
+   PRIMARY KEY: [long string of characters]
+   PRIMARY CONNECTION STRING: [contains both URI and key]
+   ```
+3. Save as:
+   - `AZURE_COSMOS_ENDPOINT` = URI
+   - `AZURE_COSMOS_KEY` = PRIMARY KEY
+
+**SECURITY WARNING**: Never commit these keys to GitHub. Add to `.env` file only.
+
+================================================================================
+5. AZURE BLOB STORAGE SETUP (FILE STORAGE)
+================================================================================
+Blob Storage stores card images, profile photos, and backups.
+
+**Step 5.1: Create Storage Account**
+1. Search "Storage accounts" in portal
+2. Click "+ Create"
+3. Fill in:
+   ```
+   Subscription: Azure for Students
+   Resource group: rg-smartwallet-dev
+   Storage account name: stsmartwalletdev (lowercase, no hyphens)
+   Region: Southeast Asia (same as others)
+   Performance: ○ Standard
+   Redundancy: Locally-redundant storage (LRS) - cheapest
+   ```
+4. Click "Review + create" → "Create"
+5. Wait 2-3 minutes
+
+**Step 5.2: Create Blob Containers**
+1. Once created, go to the storage account
+2. Click "Containers" under "Data storage" (left menu)
+3. Click "+ Container"
+4. Create these containers:
+
+**Container 1: Card Images**
+```
+Name: card-images
+Public access level: Private (no anonymous access)
+```
+Click "Create"
+
+**Container 2: Profile Photos**
+```
+Name: profile-photos
+Public access level: Private
+```
+Click "Create"
+
+**Container 3: Backups**
+```
+Name: user-backups
+Public access level: Private
+```
+Click "Create"
+
+**Step 5.3: Enable CORS (for web uploads)**
+1. In storage account, click "Resource sharing (CORS)" under Settings
+2. Click "Blob service" tab
+3. Add a rule:
+   ```
+   Allowed origins: * (or your specific domain later)
+   Allowed methods: ✓ GET, ✓ PUT, ✓ POST
+   Allowed headers: *
+   Exposed headers: *
+   Max age: 3600
+   ```
+4. Click "Save"
+
+**Step 5.4: Get Connection String**
+1. Click "Access keys" under Security + networking
+2. Click "Show" next to key1
+3. **COPY**:
+   ```
+   Storage account name: stsmartwalletdev
+   Key: [long string]
+   Connection string: DefaultEndpointsProtocol=https;AccountName=...
+   ```
+4. Save as:
+   - `AZURE_STORAGE_ACCOUNT_NAME` = stsmartwalletdev
+   - `AZURE_STORAGE_ACCOUNT_KEY` = [the key]
+   - `AZURE_STORAGE_CONNECTION_STRING` = [full connection string]
+
+================================================================================
+6. AZURE FUNCTIONS SETUP (BACKEND API)
+================================================================================
+Azure Functions run your serverless backend code.
+
+**Step 6.1: Create Function App**
+1. Search "Function App" in portal
+2. Click "+ Create"
+3. Fill in:
+   ```
+   Subscription: Azure for Students
+   Resource group: rg-smartwallet-dev
+   Function App name: func-smartwallet-dev (globally unique)
+   Publish: ● Code
+   Runtime stack: Node.js (or Python, C# - your choice)
+   Version: 18 LTS (for Node.js)
+   Region: Southeast Asia
+   Operating System: ● Linux
+   Plan type: ● Consumption (Serverless) - PAY PER USE
+   ```
+4. Click "Review + create" → "Create"
+5. Wait 3-5 minutes
+
+**Step 6.2: Configure Function App**
+1. Once created, go to Function App
+2. Click "Configuration" under Settings
+3. Click "+ New application setting" to add environment variables:
+   
+   Add these one by one:
+   ```
+   Name: COSMOS_ENDPOINT
+   Value: [paste from Cosmos DB URI]
+   
+   Name: COSMOS_KEY
+   Value: [paste from Cosmos DB PRIMARY KEY]
+   
+   Name: STORAGE_CONNECTION_STRING
+   Value: [paste from Storage Account]
+   ```
+4. Click "Save" at top after adding all
+
+**Step 6.3: Create Your First Function (Testing)**
+1. Click "Functions" in left menu
+2. Click "+ Create"
+3. Select:
+   ```
+   Development environment: Develop in portal
+   Template: HTTP trigger
+   Function name: HealthCheck
+   Authorization level: Anonymous (for testing)
+   ```
+4. Click "Create"
+
+**Step 6.4: Test the Function**
+1. Click on "HealthCheck" function
+2. Click "Code + Test" in left menu
+3. You'll see sample code. Click "Test/Run"
+4. Click "Run"
+5. You should see "HTTP/1.1 200 OK" in output
+
+**Step 6.5: Get Function URL**
+1. Click "Get Function URL" at top
+2. Copy the URL (e.g., `https://func-smartwallet-dev.azurewebsites.net/api/HealthCheck`)
+3. Save as: `AZURE_FUNCTIONS_BASE_URL`
+
+**Note**: For production, you'll deploy functions via VS Code or CLI, not portal.
+
+================================================================================
+7. EXTRACT CONNECTION STRINGS FOR FLUTTER APP
+================================================================================
+
+**Step 7.1: Create .env File**
+In your Flutter project root, create a file named `.env`:
+
+```env
+# ============================================================================
+# FIREBASE AUTHENTICATION
+# ============================================================================
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_API_KEY=your-api-key
+FIREBASE_APP_ID=your-app-id
+FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+
+# ============================================================================
+# AZURE COSMOS DB CONFIGURATION
+# ============================================================================
+AZURE_COSMOS_ENDPOINT=https://cosmos-smartwallet-dev.documents.azure.com:443/
+AZURE_COSMOS_KEY=your-primary-key-here
+AZURE_COSMOS_DATABASE_NAME=smartwallet-db
+
+# ============================================================================
+# AZURE BLOB STORAGE CONFIGURATION
+# ============================================================================
+AZURE_STORAGE_ACCOUNT_NAME=stsmartwalletdev
+AZURE_STORAGE_ACCOUNT_KEY=your-storage-key-here
+AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=...
+AZURE_STORAGE_CONTAINER_CARD_IMAGES=card-images
+AZURE_STORAGE_CONTAINER_PROFILE_PHOTOS=profile-photos
+AZURE_STORAGE_CONTAINER_BACKUPS=user-backups
+
+# ============================================================================
+# AZURE FUNCTIONS CONFIGURATION
+# ============================================================================
+AZURE_FUNCTIONS_BASE_URL=https://func-smartwallet-dev.azurewebsites.net/api
+
+# ============================================================================
+# APP CONFIGURATION
+# ============================================================================
+APP_ENV=development
+DEBUG_MODE=true
+```
+
+**Step 7.2: Update .gitignore**
+Add to your `.gitignore`:
+```
+.env
+.env.local
+.env.*.local
+```
+
+**Step 7.3: Update required_info.json**
+In `assets/config/required_info.json`, update the AZURE_CONFIG section with non-sensitive values:
+
+```json
+{
+  "AZURE_CONFIG": {
+    "TENANT_NAME": "smartwallet",
+    "CLIENT_ID": "YOUR_CLIENT_ID_HERE",
+    "REDIRECT_URI": "com.mobilewallet.v1://oauthredirect",
+    "COSMOS_DB_ENDPOINT": "https://cosmos-smartwallet-dev.documents.azure.com:443/",
+    "STORAGE_ACCOUNT_NAME": "stsmartwalletdev"
+  }
+}
+```
+
+================================================================================
+8. VERIFICATION & TESTING
+================================================================================
+
+**Test 1: Azure AD B2C Authentication**
+1. Use the Azure AD B2C "Run now" feature:
+   - Go to Azure AD B2C → User flows → B2C_1_signupsignin1
+   - Click "Run user flow"
+   - A new tab opens showing login page
+   - Try creating a test account
+   - Verify you can sign in
+
+**Test 2: Cosmos DB Connection**
+1. In Cosmos DB Data Explorer
+2. Click on "Users" container
+3. Click "New Item"
+4. Paste test data:
+   ```json
+   {
+     "id": "test-user-1",
+     "userId": "test-user-1",
+     "name": "Test User",
+     "email": "test@example.com"
+   }
+   ```
+5. Click "Save"
+6. Query to verify: `SELECT * FROM c WHERE c.id = "test-user-1"`
+
+**Test 3: Blob Storage Upload**
+1. Go to Storage Account → Containers → card-images
+2. Click "Upload"
+3. Select any image file from your computer
+4. Click "Upload"
+5. Verify file appears in the list
+
+**Test 4: Azure Function**
+1. Open the Function URL in browser: 
+   `https://func-smartwallet-dev.azurewebsites.net/api/HealthCheck`
+2. You should see a response (not an error page)
+
+================================================================================
+9. TROUBLESHOOTING COMMON ISSUES
+================================================================================
+
+**Issue 1: "Free tier not available" for Cosmos DB**
+- **Cause**: You already used free tier on another Cosmos account
+- **Solution**: Delete old Cosmos account, OR use serverless mode (still very cheap)
+
+**Issue 2: Storage account name already taken**
+- **Cause**: Storage account names must be globally unique
+- **Solution**: Add random numbers: `stsmartwalletdev2024`
+
+**Issue 3: Can't find Azure AD B2C tenant**
+- **Cause**: You're in the wrong directory
+- **Solution**: Click profile icon → Switch directory → Select B2C tenant
+
+**Issue 4: Function App won't start**
+- **Cause**: Missing configuration or wrong runtime version
+- **Solution**: 
+  1. Check "Configuration" has all required env variables
+  2. Check "Logs" for error messages
+  3. Try restarting: Overview → Restart
+
+**Issue 5: CORS errors when uploading to Blob Storage**
+- **Cause**: CORS not configured
+- **Solution**: Go to Storage → Resource sharing (CORS) → Add allowed origins
+
+**Issue 6: Student subscription expired**
+- **Cause**: Annual renewal required
+- **Solution**: 
+  1. Verify student status again
+  2. Reapply at azure.microsoft.com/free/students
+  3. Free tier services (Cosmos, AD B2C) continue working even after credits expire
+
+================================================================================
+NEXT STEPS AFTER SETUP
+================================================================================
+
+1. **Flutter Integration**:
+   - Install Azure packages:
+     ```bash
+     flutter pub add flutter_appauth
+     flutter pub add http
+     flutter pub add flutter_secure_storage
+     ```
+   - Create `AzureAuthService` class (see todo.txt)
+   - Test login flow with AD B2C
+
+2. **Backend Development**:
+   - Install Azure Functions Core Tools
+   - Create functions locally with VS Code
+   - Deploy to Azure Functions
+
+3. **Database Schema**:
+   - Design JSON structure for each Cosmos container
+   - Implement repository pattern in Flutter
+   - Test CRUD operations
+
+4. **Monitoring**:
+   - Enable Application Insights for Functions
+   - Set up alerts for errors/high costs
+   - Monitor Request Units in Cosmos DB
+
+================================================================================
+COST MONITORING
+================================================================================
+
+**How to Check Your Spending**:
+1. Portal → "Cost Management + Billing"
+2. Click "Cost analysis"
+3. View daily/monthly breakdown
+
+**Expected Costs (Development)**:
+- Azure AD B2C: $0 (free tier)
+- Cosmos DB: $0 (free tier covers 1000 RU/s + 25GB)
+- Blob Storage: ~$2-5/month (depends on image storage)
+- Azure Functions: $0-2/month (1M executions free)
+- **Total**: $2-7/month with student credits
+
+**Set Budget Alerts**:
+1. Cost Management → Budgets → + Add
+2. Set budget: $20/month
+3. Alert at 80% ($16) and 100% ($20)
+4. Get email notifications
+
+================================================================================
+END OF AZURE SETUP GUIDE
+================================================================================
+
+**Summary Checklist**:
+- [ ] Azure Student account activated
+- [ ] Resource Group created (rg-smartwallet-dev)
+- [ ] Azure AD B2C tenant configured
+- [ ] User flow created (signupsignin1)
+- [ ] App registered in AD B2C
+- [ ] Cosmos DB account created with free tier
+- [ ] 4 Containers created (Users, Contacts, GlobalContacts, Transactions)
+- [ ] Blob Storage account created
+- [ ] 3 containers created (card-images, profile-photos, user-backups)
+- [ ] Azure Functions app created
+- [ ] All connection strings saved to .env
+- [ ] Verification tests passed
+
+**Support Resources**:
+- Azure Documentation: https://docs.microsoft.com/azure
+- Azure AD B2C Docs: https://docs.microsoft.com/azure/active-directory-b2c/
+- Cosmos DB Docs: https://docs.microsoft.com/azure/cosmos-db/
+- Azure Functions: https://docs.microsoft.com/azure/azure-functions/
+
+**Estimated Total Setup Time**: 60-90 minutes for first-time setup

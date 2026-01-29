@@ -1,0 +1,93 @@
+================================================================================
+APP FUNCTIONALITY METADATA - VERSION 1.0
+================================================================================
+
+This document lists every interactive element, button, and functional capability
+available in Version 1.0 of the Smart Contact Wallet.
+
+PAGE 1: SPLASH & WELCOME
+------------------------
+[ ] Auto-redirect (after 2s) to Welcome or Home (based on auth state).
+[ ] "Log In" Button -> Navigates to Login Screen.
+[ ] "Sign Up" Button -> Navigates to Register Screen.
+[ ] Social Login (Google) -> Triggers Google Auth.
+[ ] Social Login (Facebook) -> Triggers FB Auth.
+[ ] Social Login (Apple) -> Triggers Apple Auth.
+
+PAGE 2: LOGIN
+-------------
+[ ] Email/Phone Input -> Accepts text.
+[ ] Password Input -> Accepts text (hidden).
+[ ] Eye Icon -> Toggles password visibility.
+[ ] "Forgot Password?" -> Navigates to Forgot Password Screen.
+[ ] "Log In" Button -> Validates & Authenticates.
+[ ] "Sign Up" Link -> Navigates to Register.
+
+PAGE 3: REGISTER
+----------------
+[ ] Full Name Input.
+[ ] Contact Input (+880 fixed or dropdown).
+[ ] Email Input.
+[ ] DOB Input -> Opens Date Picker.
+[ ] Password Input (with strength meter).
+[ ] "Register" Button -> Creates Account -> Navigates to OTP.
+
+PAGE 4: OTP VERIFICATION
+------------------------
+[ ] 6-digit Input -> Auto-focus, Auto-next.
+[ ] "Verify" Button -> Confirms OTP.
+[ ] "Resend Code" Link -> Active after timer expires.
+
+PAGE 5: PERMISSIONS (ONBOARDING)
+--------------------------------
+[ ] Camera Toggle -> Requests Camera Permission.
+[ ] Contacts Toggle -> Requests Contact Read Permission.
+[ ] Notification Toggle -> Requests Notification Permission.
+[ ] "Continue" Button -> Saves states -> Navigates to Intro.
+
+PAGE 6: HOME DASHBOARD
+----------------------
+[ ] Notification Bell -> Opens Notifications.
+[ ] Tab: "All" -> Filters list to All.
+[ ] Tab: "Business" -> Filters to Business.
+[ ] Tab: "Friends" -> Filters to Friends.
+[ ] Grid Card Tap -> Flips Card (Front/Back) or Opens Detail (TBD).
+[ ] Bottom Nav: Settings -> Opens Settings.
+[ ] Bottom Nav: Search -> Opens Global Search.
+[ ] Bottom Nav: FAB (+) -> Expands Menu:
+    [ ] Action: "Add Contact" -> Opens Add Method Screen.
+    [ ] Action: "Scan Card" -> Opens Camera Scanner.
+    [ ] Action: "QR Code" -> Opens My QR Screen.
+    [ ] Action: "Manual Add Contact" -> Opens Manual Entry Form.
+
+PAGE 7: ADD CONTACT (MANUAL)
+----------------------------
+[ ] Name Field (Required).
+[ ] Phone Field (Dynamic formatting).
+[ ] Email Field (Validation).
+[ ] Save Button -> Writes to Local DB & Syncs.
+
+PAGE 8: CARD SCANNER
+--------------------
+[ ] Camera Viewfinder.
+[ ] Shutter Button -> Captures Image.
+[ ] "Scan Back" -> Switches to Back Card mode.
+[ ] "Save" -> Perform OCR (stub/real) -> Pre-fill Manual Form.
+
+PAGE 9: WALLET (INTERNAL)
+-------------------------
+[ ] Balance Display (Read-only).
+[ ] "Add Money" -> Opens Demo Dialog ("Added 500 BDT").
+[ ] "Send" -> Opens Select Contact for Transfer.
+[ ] "History" -> Shows transaction list.
+
+PAGE 10: SETTINGS
+-----------------
+[ ] Profile Edit -> Update Name/Avatar.
+[ ] Biometric Toggle -> Enables Fingerprint/FaceID.
+[ ] Appearance -> Light/Dark Mode Toggle.
+[ ] Logout -> Clears Session -> Redirects to Welcome.
+
+================================================================================
+END OF METADATA
+================================================================================

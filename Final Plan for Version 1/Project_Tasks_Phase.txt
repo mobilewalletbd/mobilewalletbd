@@ -1,0 +1,756 @@
+================================================================================
+SMART CONTACT WALLET - PROJECT DEVELOPMENT PHASES
+================================================================================
+Document Version: 1.0
+Date: January 27, 2026
+Purpose: Divide the complete V1 project into manageable development phases
+         for easier team collaboration and development tracking
+
+Source Documents Analyzed:
+- MASTER_PROJECT_PLAN_V1.txt
+- Target_and_goals.txt
+- todo.txt
+- FIREBASE_SYSTEM_ARCHITECTURE.txt
+- V1_APP_DESIGN_PLAN.txt
+- DEVELOPMENT_RULES.md
+
+================================================================================
+OVERVIEW: PHASE-BASED DEVELOPMENT STRATEGY
+================================================================================
+
+The Smart Contact Wallet V1 project has been divided into 7 major phases,
+each representing a logical development milestone. This phased approach:
+
+✓ Enables parallel team work where possible
+✓ Provides clear checkpoint deliverables
+✓ Maintains dependency order (can't build UI without backend)
+✓ Allows for iterative testing at each phase
+✓ Simplifies project tracking and progress reporting
+
+CRITICAL PATH: Phases 1 → 2 → 3 must be completed sequentially
+PARALLEL WORK: Phases 4-6 can be developed simultaneously after Phase 3
+FINAL PHASE: Phase 7 integrates everything and prepares for deployment
+
+================================================================================
+PHASE 1: FOUNDATION & INFRASTRUCTURE SETUP
+================================================================================
+Duration: 1-2 Weeks
+Team Members: 1-2 Backend/DevOps Developers
+Dependencies: None (Starting Phase)
+Completion Criteria: Firebase services operational, Flutter project initialized
+
+OBJECTIVE:
+----------
+Establish the complete technical infrastructure including Firebase cloud services,
+project scaffolding, configuration management, and core service integrations.
+No UI work in this phase - pure backend and setup.
+
+DELIVERABLES:
+-------------
+1.1 Firebase Cloud Infrastructure
+   - Firebase Project created and configured
+   - Firebase Authentication enabled (Email, Phone, Google Sign-In)
+   - Cloud Firestore initialized with security rules
+   - Cloudinary account configured for image storage
+   - Android/iOS apps registered in Firebase Console
+
+1.2 Flutter Project Initialization
+   - Project created with proper package structure
+   - All dependencies installed (Riverpod, Isar, Firebase packages)
+   - Analysis options configured with strict linting
+   - Build runner executed successfully
+   - Git repository initialized with proper .gitignore
+
+1.3 Configuration & Security
+   - .env file template created with all required variables
+   - assets/config/required_info.json populated
+   - Environment variable loading system implemented
+   - AppConfig class with validation logic
+   - Firebase Security Rules implemented
+
+1.4 Core Services
+   - FirebaseAuthService (Authentication integration)
+   - FirestoreService (Cloud database integration)
+   - CloudinaryService (Image upload service)
+   - IsarService (local database initialization)
+   - AppRouter (GoRouter configuration with routes)
+   - Error handling infrastructure
+   - Logging system setup
+
+1.5 Documentation
+   - ENV_details.txt guide for developers
+   - FIREBASE_SYSTEM_ARCHITECTURE.txt for reproducible setup
+   - Developer onboarding README
+   - API documentation structure
+
+TESTING CHECKPOINTS:
+--------------------
+✓ Firebase Authentication user flow test passes
+✓ Firestore test document can be created and queried
+✓ Cloudinary test image can be uploaded
+✓ Flutter app launches without crashing
+✓ AppConfig loads without errors
+✓ Offline-first sync works correctly
+
+================================================================================
+PHASE 2: AUTHENTICATION & USER MANAGEMENT
+================================================================================
+Duration: 1-2 Weeks
+Team Members: 1-2 Flutter Developers
+Dependencies: Phase 1 (Azure AD B2C must be configured)
+Completion Criteria: Users can sign up, log in, and maintain sessions
+
+OBJECTIVE:
+----------
+Implement complete authentication flow using Azure AD B2C, including user
+registration, login, OTP verification, session management, and local caching.
+
+DELIVERABLES:
+-------------
+2.1 Domain Layer (Pure Business Logic)
+   - AuthUser entity with validation
+   - AuthFailure sealed class hierarchy (7 failure types)
+   - AuthRepository interface (contract)
+
+2.2 Data Layer (Implementation)
+   - AuthRemoteDataSource (Azure AD B2C integration)
+   - AuthLocalDataSource (Isar cache for offline)
+   - AuthRepositoryImpl with Either<Failure, Success> pattern
+   - Local Isar schema: AuthUserLocal collection
+
+2.3 Presentation Layer (UI Screens)
+   - Splash Screen (loading animation)
+   - Welcome/Logo Page (brand introduction)
+   - Login Screen (email/phone + password)
+   - Register Screen (multi-field form with validation)
+   - Forgot Password Screen (password reset flow)
+   - OTP Verification Screen (6-digit input boxes)
+
+2.4 State Management
+   - AuthController (Riverpod AsyncNotifier)
+   - Auth state providers (isAuthenticated, currentUser)
+   - Session persistence logic
+   - Auto-logout on token expiry
+
+2.5 Navigation Guards
+   - Router redirect logic (unauthenticated → login)
+   - Deep linking for OAuth callback
+   - Post-auth navigation to home
+
+TESTING CHECKPOINTS:
+--------------------
+✓ New user can register with valid email
+✓ Existing user can log in successfully
+✓ Invalid credentials show proper error messages
+✓ OTP code verification works (if enabled)
+✓ "Forgot Password" flow sends reset email
+✓ User session persists after app restart (offline mode)
+✓ Token refresh happens automatically before expiry
+
+KEY USER FLOWS TO TEST:
+------------------------
+1. Fresh Install → Welcome → Sign Up → OTP → Home
+2. Existing User → Splash → Auto-Login → Home
+3. Logged Out User → Welcome → Login → Home
+4. Password Reset → Forgot Password → Email → Reset → Login
+
+================================================================================
+PHASE 3: CONTACT MANAGEMENT CORE
+================================================================================
+Duration: 2-3 Weeks
+Team Members: 2-3 Flutter Developers
+Dependencies: Phase 2 (Authentication must work for user context)
+Completion Criteria: Users can add, view, edit, and delete contacts
+
+OBJECTIVE:
+----------
+Implement the heart of the application - contact management with CRUD operations,
+local-first storage, cloud sync, and basic organization features.
+
+DELIVERABLES:
+-------------
+3.1 Domain Layer
+   - Contact entity (full data model)
+   - Category & Tag entities
+   - ContactRepository interface
+   - Failure types (NetworkFailure, ValidationFailure, etc.)
+
+3.2 Data Layer - Local (Isar)
+   - Contact Isar collection schema (@collection annotated)
+   - Indexes: userId, category, isFavorite, createdAt
+   - ContactLocalDataSource with CRUD methods
+   - Query methods (search, filter, pagination)
+
+3.3 Data Layer - Remote (Azure Cosmos DB)
+   - ContactRemoteDataSource (HTTP calls to Azure Functions)
+   - Sync logic (upload local contacts to cloud)
+   - Conflict resolution strategy
+   - Background sync queue
+
+3.4 Presentation Layer - Screens
+   - Home Dashboard (contact grid/list view)
+   - Contact List View (with search bar)
+   - Add Contact Method Selection (Scan / Manual / Import)
+   - Manual Contact Form (all fields with validation)
+   - Contact Details Page (full profile view)
+   - Edit Contact Screen (pre-filled form)
+   - Contact Full-Screen Card View (image zoom)
+
+3.5 Presentation Layer - Widgets
+   - ContactCard (grid item with image + name)
+   - ContactListTile (list row format)
+   - CategoryChip (pill-shaped category selector)
+   - SearchBar with real-time filtering
+   - EmptyContactsWidget (when no contacts exist)
+
+3.6 State Management
+   - ContactsController (manages contact list state)
+   - ContactDetailController (single contact state)
+   - Providers: contactsProvider, categoriesProvider, favoritesProvider
+
+3.7 Features
+   - Add contact (manual entry only in this phase)
+   - Edit contact
+   - Delete contact (with confirmation dialog)
+   - Mark as favorite (star icon toggle)
+   - Assign category (Business, Personal, etc.)
+   - Global search (name, company, phone, email)
+   - Filter by category
+   - Sort options (A-Z, recently added, recently contacted)
+
+TESTING CHECKPOINTS:
+--------------------
+✓ Add new contact via manual form saves to Isar
+✓ Contact appears in list immediately
+✓ Edit contact updates data correctly
+✓ Delete contact removes from list
+✓ Search finds contacts by partial name/company
+✓ Filter by category shows only relevant contacts
+✓ Favorite toggle works and persists
+✓ Pagination loads 20 contacts at a time
+✓ Contact syncs to Cosmos DB when online
+
+BLOCKING RISKS:
+---------------
+⚠ Isar schema changes require app reinstall during development
+⚠ Large contact lists (1000+) may cause performance issues → Optimize queries
+
+================================================================================
+PHASE 4: BUSINESS CARD SCANNING & OCR
+================================================================================
+Duration: 2 Weeks
+Team Members: 1-2 Flutter Developers (can run parallel to Phase 5)
+Dependencies: Phase 3 (Contacts module must exist to save scanned data)
+Completion Criteria: Users can scan business cards and extract information
+
+OBJECTIVE:
+----------
+Implement camera-based business card scanning with OCR (Optical Character
+Recognition) to automatically extract contact information from card images.
+
+DELIVERABLES:
+-------------
+4.1 Camera Integration
+   - Camera permissions handling (Android/iOS)
+   - Custom camera screen with alignment guide
+   - Capture front and back of card
+   - Image cropping to card aspect ratio
+   - Flash toggle for low-light conditions
+
+4.2 OCR Processing
+   - Integration with Microsoft Azure Computer Vision API (OCR)
+   - OR Google ML Kit Text Recognition (free alternative)
+   - Text extraction from card image
+   - Field mapping logic (Name, Title, Company, Phone, Email, Address)
+   - Confidence scoring for extracted fields
+
+4.3 Presentation Layer
+   - Scan Card Screen (camera viewfinder with guide overlay)
+   - OCR Preview Screen (shows extracted data with editable fields)
+   - Low-confidence field highlighting (yellow background)
+   - Manual correction option before saving
+
+4.4 Data Processing
+   - Phone number formatting (+880 for Bangladesh)
+   - Email validation
+   - Company name standardization
+   - Duplicate detection (compare with existing contacts)
+
+4.5 Image Storage
+   - Save card images locally (Isar embedded)
+   - Upload to Azure Blob Storage (card-images container)
+   - Thumbnail generation for list views
+   - Image compression (WebP format, 75% quality)
+
+TESTING CHECKPOINTS:
+--------------------
+✓ Camera permission prompt appears on first use
+✓ Alignment guide helps user position card correctly
+✓ Image captured is clear and properly cropped
+✓ OCR extracts at least 70% of fields correctly
+✓ User can edit OCR results before saving
+✓ Scanned contact saves to database
+✓ Card images stored in Blob Storage
+✓ Duplicate warning shown if contact already exists
+
+PERFORMANCE TARGETS:
+--------------------
+- OCR processing time: < 3 seconds
+- Image upload time: < 5 seconds on 4G
+- Card image size: < 500KB after compression
+
+================================================================================
+PHASE 5: DIGITAL BUSINESS CARD CREATOR & SHARING
+================================================================================
+Duration: 2 Weeks
+Team Members: 1-2 Flutter Developers (can run parallel to Phase 4)
+Dependencies: Phase 3 (Needs contact module for user's own contact data)
+Completion Criteria: Users can create and share their digital business cards
+
+OBJECTIVE:
+----------
+Enable users to design their own digital business cards with customization
+options and share via QR code, NFC, vCard export, or shareable link.
+
+DELIVERABLES:
+-------------
+5.1 My Card Creator
+   - Card design canvas (live preview)
+   - 12 pre-designed templates (Minimal, Corporate, Creative)
+   - Color theme picker (brand colors + custom hex)
+   - Logo upload with drag-and-drop positioning
+   - Text field editor (name, title, company, phone, email)
+   - Custom fields (bio, website, social media links)
+   - Save multiple card designs
+
+5.2 QR Code Generation
+   - Dynamic QR code linked to cloud profile
+   - Auto-updates when contact info changes
+   - High-contrast design for easy scanning
+   - Downloadable QR image (PNG)
+
+5.3 Sharing Methods
+   - QR Code Screen (full-screen scannable QR)
+   - NFC Exchange (Android Beam / iOS Core NFC)
+   - vCard (.vcf) file export
+   - PDF Export (printable card layout)
+   - Share Link (opens web profile without app)
+
+5.4 Presentation Layer
+   - My Digital Card Screen (user's card profile)
+   - Card Editor Canvas (design studio)
+   - Theme Picker Bottom Sheet
+   - Logo Upload Dialog
+   - Share Options Bottom Sheet
+   - QR Code Display Screen
+   - PDF Preview Screen
+
+5.5 Backend Integration
+   - Store card design in Cosmos DB (Users container)
+   - Upload logo to Blob Storage (profile-photos)
+   - Generate shareable link (Azure Functions endpoint)
+   - QR code links to web profile (responsive HTML page)
+
+TESTING CHECKPOINTS:
+--------------------
+✓ User can create new card from template
+✓ Logo uploads and displays correctly
+✓ Color theme changes apply in real-time
+✓ QR code generates successfully
+✓ QR code scans correctly on another device
+✓ vCard export imports properly in phone contacts
+✓ NFC exchange transfers card data
+✓ PDF export downloads and is printable
+✓ Share link opens web profile in browser
+
+USER FLOWS TO TEST:
+-------------------
+1. Create Card → Choose Template → Customize → Save → Share via QR
+2. Edit Existing Card → Update Phone → Save → QR Auto-Updates
+3. Networking Event → Tap Phones → NFC Exchange → Contact Saved
+
+================================================================================
+PHASE 6: INTERNAL WALLET (BOOKKEEPING ONLY)
+================================================================================
+Duration: 1-2 Weeks
+Team Members: 1-2 Flutter Developers
+Dependencies: Phase 3 (Needs contacts to send/receive from)
+Completion Criteria: Users can simulate wallet transactions (no real money)
+
+OBJECTIVE:
+----------
+Implement internal wallet ledger system for bookkeeping demonstration. This
+prepares the UI/UX for V2 payment integration but does NOT move real money.
+
+DELIVERABLES:
+-------------
+6.1 Domain Layer
+   - Wallet entity (balance, currency: BDT)
+   - WalletTransaction entity (type, amount, counterparty, timestamp)
+   - Transaction types: CREDIT, DEBIT, TRANSFER
+   - TransactionStatus: PENDING, COMPLETED, FAILED
+
+6.2 Data Layer
+   - Wallet Isar collection
+   - WalletTransaction Isar collection
+   - Indexes: userId, walletId, timestamp
+   - Mock transaction processing logic
+
+6.3 Presentation Layer - Screens
+   - Wallet Home (balance card + recent transactions)
+   - Add Money Screen (mock demo only)
+   - Send Money Screen (select contact → enter amount → confirm)
+   - Receive Money Screen (show QR code with wallet ID)
+   - Transaction History (filterable list)
+   - Transaction Detail Screen (full transaction view)
+
+6.4 Features
+   - View wallet balance (starts at ৳0)
+   - Add Money (demo: adds to balance instantly)
+   - Send Money to Contact (deducts from sender, logs transaction)
+   - Transaction history with filters (Sent/Received, Date range)
+   - Search transactions by contact name
+   - Contextual "Pay" button on Contact Detail page
+
+6.5 UI Components
+   - Virtual wallet card (credit card design)
+   - Transaction list item (icon, name, amount, date)
+   - Balance display with currency symbol (৳)
+   - Amount input with number keyboard
+   - Confirmation dialog for transactions
+
+TESTING CHECKPOINTS:
+--------------------
+✓ Initial balance is ৳0
+✓ "Add Money" increases balance
+✓ "Send Money" decreases sender balance
+✓ Transaction appears in history
+✓ Filter by date range works
+✓ Search finds transactions by contact
+✓ Negative balance prevented (validation error)
+✓ Transaction detail shows all info
+
+IMPORTANT NOTES:
+----------------
+⚠ This is SIMULATION ONLY - no real payment APIs
+⚠ All transactions stored locally in Isar
+⚠ Balance is just a number in database, not connected to bank
+⚠ V2 will integrate bKash, Nagad, Rocket APIs
+
+================================================================================
+PHASE 7: SETTINGS, ADVANCED FEATURES & POLISH
+================================================================================
+Duration: 2-3 Weeks
+Team Members: 2-3 Flutter Developers (Full Team)
+Dependencies: Phases 2-6 (All core features must be complete)
+Completion Criteria: App is production-ready for beta testing
+
+OBJECTIVE:
+----------
+Complete all remaining features, implement settings module, add polish,
+optimize performance, and prepare for deployment.
+
+DELIVERABLES:
+-------------
+7.1 Settings Module
+   - Settings Home (grouped list: Account, App, Data, Help)
+   - Profile Settings (edit name, avatar, job title)
+   - Account Settings (change email, phone, password)
+   - Security Settings (biometric lock, app PIN)
+   - Backup & Sync (manual backup to Azure, restore from backup)
+   - Category Management (CRUD for custom categories)
+   - Tags Management (color-coded tags)
+   - Notification Settings (push, email toggles)
+   - Language Selection (English / Bangla)
+   - Appearance (Light/Dark mode)
+   - Privacy Settings (opt-in to Global Directory)
+   - About Page (version, terms, privacy policy)
+   - Logout (with confirmation)
+
+7.2 Advanced Contact Features
+   - Import Contacts (from phone contacts)
+   - Export Contacts (CSV, vCard, JSON)
+   - Merge Duplicate Contacts (side-by-side comparison)
+   - Contact History (view interaction log)
+   - Smart Categories (auto-categorize based on domain)
+   - Bulk Actions (select multiple → delete/categorize)
+
+7.3 Search & Filters
+   - Global Search Page (auto-focus input)
+   - Advanced Filters (category, company, location, date added)
+   - Recent Searches (chips below search bar)
+   - Search Results (real-time updating list)
+
+7.4 Team Collaboration (Basic V1)
+   - Create Team (team name + invite members)
+   - Team Dashboard (member list + shared contact count)
+   - Team Directory (shared contacts grid)
+   - Invite Member (email invite link)
+   - Basic Role Management (Admin/Member toggle)
+
+7.5 Onboarding & Permissions
+   - Permission Request Screen (Camera, Contacts, Notifications)
+   - Intro Carousel (3 slides: Scan & Save, Connect & Share, Pay Securely)
+   - First-time setup wizard
+   - Skip option for returning users
+
+7.6 Performance Optimization
+   - Image caching (cached_network_image)
+   - Lazy loading for long lists
+   - Pagination (infinite scroll)
+   - Database query optimization (indexes)
+   - Code splitting and tree-shaking
+   - APK size reduction (split APKs by architecture)
+
+7.7 UI/UX Polish
+   - Loading states (shimmer effects)
+   - Error states (friendly error messages)
+   - Empty states (illustrations + CTAs)
+   - Animations (page transitions, micro-interactions)
+   - Haptic feedback (success, error vibrations)
+   - Toast notifications (success/error feedback)
+
+7.8 Testing & Quality Assurance
+   - Unit tests for critical business logic
+   - Widget tests for UI components
+   - Integration tests for user flows
+   - Performance testing (60 FPS target)
+   - Memory leak detection
+   - Crash-free rate target: 99.9%
+
+7.9 Deployment Preparation
+   - App icons for all platforms (Android adaptive, iOS)
+   - Splash screens (iOS storyboard, Android drawable)
+   - App store screenshots (6 per platform)
+   - Play Store listing (description, keywords)
+   - Privacy policy hosted page
+   - Terms of service hosted page
+   - Support email/contact form
+   - Firebase Crashlytics integration (crash reporting)
+   - Analytics integration (usage tracking)
+
+TESTING CHECKPOINTS:
+--------------------
+✓ All settings persist after app restart
+✓ Biometric lock works on supported devices
+✓ Backup creates file successfully
+✓ Restore from backup recovers all data
+✓ Import phone contacts works without crashing
+✓ Export generates valid CSV/vCard files
+✓ Merge duplicates combines data correctly
+✓ Team invite sends email and member can join
+✓ Light/Dark mode switches instantly
+✓ App launches in < 1.5 seconds (cold start)
+✓ No memory leaks after 30 minutes of use
+✓ All critical user flows tested end-to-end
+
+FINAL ACCEPTANCE CRITERIA:
+---------------------------
+✓ 60 screens fully functional as per design specs
+✓ All features in MASTER_PROJECT_PLAN_V1.txt implemented
+✓ App works 100% offline (except initial login)
+✓ Data syncs to Azure when online
+✓ No crashes in 100 test sessions
+✓ 4.5+ star rating in internal testing
+✓ Load time benchmarks met (see performance specs)
+✓ Accessibility: Passes contrast ratio tests, screen reader compatible
+✓ Security: No credentials in code, all sensitive data encrypted
+✓ Compliance: Privacy policy and terms of service complete
+
+================================================================================
+PARALLEL WORK RECOMMENDATIONS
+================================================================================
+
+AFTER PHASE 3 IS COMPLETE, the following phases can be worked on simultaneously
+by different team members to accelerate development:
+
+TEAM SPLIT A (2 Developers):
+- Phase 4: Business Card Scanning & OCR
+- Phase 5: Digital Card Creator & Sharing
+
+TEAM SPLIT B (1-2 Developers):
+- Phase 6: Internal Wallet
+
+TEAM SPLIT C (1 Developer):
+- Start Phase 7: Settings Module basics
+
+CONVERGENCE POINT:
+After Phases 4, 5, 6 core implementations are complete, entire team works on
+Phase 7 polish, testing, and deployment preparation.
+
+================================================================================
+MILESTONE TRACKING TEMPLATE
+================================================================================
+
+Use this template to track progress at weekly standups:
+
+PHASE X: [Phase Name]
+Status: [ ] Not Started | [ ] In Progress | [ ] Blocked | [ ] Complete
+Progress: [X]% Complete
+Current Sprint: Week [X] of [Y]
+
+COMPLETED THIS WEEK:
+- [✓] Deliverable 1
+- [✓] Deliverable 2
+
+IN PROGRESS:
+- [/] Deliverable 3 (60% complete)
+- [/] Deliverable 4 (30% complete)
+
+BLOCKED:
+- [⚠] Deliverable 5 (Reason: Waiting for Azure API approval)
+
+NEXT WEEK GOALS:
+- [ ] Deliverable 6
+- [ ] Deliverable 7
+
+RISKS/ISSUES:
+- Performance issue with large contact lists → Investigating pagination
+
+TEAM NOTES:
+- Developer A: Working on OCR integration
+- Developer B: Working on card design UI
+- Developer C: Code review and testing
+
+================================================================================
+CRITICAL SUCCESS FACTORS
+================================================================================
+
+1. **Azure Infrastructure Stability**
+   - Monitor costs weekly (target: < $10/month during development)
+   - Set up budget alerts in Azure Portal
+   - Keep backups of Cosmos DB container data
+
+2. **Local-First Architecture**
+   - Never block UI on network calls
+   - All writes go to Isar first, sync in background
+   - Graceful handling of offline mode
+
+3. **Code Quality Gates**
+   - All PRs require code review before merge
+   - Run `flutter analyze` with zero warnings before commits
+   - Fix all lint errors immediately
+   - Write tests for critical business logic (80%+ coverage goal)
+
+4. **Communication & Documentation**
+   - Daily standups (15 minutes)
+   - Weekly sprint planning
+   - Update task.md and phase tracker after every feature completion
+   - Document all API endpoints and data schemas
+
+5. **User Feedback Loop**
+   - Internal testing after each phase
+   - Collect feedback from 5-10 beta users
+   - Iterate based on usability issues
+   - Track all bugs in GitHub Issues
+
+================================================================================
+RISK MITIGATION STRATEGIES
+================================================================================
+
+RISK 1: Azure Student Account Expires After 1 Year
+MITIGATION:
+- Cosmos DB free tier is PERMANENT (doesn't expire)
+- Blob Storage cost is minimal ($2-5/month) - can pay from pocket
+- Plan revenue model (V2 premium features) before Year 1 ends
+
+RISK 2: OCR Accuracy Issues (Phase 4)
+MITIGATION:
+- Test with 50+ real business cards early
+- Allow manual correction of all OCR fields
+- Consider switching to Google ML Kit if Azure CV underperforms
+- Target 70% accuracy, users can fix rest manually
+
+RISK 3: Performance Degradation with Large Data Sets
+MITIGATION:
+- Test with 1000+ contacts early in Phase 3
+- Implement pagination everywhere
+- Use Isar indexes correctly
+- Profile app with Flutter DevTools regularly
+
+RISK 4: Team Member Availability
+MITIGATION:
+- Document all code with clear comments
+- Use feature branches and pull requests
+- Keep comprehensive README for onboarding
+- Record Loom videos for complex features
+
+RISK 5: Scope Creep (Adding Features Not in V1 Plan)
+MITIGATION:
+- Strict adherence to MASTER_PROJECT_PLAN_V1.txt
+- All feature requests go to "V2 Backlog"
+- Weekly scope review in standup
+- Product owner has veto power on scope changes
+
+================================================================================
+POST-V1 LAUNCH (Future Phases)
+================================================================================
+
+These are NOT part of V1 but included for long-term planning visibility:
+
+PHASE 8 (V2): Payment Integration (Months 13-18)
+- bKash API integration
+- Nagad wallet integration
+- Rocket MFS integration
+- KYC verification system (NID scanning)
+- Real money transfers
+- Transaction fees (0.5% revenue)
+
+PHASE 9 (V2): Advanced Intelligence (Months 16-20)
+- AI fraud detection (ML model)
+- Global Directory conflict resolution
+- MFS detection (badge contacts with bKash/Nagad)
+- Smart auto-update notifications
+- Contact validity checks
+
+PHASE 10 (V3): Marketplace & B2B (Months 25-36)
+- Vendor discovery (search for services)
+- Public professional profiles
+- Ratings and reviews
+- Lead generation system
+- API for third-party integrations
+- Web dashboard portal
+
+================================================================================
+APPENDIX: QUICK REFERENCE
+================================================================================
+
+TOTAL PROJECT SCOPE (V1):
+- 60 Screens (UI)
+- 10 Modules (Features)
+- 7 Development Phases
+- Estimated Timeline: 3-4 Months with 3-4 Developers
+- Technology Stack: Flutter + Firebase (Auth, Firestore, Cloudinary) + Isar
+- Architecture: Feature-First Clean Architecture + Riverpod + Isar
+
+KEY CONTACTS:
+- Firebase Support: https://console.firebase.google.com → Help & Support
+- Flutter Documentation: https://docs.flutter.dev
+- Project Master Plan: MASTER_PROJECT_PLAN_V1.txt
+- Technical Tasks List: todo.txt
+- Development Rules: DEVELOPMENT_RULES.md
+
+DEVELOPER QUICKSTART:
+1. Read FIREBASE_SYSTEM_ARCHITECTURE.txt (complete Firebase setup)
+2. Read ENV_details.txt (configure .env file)
+3. Run `flutter pub get`
+4. Run `dart run build_runner build`
+5. Check Phase 1 completion checklist
+6. Start Phase 2 tasks
+
+================================================================================
+END OF PROJECT PHASES DOCUMENT
+================================================================================
+
+This document should be reviewed and updated:
+- Weekly during active development
+- After each phase completion
+- When scope changes are approved
+- Before major sprint planning sessions
+
+For questions or clarifications, refer to MASTER_PROJECT_PLAN_V1.txt or
+contact the project lead.
+
+Last Updated: January 27, 2026
+Document Owner: Project Manager / Tech Lead
+Status: ACTIVE PLANNING DOCUMENT

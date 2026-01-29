@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "343204336259",
+    "project_id": "smartwallet-c97fe",
+    "storage_bucket": "smartwallet-c97fe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:343204336259:android:542ba57af87ddc5b4041b6",
+        "android_client_info": {
+          "package_name": "com.mobilewallet.v1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "343204336259-h879t1i3neaibh9r2se82iihm7i1sel1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDES-OF1FzMAfEXnCMKIM2oNecfCZSE2vs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "343204336259-h879t1i3neaibh9r2se82iihm7i1sel1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "343204336259-nt9hgnba1rsk302a5qhogvlpnlu9vcn4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mobilewallet.v1"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

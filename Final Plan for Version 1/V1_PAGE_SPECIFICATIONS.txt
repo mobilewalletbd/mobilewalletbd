@@ -1,0 +1,563 @@
+================================================================================
+V1 CONTEXT NOTE:
+This document is a REFERENCE for Version 1.0.
+For explicit V1 scope exclusions (e.g., Payment Flows), refer to MASTER_PROJECT_PLAN_V1.txt.
+Any conflicting scope details in this file are overridden by the Master Plan.
+================================================================================
+
+⭐ FINAL APP PAGE LIST — WITH CONTENT + DESIGN DESCRIPTION
+I grouped pages by module.
+Every page contains:
+1) Page Purpose
+2) Content (what must be on the screen)
+3) Design Description (how it visually works)
+4) Design Notes (your sketch + improvements)
+________________
+
+⭐ GENERAL DESIGN ELEMENTS:
+MY DIGITAL CARD (UI ELEMENT):
+• Image Area: Top 60% of card, rounded top corners
+• Content Area: Name, Title, Quick Actions below
+• Feature: "Pay" button (Contextual) overlaid on bottom-right of image area.
+
+MY CARD CREATOR (UI ELEMENT):
+• Preview Area: Live rendering of card.
+• Editor Tools: Bottom sheet with tabs (Templates, Logo, Color, Fields).
+• Interactive: Drag-and-drop logo placement.
+________________
+
+
+✅ 1. AUTHENTICATION MODULE
+________________
+
+
+1. Splash Screen
+Purpose: Quick brand intro.
+Content:
+* App logo
+* Loading animation
+Design:
+ Minimal white background, centered logo, soft fade-in.
+________________
+
+
+2. Welcome / Logo Page
+Content:
+* App logo
+* Buttons: Log In [link to → (3. Log In)], Sign Up [link to → (4. Register)]
+* Social login icons (G, FB)
+Design:
+ Centered logo → Large buttons → Social icons bottom.
+(Exactly like your sketch)
+________________
+
+
+3. Log In
+Content:
+* Username / Email
+* Password
+* “Forgot Password”
+* Log In button
+* “Don’t have an account? Sign Up”
+* G & FB login buttons
+Design:
+ Clean card-style form, rounded fields, elevated button.
+________________
+
+
+4. Register
+Content:
+* Name
+* Contact Number
+* Email
+* DOB
+* Password
+* Register button
+* Social login buttons
+Design:
+ Step-form or scroll form.
+From your sketch — direct form, simple and clean.
+________________
+
+
+5. Forgot Password
+Content:
+* Email field
+* “Send Reset Link” button
+Design:
+ Minimal. Modal or full screen.
+________________
+
+
+6. OTP / Verification
+Content:
+* 4–6 digit OTP input
+* Timer for resend
+Design:
+ Centered input boxes with auto-fill.
+________________
+________________
+
+
+________________
+✅ 2. ONBOARDING
+________________
+
+
+7. Permission Page
+Content:
+* Camera access
+* Contact access
+* Notification access
+Design:
+ Illustration + toggle + “Allow” button.
+________________
+
+
+8. Intro / How It Works
+Content:
+ 3–4 slides:
+* Scan card
+* Save contact
+* Share via QR
+* Use wallet
+Design:
+ Carousel with illustrations.
+________________
+
+
+________________
+✅ 3. HOME / DASHBOARD MODULE
+________________
+
+
+9. Home Dashboard
+Purpose: Central hub — shown in your sketch.
+Content:
+* User profile picture
+* User name + contact
+* Tabs (All / Business / Friends / Family / Uncategorized)
+* Contact cards grid (front/back preview)
+* Floating Action Buttons:
+   * Add Contact
+   * Wallet
+   * Search
+   * Settings
+Design:
+ Your sketch shows a grid of “cards” with front/back buttons.
+Improvement:
+Use clean card previews with subtle drop shadows.
+________________
+
+
+10. Contact List View (Scrollable)
+Content:
+* Search bar
+* List view of contacts with small card preview
+* Category filters
+Design:
+ Apple Contacts style but with card thumbnails.
+________________
+
+
+________________
+11. Favorites
+Content:
+* List of favorited contacts
+* Star icon toggles
+________________
+
+
+12. Recent Activity
+Content:
+* Recently added
+* Recently contacted
+* Recently edited
+________________
+
+
+13. Notifications
+Content:
+* Payment alerts
+* Contact updates
+* Team invites
+________________
+________________
+
+
+✅ 4. CONTACT MANAGEMENT MODULE
+________________
+
+
+14. Add Contact – Choose Method
+Content:
+* “Scan Card”
+* “Manual Entry”
+* “Import from Phone Contacts” (added improvement)
+Design:
+ Icons for each option.
+________________
+
+
+15. Add Contact – Manual Form
+Content (from your sketch):
+* Name
+* Position
+* Company
+* Contact Number
+* Address
+* Email
+* Services/Notes
+* “Add” button
+Design:
+ Simple form.
+Your sketch includes a very good labeled field layout.
+________________
+
+
+16. Auto Scan (Front)
+Content:
+* Camera with card outline frame
+* Capture button
+Design:
+ Card-alignment rectangle (from your sketch).
+________________
+
+
+17. Auto Scan (Back)
+Same as above.
+________________
+
+
+18. Scan Preview + OCR Confirmation
+Content:
+* Auto-filled fields
+* Editable fields
+* Original card image preview (front/back)
+Design:
+ Your sketch shows a labelled preview from OCR.
+Add: highlight fields with low confidence.
+________________
+
+
+19. Edit Contact
+Same form as Add Contact, pre-filled.
+________________
+
+
+20. Contact Details
+Content (from your sketch):
+* Front / Back toggle
+* Name
+* Email
+* Phone
+* Company
+* Address
+* QR Code
+* Share button
+* Delete button
+* Edit button
+Design:
+ Your sketch shows a centered card preview with details below.
+Add improvement:
+Call / Message / Email quick buttons at top.
+________________
+
+
+21. View Card – Front
+Full-screen image viewer.
+22. View Card – Back
+Full-screen image viewer.
+________________
+
+
+23. Share Contact
+Content:
+* QR Code
+* Share Link
+* Export as vCard (.vcf)
+* NFC Share
+* PDF version of card
+Design:
+ Centered QR with social share icons.
+________________
+
+
+24. Duplicate Contact Merge
+Content:
+* Detected duplicate
+* Fields comparison
+* "Merge / Keep Both" buttons
+________________
+
+
+25. Delete Confirmation
+Simple modal.
+________________
+
+
+26. Export Contacts
+Content:
+* Export format: CSV, vCard, PDF
+* Download or share options
+________________
+________________
+
+
+✅ 5. SEARCH MODULE
+________________
+
+
+27. Search Page
+Content:
+* Search bar
+* Suggestions (recent)
+* Popular filters
+________________
+
+
+28. Advanced Filters
+Content:
+* Category
+* Company
+* Location
+* Recently added
+* Recently contacted
+________________
+
+
+29. Search Results Page
+List/grid showing matching contacts.
+________________
+________________
+
+
+✅ 6. WALLET MODULE
+________________
+
+
+30. Wallet Home
+Content (from your sketch):
+* Add card
+* Send
+* Receive
+* Payment button
+* Saved card list (Visa/Master)
+Design:
+ Your sketch shows "Add / Send / Payment / Receive".
+Use rounded wallet tiles.
+________________
+
+
+31. Add Payment Card
+Content:
+* Card Number
+* Expiry
+* Name
+* CVV
+* Billing address
+________________
+
+
+32. Add Business Card to Wallet
+Like “Add Contact” but saved as a wallet card.
+________________
+
+
+33. Card Details Page
+Content:
+* Card front
+* Card back
+* Edit
+* Share
+* Delete
+________________
+
+
+34. Send Money
+Content:
+* Enter amount
+* Select contact
+* Confirm with PIN/FaceID
+________________
+
+
+35. Receive Money
+Content:
+* Your QR Code
+* Payment instructions
+________________
+
+
+36. Scan QR for Payment
+Camera view.
+________________
+
+
+37. Transaction History
+List of transactions.
+________________
+________________
+
+
+✅ 7. SHARE MODULE
+________________
+
+
+38. Your Digital Business Card
+User’s own card.
+________________
+
+
+39. QR Code Page
+Large QR, downloadable.
+________________
+
+
+40. NFC Share Page
+Tap-to-share guide.
+________________
+
+
+41. PDF Export Page
+Preview of PDF contact card.
+________________
+
+41A. NFC "Bump" Exchange (New)
+• Visual: Ripple animation radiating from center.
+• State: "Looking for nearby phone..." -> "Card Found!" -> "Exchange Complete".
+• Action: Haptic feedback on connection.
+________________
+________________
+
+
+✅ 8. TEAM MODULE
+________________
+
+
+42. Team Dashboard
+List of team members, shared cards.
+________________
+
+
+43. Team Directory
+Company-wide contacts.
+________________
+
+
+44. Invite Member
+Email or QR invite.
+________________
+
+
+45. Role Management
+Admin assigns roles.
+________________
+________________
+
+
+✅ 9. SETTINGS MODULE
+________________
+
+
+46. Settings Home
+List of all subsettings.
+________________
+
+
+47. Profile Settings
+Edit personal details.
+________________
+
+47A. My Card Creator (New)
+• Hub: Manage personal digital card.
+• Actions: "Edit Design", "Manage Fields", "Preview".
+________________
+
+
+48. Account Settings
+Email, password, phone.
+________________
+
+
+49. Security
+PIN, biometrics, 2FA.
+________________
+
+
+50. Backup & Sync
+Cloud backup, sync toggle.
+________________
+
+
+51. Category Management
+Create/edit/delete categories.
+________________
+
+
+52. Tags Management
+Organize tags.
+________________
+
+
+53. Notification Settings
+Push toggles.
+________________
+
+
+54. Language Settings
+Language options.
+________________
+
+
+55. Import / Restore Backup
+Choose a file → restore.
+________________
+
+
+56. Privacy Settings
+Data permissions, export your data.
+________________
+
+
+57. Logout Page
+Confirmation.
+________________
+________________
+
+
+✅ 10. HELP & SUPPORT
+________________
+
+
+58. Help Center
+Guides.
+59. FAQ
+Common questions.
+60. Contact Support
+Email form + chat.
+________________
+________________
+
+
+⭐ TOTAL: 60 Pages
+________________
+
+
+⭐ BONUS: Extra Pages You Can Add (Optional Upgrades)
+These are recommended but optional:
+61. Analytics Dashboard
+62. Meeting Scheduler (sync with contacts)
+63. Contact Groups (drag and drop)
+64. Custom QR Style Generator
+65. AI Summary of Contact
+66. Voice Note Inside Contact
+________________
+
+
+If you want, G, I can now create:
+🔥 A full sitemap diagram
+ 🔥 Figma-ready wireframes
+ 🔥 A developer-ready requirements document (PRD)
+ 🔥 A clean PDF version of this whole document
+Just tell me what you want next.

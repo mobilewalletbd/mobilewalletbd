@@ -1,0 +1,487 @@
+
+================================================================================
+ENVIRONMENT VARIABLES CONFIGURATION GUIDE
+Smart Contact Wallet V1 - Firebase Edition
+================================================================================
+Last Updated: January 29, 2026
+Purpose: Complete reference for all required environment variables
+Related: FIREBASE_SYSTEM_ARCHITECTURE.txt (architecture overview)
+Related: FIREBASE_AUTH_SETUP_GUIDE.txt (Firebase authentication setup)
+Related: DEVELOPMENT_RULES.md (development guidelines)
+
+================================================================================
+SECTION 1: COMPLETE .ENV TEMPLATE
+================================================================================
+
+Copy this template to create your `.env` file in the project root:
+
+```env
+# ============================================================================
+# FIREBASE CONFIGURATION (Authentication & Database)
+# ============================================================================
+FIREBASE_PROJECT_ID=your-firebase-project-id
+FIREBASE_API_KEY=AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+FIREBASE_APP_ID=1:123456789:android:xxxxxxxxxxxxx
+FIREBASE_MESSAGING_SENDER_ID=123456789
+FIREBASE_AUTH_DOMAIN=your-firebase-project.firebaseapp.com
+
+# ============================================================================
+# CLOUDINARY CONFIGURATION (Image Storage)
+# ============================================================================
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+CLOUDINARY_UPLOAD_PRESET=your-upload-preset
+
+# ============================================================================
+# APPLICATION CONFIGURATION
+# ============================================================================
+APP_ENV=development
+DEBUG_MODE=true
+APP_VERSION=1.0.0
+
+# ============================================================================
+# EXTERNAL LINKS (Legal & Support)
+# ============================================================================
+PRIVACY_POLICY_URL=https://your-domain.com/privacy
+TERMS_OF_SERVICE_URL=https://your-domain.com/terms
+SUPPORT_WEBSITE=https://your-domain.com/support
+SUPPORT_EMAIL=support@your-domain.com
+```
+
+================================================================================
+SECTION 2: HOW TO OBTAIN EACH ENVIRONMENT VARIABLE
+================================================================================
+
+------------------------------------------------------------------------------
+2.1: FIREBASE AUTHENTICATION & FIRESTORE CONFIGURATION
+------------------------------------------------------------------------------
+
+These variables connect your Flutter app to Firebase services (Authentication
+and Firestore database).
+
+VARIABLE: FIREBASE_PROJECT_ID
+------------------------------
+VALUE EXAMPLE: smartwallet-a1b2c
+WHERE TO FIND:
+1. Go to Firebase Console: https://console.firebase.google.com
+2. Click on your project (e.g., "Smart Contact Wallet")
+3. Click the gear icon (Project settings)
+4. On the "General" tab, look for "Project ID"
+5. Copy the value (format: projectname-xxxxx)
+
+EXPLANATION:
+This is your unique Firebase project identifier. It's automatically generated
+when you create a Firebase project and cannot be changed.
+
+VARIABLE: FIREBASE_API_KEY
+---------------------------
+VALUE EXAMPLE: AIzaSyDXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+WHERE TO FIND:
+1. Same location as Project ID (Firebase Console → Project settings)
+2. Scroll down to "Your apps" section
+3. Click on your Android app (or iOS app)
+4. Look for "Web API Key" or just "API Key"
+5. Copy the value (starts with "AIzaSy")
+
+EXPLANATION:
+This is the public API key for your Firebase project. It's safe to include
+in your client-side code. Firebase uses this to identify your project.
+
+VARIABLE: FIREBASE_APP_ID
+--------------------------
+VALUE EXAMPLE: 1:123456789:android:a1b2c3d4e5f6g7h8
+WHERE TO FIND:
+1. Firebase Console → Project settings → Your apps
+2. Click on your Android app
+3. Look for "App ID"
+4. Copy the value (format: 1:number:platform:hash)
+
+EXPLANATION:
+This uniquely identifies your specific app within the Firebase project.
+Different for Android and iOS apps.
+
+VARIABLE: FIREBASE_MESSAGING_SENDER_ID
+---------------------------------------
+VALUE EXAMPLE: 123456789012
+WHERE TO FIND:
+1. Firebase Console → Project settings → Cloud Messaging tab
+2. Look for "Sender ID"
+3. Copy the numeric value
+
+EXPLANATION:
+Used for Firebase Cloud Messaging (push notifications). Even if you're not
+using push notifications yet, this is required for Firebase initialization.
+
+VARIABLE: FIREBASE_AUTH_DOMAIN
+-------------------------------
+VALUE EXAMPLE: smartwallet-a1b2c.firebaseapp.com
+WHERE TO FIND:
+1. Firebase Console → Project settings
+2. Look for "Auth domain" on the General tab
+3. Copy the value (format: project-id.firebaseapp.com)
+
+EXPLANATION:
+The domain used for Firebase Authentication, particularly for email link
+authentication and OAuth redirects.
+
+ALTERNATIVE METHOD - Get All Values from google-services.json:
+---------------------------------------------------------------
+If you've already downloaded google-services.json (Android) or
+GoogleService-Info.plist (iOS), you can find these values there:
+
+**For Android (google-services.json):**
+```json
+{
+  "project_info": {
+    "project_id": "smartwallet-xxxxx",  ← FIREBASE_PROJECT_ID
+    "project_number": "123456789"       ← FIREBASE_MESSAGING_SENDER_ID
+  },
+  "client": [{
+    "client_info": {
+      "mobilesdk_app_id": "1:123:android:xxx"  ← FIREBASE_APP_ID
+    },
+    "api_key": [{
+      "current_key": "AIzaSyXXXXXXXX"  ← FIREBASE_API_KEY
+    }]
+  }]
+}
+```
+
+**For iOS (GoogleService-Info.plist):**
+```
+CLIENT_ID = xxxxxx.apps.googleusercontent.com
+REVERSED_CLIENT_ID = com.googleusercontent.apps.xxxxxx
+API_KEY = AIzaSyXXXXXXXXXXXXXXXXXXXXXXX  ← FIREBASE_API_KEY
+PROJECT_ID = smartwallet-xxxxx            ← FIREBASE_PROJECT_ID
+BUNDLE_ID = com.yourcompany.smartwallet
+APPLICATION_ID = 1:123456789:android:xxx  ← FIREBASE_APP_ID
+```
+
+------------------------------------------------------------------------------
+2.2: CLOUDINARY CONFIGURATION
+------------------------------------------------------------------------------
+
+Cloudinary is used for storing business card images and profile photos.
+It provides automatic optimization, CDN delivery, and image transformations.
+
+VARIABLE: CLOUDINARY_CLOUD_NAME
+--------------------------------
+VALUE EXAMPLE: your-cloud-name
+WHERE TO FIND:
+1. Go to Cloudinary Dashboard: https://cloudinary.com/console
+2. Look at the top of the dashboard for "Cloud Name"
+3. Copy the value (e.g., "smartwallet" or "dvse3k4h5")
+
+EXPLANATION:
+Your Cloudinary cloud name identifies your account on Cloudinary's CDN.
+It's used in all API calls and image URLs.
+
+VARIABLE: CLOUDINARY_API_KEY
+-----------------------------
+VALUE EXAMPLE: 123456789012345
+WHERE TO FIND:
+1. Cloudinary Console → Settings → API Keys
+2. Look for "API Key"
+3. Copy the numeric/alphanumeric value
+4. Note: You'll need the "API Secret" too (see below)
+
+EXPLANATION:
+The API key is used for server-side operations with Cloudinary.
+Keep this secure and never expose it in client-side code.
+
+VARIABLE: CLOUDINARY_API_SECRET
+--------------------------------
+VALUE EXAMPLE: AAb1c2d3e4F5g6h7i8j9k0
+WHERE TO FIND:
+1. Cloudinary Console → Settings → API Keys
+2. If not visible, click "Generate API Secret" or check with account owner
+3. Copy the secret value (keep this confidential!)
+
+EXPLANATION:
+The API secret is used for signed uploads and server-side operations.
+NEVER expose this in client-side code. Store securely.
+
+VARIABLE: CLOUDINARY_UPLOAD_PRESET
+-----------------------------------
+VALUE EXAMPLE: smartwallet_unsigned
+WHERE TO FIND:
+1. Cloudinary Console → Settings → Upload
+2. Scroll to "Upload presets" section
+3. Click "Add upload preset"
+4. Set name and signing mode (use "Unsigned" for client uploads)
+5. Save and copy the preset name
+
+EXPLANATION:
+Upload presets define how images are processed when uploaded. Unsigned
+presets allow client-side uploads without exposing API secrets.
+
+------------------------------------------------------------------------------
+2.3: APPLICATION CONFIGURATION
+------------------------------------------------------------------------------
+
+These variables control app behavior and versioning.
+
+VARIABLE: APP_ENV
+------------------
+VALUE OPTIONS: development | staging | production
+DEFAULT: development
+
+EXPLANATION:
+Controls which backend environment to connect to. Never use production
+credentials in development mode.
+
+VARIABLE: DEBUG_MODE
+---------------------
+VALUE OPTIONS: true | false
+DEFAULT: true
+
+EXPLANATION:
+Enables debug logging and development features. Set to false for release builds.
+
+VARIABLE: APP_VERSION
+----------------------
+VALUE EXAMPLE: 1.0.0
+
+EXPLANATION:
+Semantic version of your app. Used for analytics and update prompts.
+
+------------------------------------------------------------------------------
+2.4: EXTERNAL LINKS CONFIGURATION
+------------------------------------------------------------------------------
+
+These URLs are displayed in-app for legal and support purposes.
+
+VARIABLE: PRIVACY_POLICY_URL
+-----------------------------
+VALUE EXAMPLE: https://smartwallet.com/privacy
+
+EXPLANATION:
+Link to your app's privacy policy. Required by app stores (Play Store, App Store).
+
+VARIABLE: TERMS_OF_SERVICE_URL
+-------------------------------
+VALUE EXAMPLE: https://smartwallet.com/terms
+
+EXPLANATION:
+Link to your app's terms of service. Required by app stores.
+
+VARIABLE: SUPPORT_WEBSITE
+--------------------------
+VALUE EXAMPLE: https://smartwallet.com/support
+
+EXPLANATION:
+Website where users can find help and documentation.
+
+VARIABLE: SUPPORT_EMAIL
+------------------------
+VALUE EXAMPLE: support@smartwallet.com
+
+EXPLANATION:
+Email address for user support. This email must be monitored.
+
+================================================================================
+SECTION 3: STEP-BY-STEP SETUP INSTRUCTIONS
+================================================================================
+
+PREREQUISITE: Complete Firebase and Cloudinary Setup First
+------------------------------------------------------------
+Before filling in environment variables, you must:
+1. Create Firebase project (for authentication and database)
+2. Set up Cloudinary account (for image storage)
+3. Configure both platforms with your app
+
+FOLLOW THESE GUIDES:
+- FIREBASE_AUTH_SETUP_GUIDE.txt (Firebase authentication setup)
+- FIREBASE_SYSTEM_ARCHITECTURE.txt (architecture overview)
+
+Firebase setup includes:
+- Creating Firebase project
+- Enabling authentication methods (Email, Phone, Google)
+- Downloading google-services.json (Android) and GoogleService-Info.plist (iOS)
+- Setting up Firestore database with security rules
+- Getting Firebase configuration values
+
+Cloudinary setup includes:
+- Creating Cloudinary account
+- Configuring upload preset for client-side uploads
+- Getting API credentials
+
+QUICK SETUP CHECKLIST:
+----------------------
+FIREBASE (Authentication & Database):
+[ ] 1. Firebase project created
+[ ] 2. Email/Password authentication enabled
+[ ] 3. Phone authentication enabled
+[ ] 4. Google Sign-In enabled (optional)
+[ ] 5. Firestore database enabled
+[ ] 6. Firestore Security Rules configured
+[ ] 7. google-services.json downloaded (Android)
+[ ] 8. GoogleService-Info.plist downloaded (iOS)
+[ ] 9. Firebase configuration values copied
+
+CLOUDINARY (Image Storage):
+[ ] 10. Cloudinary account created
+[ ] 11. Unsigned upload preset configured
+[ ] 12. API credentials obtained
+
+CREATING YOUR .ENV FILE:
+------------------------
+1. In your Flutter project root directory (same level as pubspec.yaml)
+2. Copy the template from Section 1 above
+3. Create a new file named `.env` (note the dot at the beginning)
+4. Paste the template
+5. Replace all placeholder values with your actual values
+6. Save the file
+
+IMPORTANT FILE LOCATION:
+```
+mobile_wallet/
+├── .env              ← Your .env file goes HERE
+├── .gitignore        ← Make sure .env is listed here!
+├── pubspec.yaml
+├── lib/
+├── assets/
+└── ...
+```
+
+VERIFY .ENV IS IGNORED BY GIT:
+-------------------------------
+Open .gitignore and ensure these lines are present:
+```
+# Environment variables
+.env
+.env.local
+.env.*.local
+```
+
+This prevents your secrets from being committed to version control.
+
+LOADING ENVIRONMENT VARIABLES IN FLUTTER:
+------------------------------------------
+Use the flutter_dotenv package to load variables:
+
+```dart
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+// In main()
+await dotenv.load(fileName: '.env');
+
+// Access variables
+final projectId = dotenv.env['FIREBASE_PROJECT_ID'];
+final apiKey = dotenv.env['FIREBASE_API_KEY'];
+```
+
+================================================================================
+SECTION 4: VERIFICATION & TROUBLESHOOTING
+================================================================================
+
+VERIFY YOUR CONFIGURATION:
+---------------------------
+Run these checks to ensure your environment is set up correctly:
+
+1. Check Firebase Connection:
+   ```dart
+   import 'package:firebase_core/firebase_core.dart';
+   
+   Future<void> initFirebase() async {
+     try {
+       await Firebase.initializeApp();
+       print('Firebase connected successfully');
+     } catch (e) {
+       print('Firebase connection failed: $e');
+     }
+   }
+   ```
+
+2. Check Firestore Connection:
+   ```dart
+   import 'package:cloud_firestore/cloud_firestore.dart';
+   
+   Future<void> testFirestore() async {
+     try {
+       await FirebaseFirestore.instance.collection('test').doc('test').set({
+         'timestamp': DateTime.now(),
+       });
+       print('Firestore connected successfully');
+     } catch (e) {
+       print('Firestore connection failed: $e');
+     }
+   }
+   ```
+
+3. Check Cloudinary Upload:
+   Use Cloudinary's upload widget or test with a sample image.
+
+COMMON ERRORS AND FIXES:
+-------------------------
+
+ERROR: "No Firebase App has been created"
+FIX: Call `await Firebase.initializeApp()` before using any Firebase service.
+
+ERROR: "API key not valid"
+FIX: Verify FIREBASE_API_KEY matches the one in google-services.json.
+
+ERROR: "Permission denied" (Firestore)
+FIX: Check Firestore Security Rules allow the operation.
+
+ERROR: "Cloudinary upload failed"
+FIX: Verify CLOUDINARY_UPLOAD_PRESET exists and is unsigned.
+
+ERROR: "Unsupported operation" (Platform)
+FIX: Ensure google-services.json is in android/app/ directory.
+
+================================================================================
+SECTION 5: SECURITY BEST PRACTICES
+================================================================================
+
+1. NEVER commit .env files to version control
+2. Use different Firebase projects for dev/staging/prod
+3. Rotate API keys if they are ever exposed
+4. Use Firestore Security Rules for all data access
+5. Never expose Cloudinary API Secret in client code
+6. Use unsigned upload presets for client-side uploads only
+7. Enable Firebase App Check for production security
+
+================================================================================
+SECTION 6: COST SUMMARY
+================================================================================
+
+FIREBASE COSTS (Free Tier):
+- Authentication: FREE (unlimited users)
+- Phone OTP: FREE (first 10,000/month)
+- Firestore: 50k reads/day, 20k writes/day FREE
+- After free tier: Pay-as-you-go
+
+CLOUDINARY COSTS (Free Tier):
+- 25 monthly credits (~25k transformations or 2.5GB storage)
+- After free tier: Pay-as-you-go
+
+================================================================================
+SECTION 7: QUICK REFERENCE
+================================================================================
+
+ESSENTIAL LINKS:
+- Firebase Console: https://console.firebase.google.com
+- Firebase Documentation: https://firebase.google.com/docs
+- Cloudinary Console: https://cloudinary.com/console
+- Cloudinary Documentation: https://cloudinary.com/docs
+- FlutterFire Documentation: https://firebase.flutter.dev
+- Flutter DotEnv: https://pub.dev/packages/flutter_dotenv
+
+RELATED PROJECT FILES:
+- FIREBASE_AUTH_SETUP_GUIDE.txt - Complete Firebase authentication setup
+- FIREBASE_SYSTEM_ARCHITECTURE.txt - Technical architecture overview
+- DEVELOPMENT_RULES.md - Development guidelines and best practices
+- required_info.json - Non-sensitive app configuration
+
+NEED HELP?
+----------
+1. Check Firebase documentation for service-specific issues
+2. Review Firebase Console for project configuration
+3. Check Firebase Status page for outages: https://status.firebase.google.com
+4. Search Stack Overflow with tags: [flutter], [firebase], [firestore]
+
+================================================================================
+END OF FILE
+================================================================================

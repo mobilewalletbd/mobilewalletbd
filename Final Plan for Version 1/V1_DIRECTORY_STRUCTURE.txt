@@ -1,0 +1,131 @@
+================================================================================
+V1 CONTEXT NOTE:
+This document is a REFERENCE for Version 1.0.
+For explicit V1 scope exclusions (e.g., Payment Flows), refer to MASTER_PROJECT_PLAN_V1.txt.
+Any conflicting scope details in this file are overridden by the Master Plan.
+================================================================================
+
+Got it ✅ — you want a Figma-ready sitemap for your full app.
+Here’s what I’ll do for you, G 👇
+________________
+
+
+🧭 Figma-Ready Sitemap (Text Structure for Import or Manual Setup)
+You can copy this directly into FigJam or Figma — it’s formatted to create an organized flow automatically using “Smart Animate > Auto Layout” or “Mind Map” plugin.
+________________
+
+
+📱 APP NAME: Smart Contact Wallet
+
+
+├── AUTHENTICATION
+│   ├── Splash Screen
+│   ├── Welcome Screen
+│   ├── Log In
+│   ├── Register
+│   ├── Forgot Password
+│   └── OTP Verification
+
+
+├── ONBOARDING
+│   ├── Permission Request
+│   └── Intro / How It Works (Carousel)
+
+
+├── HOME DASHBOARD
+│   ├── All Contacts
+│   ├── Business Contacts
+│   ├── Friends
+│   ├── Family
+│   ├── Uncategorized
+│   ├── Favorites
+│   ├── Recent Activity
+│   └── Notifications
+
+
+├── CONTACT MANAGEMENT
+│   ├── Add Contact
+│   │   ├── Choose Method (Scan / Manual / Import)
+│   │   ├── Manual Form
+│   │   ├── Scan Front
+│   │   ├── Scan Back
+│   │   └── OCR Confirmation
+│   ├── Edit Contact
+│   ├── Contact Details (Front / Back View)
+│   ├── Share Contact (QR / Link / NFC / vCard / PDF)
+│   ├── Merge Duplicates
+│   ├── Delete Confirmation
+│   └── Export Contacts
+
+
+├── SEARCH & FILTER
+│   ├── Search Bar
+│   ├── Advanced Filters
+│   └── Search Results
+
+
+├── WALLET MODULE
+│   ├── Wallet Home
+│   ├── Add Payment Card
+│   ├── Add Business Card
+│   ├── Send Money
+│   ├── Receive Money (QR)
+│   ├── Scan Payment QR
+│   ├── Transaction History
+│   └── Card Details
+
+
+├── SHARE MODULE
+│   ├── Digital Business Card
+│   ├── QR Share
+│   ├── NFC Share
+│   └── PDF Export
+
+
+├── TEAM / ORGANIZATION
+│   ├── Team Dashboard
+│   ├── Team Directory
+│   ├── Invite Member
+│   └── Role Management
+
+
+├── SETTINGS
+│   ├── Profile Settings
+│   ├── Account Settings
+│   ├── Security Settings
+│   │   ├── App PIN
+│   │   ├── Face ID / Fingerprint
+│   │   └── 2FA
+│   ├── Backup & Sync
+│   ├── Category Management
+│   ├── Tag Management
+│   ├── Notification Settings
+│   ├── Language Settings
+│   ├── Import / Restore Backup
+│   ├── Privacy Settings
+│   └── Logout
+
+
+└── HELP & SUPPORT
+    ├── Help Center
+    ├── FAQ
+    └── Contact Support
+
+
+________________
+
+
+🎨 How to use this in Figma:
+1. Open FigJam or Figma file.
+2. Create a Frame → Name it Sitemap.
+3. Paste this text inside.
+4. Use Plugins like:
+   * 🧩 “Autoflow” → for connecting frames automatically.
+   * 🧩 “Mind Map” or “Mermaid for Figma” → for turning hierarchy into a visual diagram.
+5. Apply consistent Auto Layout, node colors, and icons.
+6. Done — you’ll have a fully visual sitemap.
+________________
+
+
+Would you like me to generate the visual version of this sitemap (the diagram version with connecting lines and boxes) so you can import directly into Figma as an SVG or PDF?
+If yes, I’ll generate that next.

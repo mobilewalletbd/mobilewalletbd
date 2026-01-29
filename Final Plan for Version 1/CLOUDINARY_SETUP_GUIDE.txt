@@ -1,0 +1,56 @@
+================================================================================
+CLOUDINARY MEDIA STORAGE SETUP GUIDE
+================================================================================
+**Purpose**: Configure Cloudinary for image and video management.
+
+--------------------------------------------------------------------------------
+1. CREATE CLOUDINARY ACCOUNT
+--------------------------------------------------------------------------------
+1. Go to [Cloudinary](https://cloudinary.com/) and sign up for a FREE account.
+2. Once logged in, go to your **Dashboard**.
+3. Locate your **Product Environment Credentials**:
+   - **Cloud Name**
+   - **API Key**
+   - **API Secret**
+
+--------------------------------------------------------------------------------
+2. GET API ENVIRONMENT VARIABLE
+--------------------------------------------------------------------------------
+1. In the Dashboard, you will see an "API Environment variable" (e.g., `CLOUDINARY_URL=cloudinary://...`).
+2. Copy this URL. You will need it for the `.env` file.
+
+--------------------------------------------------------------------------------
+3. CONFIGURE UPLOAD PRESETS (For Flutter)
+--------------------------------------------------------------------------------
+1. Go to **Settings** (gear icon) -> **Upload**.
+2. Scroll down to **Upload presets**.
+3. Click **Add upload preset**.
+4. Set **Upload preset name** to `smart_wallet_preset`.
+5. Set **Signing Mode** to `Unsigned` (simplifies upload from mobile).
+6. Click **Save**.
+
+--------------------------------------------------------------------------------
+4. UPDATE .env FILE
+--------------------------------------------------------------------------------
+Add these to your `g:\wallet\mobilewalletbd\mobile_wallet\.env`:
+
+```env
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+CLOUDINARY_UPLOAD_PRESET=smart_wallet_preset
+```
+
+--------------------------------------------------------------------------------
+5. UPDATE FLUTTER PROJECT
+--------------------------------------------------------------------------------
+Run this command:
+```bash
+flutter pub add cloudinary_url_gen cloudinary_flutter
+```
+
+--------------------------------------------------------------------------------
+6. VERIFICATION
+--------------------------------------------------------------------------------
+We will implement a `CloudinaryService` to verify the connection.
+================================================================================

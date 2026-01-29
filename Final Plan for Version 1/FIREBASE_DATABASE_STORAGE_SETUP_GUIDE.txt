@@ -1,0 +1,41 @@
+================================================================================
+FIREBASE DATABASE & STORAGE SETUP GUIDE
+================================================================================
+**Purpose**: Configure Firestore and Storage for the Smart Contact Wallet.
+
+--------------------------------------------------------------------------------
+1. ENABLE CLOUD FIRESTORE
+--------------------------------------------------------------------------------
+1. Go to [Firebase Console](https://console.firebase.google.com/).
+2. Select your project: **smartwallet-c97fe**.
+3. In the left menu, click **Firestore Database**.
+4. Click **Create database**.
+5. **Location**: Choose a region close to you (e.g., `asia-southeast1` or `us-central`).
+6. **Rules**: Start in **"Test mode"** (allows development for 30 days). We will update to "Production mode" later.
+7. Click **Enable**.
+
+--------------------------------------------------------------------------------
+2. ENABLE FIREBASE STORAGE
+--------------------------------------------------------------------------------
+1. In the left menu, click **Storage**.
+2. Click **Get started**.
+3. **Rules**: Start in **"Test mode"**.
+4. **Location**: It will likely use the same region as Firestore.
+5. Click **Done**.
+
+--------------------------------------------------------------------------------
+3. UPDATE FLUTTER PROJECT
+--------------------------------------------------------------------------------
+Run these commands in your terminal:
+
+```bash
+flutter pub add cloud_firestore
+flutter pub add firebase_storage
+```
+
+--------------------------------------------------------------------------------
+4. VERIFICATION
+--------------------------------------------------------------------------------
+1. Run the app.
+2. If the console prints "✅ Firebase initialized successfully", you are ready!
+================================================================================

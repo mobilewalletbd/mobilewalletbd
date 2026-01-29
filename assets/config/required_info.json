@@ -1,0 +1,67 @@
+{
+    "_comment": "NON-SENSITIVE PROJECT CONFIGURATION - Safe to commit to version control",
+    "_security_note": "Sensitive credentials (Supabase, Google Auth, URLs) are in .env file",
+    "APP_METADATA": {
+        "APP_NAME": "Mobile Wallet",
+        "BUNDLE_ID": "com.example.mobilewallet",
+        "PACKAGE_NAME": "com.example.mobilewallet",
+        "VERSION": "1.0.0",
+        "BUILD_NUMBER": "1",
+        "DEFAULT_LOCALE": "en_US",
+        "SUPPORTED_LOCALES": [
+            "en_US",
+            "bn_BD"
+        ]
+    },
+    "SUPABASE_CONFIG": {
+        "PROJECT_URL": "https://anodbczjgksdxbdyshqa.supabase.co",
+        "ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFub2RiY3pqZ2tzZHhiZHlzaHFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwMDEzNjUsImV4cCI6MjA4MzU3NzM2NX0.lJ7dIkOQIHqSPao64CpBML04l7JxfOF1XsIq-nurEYM",
+        "STORAGE_BUCKET_IMAGES": "card-images",
+        "STORAGE_BUCKET_BACKUPS": "user-backups"
+    },
+    "DESIGN_SYSTEM": {
+        "FONT_FAMILY": "Inter",
+        "COLORS": {
+            "PRIMARY": "#0BBF7D",
+            "SECONDARY": "#1A1F36",
+            "ACCENT": "#FFC107",
+            "BACKGROUND": "#F8F9FB",
+            "ERROR": "#FF4D4F"
+        }
+    },
+    "GOOGLE_AUTH_CONFIG": {
+        "_comment": "Required for Google Sign In & Drive Backup (actual values come from .env in production)",
+        "WEB_CLIENT_ID": "26563254188-j0597lgj8j58tm7717vonmkt434ft0dh.apps.googleusercontent.com",
+        "IOS_CLIENT_ID": "26563254188-m3a14kpg24oncbj41tf2ugak5en9s358.apps.googleusercontent.com",
+        "ANDROID_CLIENT_ID": "26563254188-6575ciiajd84e67ro25fat1jjtk6j1ti.apps.googleusercontent.com"
+    },
+    "BACKUP_CONFIG": {
+        "DRIVE_FOLDER_NAME": "MobileWallet_Backups",
+        "BACKUP_FILENAME_PREFIX": "scw_backup_"
+    },
+    "ASSETS_CONFIG": {
+        "APP_ICON_SOURCE_PATH": "assets/icons/logo.ico",
+        "SPLASH_IMAGE_PATH": "assets/images/logo.png",
+        "FONT_WEIGHTS_TO_INCLUDE": [
+            400,
+            500,
+            600,
+            700
+        ]
+    },
+    "FEATURE_FLAGS_V1": {
+        "ENABLE_MOCK_WALLET": true,
+        "ENABLE_TEAM_COLLABORATION": true,
+        "ENABLE_GOOGLE_AUTH": true,
+        "ENABLE_FACEBOOK_AUTH": false,
+        "ENABLE_DATA_EXPORT": true,
+        "ENABLE_AI_FRAUD_ALERTS": true,
+        "ENABLE_GLOBAL_SYNC": true,
+        "ENABLE_MFS_DETECTION": true
+    },
+    "SECURITY_LIMITS": {
+        "MAX_LOGIN_ATTEMPTS": 5,
+        "OTP_EXPIRY_SECONDS": 300,
+        "SESSION_TIMEOUT_MINUTES": 60
+    }
+}

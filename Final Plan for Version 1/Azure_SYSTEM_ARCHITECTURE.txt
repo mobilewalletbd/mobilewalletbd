@@ -1,0 +1,102 @@
+================================================================================
+NEW SYSTEM ARCHITECTURE: MICROSOFT AZURE (STUDENT PLAN)
+================================================================================
+DATE: 2026-01-26
+STATUS: DRAFT PROPOSAL
+CONSTRAINT: USE AZURE STUDENT ACCOUNT (1 YEAR + $100 CREDIT)
+GOAL: REPLACE SUPABASE COMPLETELY
+
+1. EXECUTIVE SUMMARY
+--------------------
+We are pivoting from Supabase to **Microsoft Azure**. Since you have a Student Account, you have access to powerful enterprise-grade services for free (via 12-months free tier + $100 credits). This architecture removes the Supabase dependency and leverages Azure's robust ecosystem.
+
+**Verdict on Complexity**: Azure is *more complex* to set up than Supabase, but it is industry-standard. We will create a "Serverless" architecture to minimize maintenance.
+
+2. TECHNOLOGY STACK (AZURE EDITION)
+-----------------------------------
+
+### A. Authentication: Azure Active Directory B2C (Azure AD B2C)
+*   **Role**: Handles Login, Registration (Email/Password), and Social Logins (Google).
+*   **Cost**: Free for the first 50,000 Monthly Active Users (MAU).
+*   **Why**: Enterprise-grade security, handles reusable components like "Forgot Password" flows automatically.
+*   **Implementation**:
+    *   Create an Azure AD B2C Tenant.
+    *   Define "User Flows" for Sign-up/Sign-in.
+    *   Flutter uses `aad_oauth` or `flutter_appauth` packages to communicate.
+
+### B. Database: Azure Cosmos DB (NoSQL)
+*   **Role**: Stores User Profiles, Contacts, Teams, and Metadata.
+*   **Cost**: **Free Tier Available** (1000 Request Units/s and 25GB Storage lifetime free).
+*   **Why**:
+    *   It is a NoSQL document DB (JSON-like), similar to what we planned with Isar locally.
+    *   Fast, scales globally, and the Free Tier is PERMANENT (doesn't expire after 12 months if configured correctly).
+*   **Structure**:
+    *   Container: `Users` (partition key: `/userId`)
+    *   Container: `Contacts` (partition key: `/ownerId`)
+    *   Container: `Transactions` (partition key: `/walletId`)
+
+### C. File Storage: Azure Blob Storage
+*   **Role**: Stores Card Images, QR Codes.
+*   **Cost**: Uses your $100 Student Credit (Cost is extremely low, ~$0.02 per GB).
+*   **Structure**:
+    *   Container: `user-images-{userid}` (Private)
+    *   Container: `public-assets` (Public)
+
+### D. Backend Logic: Azure Functions (Serverless)
+*   **Role**: Runs the "Brain" of the app (API).
+*   **Cost**: Free Tier (1 million requests/month).
+*   **Why**: You don't manage servers. You just write code (Node.js, Python, or C#) that runs when needed.
+*   **Use Cases**:
+    *   `POST /api/sync`: Syncs local Isar data to Cosmos DB.
+    *   `POST /api/analyze-fraud`: Runs logic to detect spam numbers.
+    *   `POST /api/invite-team`: Sends email invites.
+
+3. ARCHITECTURE DIAGRAM (DATA FLOW)
+-----------------------------------
+
+[FLUTTER APP] 
+      |
+      +--- (1) Auth ---> [AZURE AD B2C] (Returns JWT Token)
+      |
+      +--- (2) Data Sync ---> [AZURE FUNCTIONS API] ---> [COSMOS DB]
+      |
+      +--- (3) Image Upload ---> [AZURE BLOB STORATE] (Direct or via SAS Token)
+
+4. MIGRATION PLAN (FROM SUPABASE PLAN)
+--------------------------------------
+
+### Phase 1: Setup Azure Resources (Student Portal)
+1.  **Create Resource Group**: `rg-smartwallet-dev`.
+2.  **Create Cosmos DB**: Select "Azure Cosmos DB for NoSQL". **IMPORTANT Check "Apply Free Tier Discount"**.
+3.  **Create Storage Account**: `stsmartwalletv1`.
+4.  **Create Azure AD B2C Tenant**.
+
+### Phase 2: Updating the Flutter App
+1.  **Remove Dependencies**:
+    *   Remove `supabase_flutter`.
+2.  **Add Dependencies**:
+    *   `flutter_appauth` (for Azure AD login).
+    *   `http` (to call your Azure Functions).
+    *   *(Optional)* `azure_cosmosdb` (Direct DB access) OR stick to HTTP API for security.
+
+### Phase 3: Revised User Flow
+1.  **Login**: User clicks "Login" -> Redirects to Microsoft-hosted login page (Customizable) -> Returns to App.
+2.  **Card Scan**: App saves to `Isar` (Local) -> Background Service uploads image to Blob Storage -> Sends Metadata to Cosmos DB.
+3.  **Backup**: Since we are using Cloud DB (Cosmos), "Backup" is automatic. You don't strictly need the Google Drive backup anymore unless you want "User Ownership" privacy.
+
+5. PROS & CONS OF AZURE VS SUPABASE
+-----------------------------------
+
+| Feature | Supabase (Old Plan) | Azure Student (New Plan) |
+| :--- | :--- | :--- |
+| **Complexity** | Low (All-in-one SDK) | High (Separate services for Auth, DB, API) |
+| **Cost** | Free Tier (Limited) | **Free + $100 Credit** (Very Generous) |
+| **Database** | SQL (Postgres) | NoSQL (Cosmos DB) - *Better match for Flutter/JSON* |
+| **Control** | Good | **Enterprise Level** (Complete control) |
+| **Learning Curve** | Easy | Steep (Great for your CV/Career) |
+
+6. RECOMMENDATION
+-----------------
+Using your student account is a **smart financial move**. The $100 credit + Free Services will easily cover development and beta testing for 1 year. The learning curve is higher, but knowing Azure is a valuable professional skill.
+
+**Action**: Approval to proceed with Azure setup tasks?

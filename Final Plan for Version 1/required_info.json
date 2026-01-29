@@ -1,0 +1,67 @@
+{
+    "_comment": "REQUIRED PROJECT CONFIGURATION - UPDATE BEFORE DEV START",
+    "APP_METADATA": {
+        "APP_NAME": "Mobile Wallet",
+        "BUNDLE_ID": "com.mobilewallet.v1",
+        "PACKAGE_NAME": "com.mobilewallet.v1",
+        "VERSION": "1.0.0",
+        "BUILD_NUMBER": "1",
+        "DEFAULT_LOCALE": "en_US",
+        "SUPPORTED_LOCALES": [
+            "en_US",
+            "bn_BD"
+        ]
+    },
+    "AZURE_CONFIG": {
+        "TENANT_NAME": "PLACEHOLDER_AZURE_AD_B2C_TENANT_NAME",
+        "CLIENT_ID": "PLACEHOLDER_AZURE_AD_B2C_CLIENT_ID",
+        "REDIRECT_URI": "com.mobilewallet.v1://oauthredirect",
+        "COSMOS_DB_ENDPOINT": "PLACEHOLDER_COSMOS_DB_ENDPOINT",
+        "STORAGE_ACCOUNT_NAME": "PLACEHOLDER_STORAGE_ACCOUNT_NAME"
+    },
+    "DESIGN_SYSTEM": {
+        "FONT_FAMILY": "Inter",
+        "COLORS": {
+            "PRIMARY": "#0BBF7D",
+            "SECONDARY": "#1A1F36",
+            "ACCENT": "#FFC107",
+            "BACKGROUND": "#F8F9FB",
+            "ERROR": "#FF4D4F"
+        }
+    },
+    "GOOGLE_AUTH_CONFIG": {
+        "_comment": "Required for Google Sign In & Drive Backup",
+        "WEB_CLIENT_ID": "26563254188-j0597lgj8j58tm7717vonmkt434ft0dh.apps.googleusercontent.com",
+        "IOS_CLIENT_ID": "26563254188-m3a14kpg24oncbj41tf2ugak5en9s358.apps.googleusercontent.com",
+        "ANDROID_CLIENT_ID": "26563254188-6575ciiajd84e67ro25fat1jjtk6j1ti.apps.googleusercontent.com"
+    },
+    "BACKUP_CONFIG": {
+        "DRIVE_FOLDER_NAME": "SmartContactWallet_Backups",
+        "BACKUP_FILENAME_PREFIX": "scw_backup_"
+    },
+    "ASSETS_CONFIG": {
+        "APP_ICON_SOURCE_PATH": "assets/icon/app_icon.png",
+        "SPLASH_IMAGE_PATH": "assets/images/splash_logo.png",
+        "FONT_WEIGHTS_TO_INCLUDE": [
+            400,
+            500,
+            600,
+            700
+        ]
+    },
+    "FEATURE_FLAGS_V1": {
+        "ENABLE_MOCK_WALLET": true,
+        "ENABLE_TEAM_COLLABORATION": true,
+        "ENABLE_GOOGLE_AUTH": true,
+        "ENABLE_FACEBOOK_AUTH": false,
+        "ENABLE_DATA_EXPORT": true,
+        "ENABLE_AI_FRAUD_ALERTS": true,
+        "ENABLE_GLOBAL_SYNC": true,
+        "ENABLE_MFS_DETECTION": true
+    },
+    "SECURITY_LIMITS": {
+        "MAX_LOGIN_ATTEMPTS": 5,
+        "OTP_EXPIRY_SECONDS": 300,
+        "SESSION_TIMEOUT_MINUTES": 60
+    }
+}
