@@ -43,6 +43,21 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
+// Suppress Kotlin deprecation warnings in external Flutter plugin packages
+// (e.g., nfc_manager 3.5.0 uses String.toLowerCase which is deprecated in Kotlin 2.1)
+subprojects {
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        if (project.name != "app") {
+            kotlinOptions {
+                freeCompilerArgs += listOf("-Xsuppress-version-warnings")
+                @Suppress("DEPRECATION")
+                allWarningsAsErrors = false
+                languageVersion = "1.9"
+            }
+        }
+    }
+}
+
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }

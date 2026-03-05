@@ -29,6 +29,12 @@ mixin _$AuthUser {
   /// User's phone number (with country code)
   String? get phoneNumber => throw _privateConstructorUsedError;
 
+  /// User's first name
+  String? get firstName => throw _privateConstructorUsedError;
+
+  /// User's last name
+  String? get lastName => throw _privateConstructorUsedError;
+
   /// User's display name
   String? get displayName => throw _privateConstructorUsedError;
 
@@ -50,6 +56,9 @@ mixin _$AuthUser {
   /// Custom claims from Firebase token (roles, permissions)
   List<String>? get customClaims => throw _privateConstructorUsedError;
 
+  /// Raw profile data from auth provider (e.g., Google AdditionalUserInfo)
+  Map<String, dynamic>? get rawExtraData => throw _privateConstructorUsedError;
+
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $AuthUserCopyWith<AuthUser> get copyWith =>
@@ -65,13 +74,16 @@ abstract class $AuthUserCopyWith<$Res> {
       {String id,
       String? email,
       String? phoneNumber,
+      String? firstName,
+      String? lastName,
       String? displayName,
       String? photoUrl,
       bool emailVerified,
       DateTime? lastSignIn,
       String? provider,
       bool isAnonymous,
-      List<String>? customClaims});
+      List<String>? customClaims,
+      Map<String, dynamic>? rawExtraData});
 }
 
 /// @nodoc
@@ -90,6 +102,8 @@ class _$AuthUserCopyWithImpl<$Res, $Val extends AuthUser>
     Object? id = null,
     Object? email = freezed,
     Object? phoneNumber = freezed,
+    Object? firstName = freezed,
+    Object? lastName = freezed,
     Object? displayName = freezed,
     Object? photoUrl = freezed,
     Object? emailVerified = null,
@@ -97,6 +111,7 @@ class _$AuthUserCopyWithImpl<$Res, $Val extends AuthUser>
     Object? provider = freezed,
     Object? isAnonymous = null,
     Object? customClaims = freezed,
+    Object? rawExtraData = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -110,6 +125,14 @@ class _$AuthUserCopyWithImpl<$Res, $Val extends AuthUser>
       phoneNumber: freezed == phoneNumber
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      firstName: freezed == firstName
+          ? _value.firstName
+          : firstName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      lastName: freezed == lastName
+          ? _value.lastName
+          : lastName // ignore: cast_nullable_to_non_nullable
               as String?,
       displayName: freezed == displayName
           ? _value.displayName
@@ -139,6 +162,10 @@ class _$AuthUserCopyWithImpl<$Res, $Val extends AuthUser>
           ? _value.customClaims
           : customClaims // ignore: cast_nullable_to_non_nullable
               as List<String>?,
+      rawExtraData: freezed == rawExtraData
+          ? _value.rawExtraData
+          : rawExtraData // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>?,
     ) as $Val);
   }
 }
@@ -155,13 +182,16 @@ abstract class _$$AuthUserImplCopyWith<$Res>
       {String id,
       String? email,
       String? phoneNumber,
+      String? firstName,
+      String? lastName,
       String? displayName,
       String? photoUrl,
       bool emailVerified,
       DateTime? lastSignIn,
       String? provider,
       bool isAnonymous,
-      List<String>? customClaims});
+      List<String>? customClaims,
+      Map<String, dynamic>? rawExtraData});
 }
 
 /// @nodoc
@@ -178,6 +208,8 @@ class __$$AuthUserImplCopyWithImpl<$Res>
     Object? id = null,
     Object? email = freezed,
     Object? phoneNumber = freezed,
+    Object? firstName = freezed,
+    Object? lastName = freezed,
     Object? displayName = freezed,
     Object? photoUrl = freezed,
     Object? emailVerified = null,
@@ -185,6 +217,7 @@ class __$$AuthUserImplCopyWithImpl<$Res>
     Object? provider = freezed,
     Object? isAnonymous = null,
     Object? customClaims = freezed,
+    Object? rawExtraData = freezed,
   }) {
     return _then(_$AuthUserImpl(
       id: null == id
@@ -198,6 +231,14 @@ class __$$AuthUserImplCopyWithImpl<$Res>
       phoneNumber: freezed == phoneNumber
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      firstName: freezed == firstName
+          ? _value.firstName
+          : firstName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      lastName: freezed == lastName
+          ? _value.lastName
+          : lastName // ignore: cast_nullable_to_non_nullable
               as String?,
       displayName: freezed == displayName
           ? _value.displayName
@@ -227,6 +268,10 @@ class __$$AuthUserImplCopyWithImpl<$Res>
           ? _value._customClaims
           : customClaims // ignore: cast_nullable_to_non_nullable
               as List<String>?,
+      rawExtraData: freezed == rawExtraData
+          ? _value._rawExtraData
+          : rawExtraData // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>?,
     ));
   }
 }
@@ -238,14 +283,18 @@ class _$AuthUserImpl extends _AuthUser {
       {required this.id,
       this.email,
       this.phoneNumber,
+      this.firstName,
+      this.lastName,
       this.displayName,
       this.photoUrl,
       this.emailVerified = false,
       this.lastSignIn,
       this.provider,
       this.isAnonymous = false,
-      final List<String>? customClaims})
+      final List<String>? customClaims,
+      final Map<String, dynamic>? rawExtraData})
       : _customClaims = customClaims,
+        _rawExtraData = rawExtraData,
         super._();
 
   factory _$AuthUserImpl.fromJson(Map<String, dynamic> json) =>
@@ -262,6 +311,14 @@ class _$AuthUserImpl extends _AuthUser {
   /// User's phone number (with country code)
   @override
   final String? phoneNumber;
+
+  /// User's first name
+  @override
+  final String? firstName;
+
+  /// User's last name
+  @override
+  final String? lastName;
 
   /// User's display name
   @override
@@ -302,9 +359,22 @@ class _$AuthUserImpl extends _AuthUser {
     return EqualUnmodifiableListView(value);
   }
 
+  /// Raw profile data from auth provider (e.g., Google AdditionalUserInfo)
+  final Map<String, dynamic>? _rawExtraData;
+
+  /// Raw profile data from auth provider (e.g., Google AdditionalUserInfo)
+  @override
+  Map<String, dynamic>? get rawExtraData {
+    final value = _rawExtraData;
+    if (value == null) return null;
+    if (_rawExtraData is EqualUnmodifiableMapView) return _rawExtraData;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(value);
+  }
+
   @override
   String toString() {
-    return 'AuthUser(id: $id, email: $email, phoneNumber: $phoneNumber, displayName: $displayName, photoUrl: $photoUrl, emailVerified: $emailVerified, lastSignIn: $lastSignIn, provider: $provider, isAnonymous: $isAnonymous, customClaims: $customClaims)';
+    return 'AuthUser(id: $id, email: $email, phoneNumber: $phoneNumber, firstName: $firstName, lastName: $lastName, displayName: $displayName, photoUrl: $photoUrl, emailVerified: $emailVerified, lastSignIn: $lastSignIn, provider: $provider, isAnonymous: $isAnonymous, customClaims: $customClaims, rawExtraData: $rawExtraData)';
   }
 
   @override
@@ -316,6 +386,10 @@ class _$AuthUserImpl extends _AuthUser {
             (identical(other.email, email) || other.email == email) &&
             (identical(other.phoneNumber, phoneNumber) ||
                 other.phoneNumber == phoneNumber) &&
+            (identical(other.firstName, firstName) ||
+                other.firstName == firstName) &&
+            (identical(other.lastName, lastName) ||
+                other.lastName == lastName) &&
             (identical(other.displayName, displayName) ||
                 other.displayName == displayName) &&
             (identical(other.photoUrl, photoUrl) ||
@@ -329,7 +403,9 @@ class _$AuthUserImpl extends _AuthUser {
             (identical(other.isAnonymous, isAnonymous) ||
                 other.isAnonymous == isAnonymous) &&
             const DeepCollectionEquality()
-                .equals(other._customClaims, _customClaims));
+                .equals(other._customClaims, _customClaims) &&
+            const DeepCollectionEquality()
+                .equals(other._rawExtraData, _rawExtraData));
   }
 
   @JsonKey(ignore: true)
@@ -339,13 +415,16 @@ class _$AuthUserImpl extends _AuthUser {
       id,
       email,
       phoneNumber,
+      firstName,
+      lastName,
       displayName,
       photoUrl,
       emailVerified,
       lastSignIn,
       provider,
       isAnonymous,
-      const DeepCollectionEquality().hash(_customClaims));
+      const DeepCollectionEquality().hash(_customClaims),
+      const DeepCollectionEquality().hash(_rawExtraData));
 
   @JsonKey(ignore: true)
   @override
@@ -366,13 +445,16 @@ abstract class _AuthUser extends AuthUser {
       {required final String id,
       final String? email,
       final String? phoneNumber,
+      final String? firstName,
+      final String? lastName,
       final String? displayName,
       final String? photoUrl,
       final bool emailVerified,
       final DateTime? lastSignIn,
       final String? provider,
       final bool isAnonymous,
-      final List<String>? customClaims}) = _$AuthUserImpl;
+      final List<String>? customClaims,
+      final Map<String, dynamic>? rawExtraData}) = _$AuthUserImpl;
   const _AuthUser._() : super._();
 
   factory _AuthUser.fromJson(Map<String, dynamic> json) =
@@ -390,6 +472,14 @@ abstract class _AuthUser extends AuthUser {
 
   /// User's phone number (with country code)
   String? get phoneNumber;
+  @override
+
+  /// User's first name
+  String? get firstName;
+  @override
+
+  /// User's last name
+  String? get lastName;
   @override
 
   /// User's display name
@@ -418,6 +508,10 @@ abstract class _AuthUser extends AuthUser {
 
   /// Custom claims from Firebase token (roles, permissions)
   List<String>? get customClaims;
+  @override
+
+  /// Raw profile data from auth provider (e.g., Google AdditionalUserInfo)
+  Map<String, dynamic>? get rawExtraData;
   @override
   @JsonKey(ignore: true)
   _$$AuthUserImplCopyWith<_$AuthUserImpl> get copyWith =>

@@ -1,0 +1,48 @@
+### ADB Log Analysis (Process 11980)
+
+1. **Missing OnBackInvokedCallback (Warning) - FIXED**
+   - **Log**: `W/OnBackInvokedCallback: Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.`
+   - **Impact**: Non-critical. Android 13+ encourages predictive back gestures. The app will still work, but adding this to `AndroidManifest.xml` improves the modern Android experience.
+   - **Fix Applied**: Added `android:enableOnBackInvokedCallback="true"` to the `<application>` tag in `AndroidManifest.xml`.
+
+2. **Heavy Binder Transactions (Performance Warning) - NOT FIXED / INFORMATIONAL**
+   - **Log**: Multiple lines of `W/BpBinder: PerfMonitor binderTransact :  time=...ms interface=android.content.IBulkCursor`
+   - **Impact**: Non-critical but indicates a potential UI stutter. `IBulkCursor` is typically associated with reading Contacts or heavy SQLite queries. The fact that some transactions are taking up to 2000ms+ (2 seconds) suggests the app is doing a massive contact sync or data load on the main thread or overwhelming the IPC bridge.
+   - **Status**: This is a limitation of the `flutter_contacts` package when reading thousands of contacts at once from the Android OS. Because it happens in the background during imports, it does not crash the app.
+
+---
+
+### New Runtime Errors (terminalError.txt)
+
+3. **RenderFlex Overflow (UI Error) - FIXED**
+   - **Log**: `A RenderFlex overflowed by 52 pixels on the bottom.`
+   - **Location**: `lib/features/contacts/presentation/widgets/contact_list_item.dart:407:18`
+   - **Cause**: A `Column` inside the `ContactListItem` widget contains content that is taller than the available vertical space on the screen.
+   - **Fix Applied**: Wrapped the overflowing content in a `SingleChildScrollView`.
+
+4. **RangeError (State Error) - FIXED**
+   - **Log**: `Another exception was thrown: RangeError (index): Invalid value: Valid value range is empty: 0`
+   - **Location**: `lib/features/contacts/domain/entities/contact.dart`
+   - **Cause**: By default, Flutter assumes contacts have names. If a phone imports a contact with a blank name, calling `name[0]` on an empty string causes a native index crash.
+   - **Fix Applied**: Added a `.isNotEmpty` safety check before extracting the first/second letter in the `initials` getter.
+
+5. **Contact Sync Failure (State Error) - FIXED**
+   - **Location**: `lib/features/contacts/data/services/phone_contact_import_service.dart:184`
+   - **Cause**: Similar to the above error, the system was reading Android contacts and assuming `organizations`, `notes`, and `name.first`/`name.last` arrays always had values if the contact existed, causing unseen `RangeErrors` crashing the background sync quietly. 
+   - **Fix Applied**: Added `.isNotEmpty` length checks before extracting `phoneContact.name.first`, `.last`, and `phoneContact.organizations.first`.
+
+---
+
+### System/Device Disconnect Logs (Late Update in terminalError.txt)
+
+6. **BLASTBufferQueue & AdrenoUtils Errors (GPU Warnings) - INFORMATIONAL**
+   - **Log**: `E/qdgralloc: GetGpuPixelFormat... E/AdrenoUtils: Memory Layout input parameter validation failed!`
+   - **Impact**: Non-hazardous. This is a very common device-specific warning on phones using Qualcomm Snapdragon/Adreno GPUs. The renderer fallback handles it natively without crashing your app.
+
+7. **NativeCrypto Broken Pipe (Network Abort) - INFORMATIONAL**
+   - **Log**: `V/NativeCrypto(30289): Write error: ssl=...: I/O error during system call, Broken pipe`
+   - **Impact**: Safe to ignore. This just means a background SSL connection (like Firebase) was abruptly closed because the app was stopped or backgrounded.
+
+8. **Lost connection to device - INFORMATIONAL**
+   - **Log**: `Lost connection to device.`
+   - **Impact**: The `flutter run` session terminated. Either the USB cable was unplugged, the phone locked and dropped the debugger, or the app process was manually killed. No app crash occurred here.

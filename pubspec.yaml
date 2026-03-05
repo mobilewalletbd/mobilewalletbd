@@ -35,6 +35,8 @@ dependencies:
   firebase_core: ^3.6.0
   firebase_auth: ^5.3.1
   cloud_firestore: ^5.4.4
+  firebase_data_connect: ^0.1.0-dev.1
+  firebase_app_check: ^0.3.1+3
   google_sign_in: ^6.2.1
   
   # Media & Storage (Cloudinary)
@@ -61,14 +63,60 @@ dependencies:
   google_fonts: ^6.2.1
   path_provider: ^2.1.5
   app_links: ^6.3.2
+  permission_handler: ^11.3.1
+  image_picker: ^1.2.1
+  
+  # Security & Biometrics
+  local_auth: ^2.3.0
+  crypto: ^3.0.5
+  encrypt: ^5.0.3
 
+  # URL Launcher (for phone, SMS, email, maps)
+  url_launcher: ^6.3.1
+  
+  # Utilities
+  uuid: ^4.5.1
+  
+  # Phone Contacts Import
+  flutter_contacts: ^1.1.7+1
+  
+  # Google Drive API
+  googleapis: ^13.1.0
+  googleapis_auth: ^1.6.0
+  
+  # Camera & OCR for Business Card Scanning
+  camera: ^0.10.5+9
+  google_mlkit_text_recognition: ^0.13.1
+  google_mlkit_barcode_scanning: ^0.12.0
+  image: ^4.2.0
+  
+  # Duplicate Detection (Fuzzy String Matching)
+  string_similarity: ^2.0.0
+
+  # Digital Card Creator & Sharing
+  qr_flutter: ^4.1.0
+  pdf: ^3.10.7
+  printing: ^5.12.0
+  share_plus: ^7.2.2
+  flutter_speed_dial: ^7.0.0  # For FAB fan menu
+  device_info_plus: ^10.1.0
+  package_info_plus: ^8.0.0
+  nfc_manager: ^3.4.0  # NFC card sharing — NDEF write/read implemented
   # Base Icons
   cupertino_icons: ^1.0.8
+  intl: ^0.20.2
+  csv: ^6.0.0
+  file_picker: ^8.1.7
+  firebase_storage: ^12.4.10
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  # Testing
+  mockito: ^5.4.4
+  
   # Code Generation
   build_runner: ^2.4.13
   riverpod_generator: ^2.4.0
@@ -92,6 +140,7 @@ flutter:
 
   # Application assets
   assets:
+    - .env
     - assets/config/
     - assets/images/
     - assets/icons/

@@ -72,7 +72,7 @@ final authErrorProvider = AutoDisposeProvider<Object?>.internal(
 );
 
 typedef AuthErrorRef = AutoDisposeProviderRef<Object?>;
-String _$authenticationHash() => r'94e06b2bbd3b90a6ebc607d67f3b151b3173ac7a';
+String _$authenticationHash() => r'51cca8fd2da151a8857e09c130991e01720be913';
 
 /// Authentication state provider using Riverpod.
 ///

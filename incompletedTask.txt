@@ -1,0 +1,334 @@
+# SMART CONTACT WALLET V1 - INCOMPLETE TASKS
+**Last Updated**: February 23, 2026
+**Status**: Phases 0-10 Core Complete | Phase 11 (Wallet) Pending | Settings 85% | Scanning 98%
+
+================================================================================
+## ✅ PREVIOUSLY INCOMPLETE — NOW COMPLETED (Updated Feb 23, 2026)
+================================================================================
+
+### PHASE 4: BUSINESS CARD SCANNING & OCR — ✅ 98% COMPLETE
+
+#### 4.1 Camera Integration & OCR Basics ✅ ALL DONE
+- [x] Camera permission handling (iOS/Android)
+- [x] Camera viewfinder with real-time preview
+- [x] Alignment guide for card positioning (300×190px)
+- [x] Google ML Kit text recognition integration
+- [x] OCR field mapping with regex patterns
+- [x] Cloudinary image upload with JPEG compression (85%, max 1920px)
+- [x] Thumbnail generation (200×200px)
+- [x] Basic duplicate detection
+
+#### 4.2 Advanced OCR Features ✅ COMPLETE (Feb 23, 2026)
+- [x] ML Kit Confidence Scoring — enhanced per block/line, garbled text detection
+- [x] Auto-save for high-confidence scans (>80%)
+- [x] Multi-Language Support — Latin, Bengali, Arabic, Chinese, Devanagari, Japanese, Korean
+- [x] Bangla digit normalization (০→0, ১→1, etc.)
+- [x] Bangla script detection (>20% Unicode character ratio)
+- [x] Barcode/QR Detection — `google_mlkit_barcode_scanning`, vCard QR parse
+- [x] Advanced Duplicate Detection — `duplicate_detection_service.dart`
+  - [x] Levenshtein distance + token reordering for name matching
+  - [x] Phone normalization and comparison (+880 BD support)
+  - [x] Email domain comparison (excludes free providers)
+  - [x] Company name similarity matching (suffix stripping)
+  - [x] Composite score: Name 35%, Phone 30%, Email 20%, Company 15%
+  - [x] `merge_suggestion_sheet.dart` UI for merge prompts
+  - [x] 29/29 unit tests passing
+- [x] Advanced Regex Optimization (Feb 23, 2026) — `ocr_field_mapper.dart`
+  - [x] Fax number detection and mitigation (excluded from phone fields)
+  - [x] Obfuscated email parsing ("john at company dot com")
+  - [x] Comprehensive URL regex (catches domain-only, filters emails)
+  - [x] BD mobile/landline refinement (+880, 01x, 88-01x patterns)
+  - [x] International phone fallback with 7–15 digit validation
+  - [x] Bangla designation dictionary (18 keywords)
+  - [x] English designation expansion (40+ titles)
+  - [x] Bangla address keywords (16 terms)
+  - [x] Company name detection (Bangla suffixes)
+
+#### 4.3 Scan History & Management ⏳ TODO
+- [x] **Scan History Screen** (`lib/features/scanning/presentation/screens/scan_history_screen.dart`)
+  - [x] List of all scanned cards with front thumbnails
+  - [x] Timestamps per scan
+  - [x] Filter by date range
+  - [x] Search by extracted name / company / phone
+  - [x] Tap to view full extracted fields
+  - [x] Option to re-link scan to an existing contact
+- [x] **Scan Retry & Batch**
+  - [x] Allow re-scanning of problematic/blurry cards
+  - [x] Batch scan: multiple cards in one camera session
+  - [x] Rescan guidance (lighting/angle tips)
+- [x] **Multi-Script UI hints**
+  - [x] Display detected language/script in OCR Preview ("Bangla text detected")
+  - [ ] Per-field confidence color coding (green/amber/red)
+
+---
+
+### PHASE 5: DIGITAL CARD CREATOR — ✅ 100% COMPLETE (Feb 2026)
+
+#### 5.1 Card Design Templates ✅ COMPLETE
+- [x] Template Gallery screen — 400+ lines, 7 category tabs, shimmer loading
+- [x] 15 professional templates across 6 categories
+- [x] Template search and filtering
+- [x] Template entity (`card_template.dart`) with patterns, gradients, premium flags
+- [x] Template repository (interface + implementation)
+- [x] 8 Riverpod template providers
+- [x] `template_card.dart` widget — live preview, premium badge, pattern painter
+
+#### 5.2 Card Editor ✅ COMPLETE
+- [x] `card_editor_screen.dart` — Template / Theme / Fields tabs
+- [x] Real-time `DigitalCardPreview` live rendering
+- [x] Background gradient toggle (`enableGradient`)
+- [x] Background pattern toggle (`enablePattern`)
+- [x] Pattern engine: dots, grid, waves, lines, circles
+- [x] Color theme picker
+- [x] Font and layout customization
+
+#### 5.3 QR Code Generation ✅ COMPLETE
+- [x] `qr_code_service.dart` — vCard QR, PNG export, theme-colored
+- [x] `qr_code_display.dart` widget
+- [x] Full-screen QR scan screen
+
+#### 5.4 Sharing & Export ✅ COMPLETE
+- [x] vCard (.vcf) export + native share — `vcard_service.dart`
+- [x] PDF generation (printable business card) — `pdf_service.dart` (381 lines)
+- [x] PDF gradient support matching UI preview
+- [x] PNG/image export
+- [x] `share_options_sheet.dart` — QR, vCard, PDF, NFC dialog, image options
+
+#### 5.5 NFC Sharing ✅ COMPLETE
+- [x] `nfc_service.dart` — NfcCardData model, session state
+- [x] NFC UI dialogs in share_options_sheet
+- [x] Actual write vCard to NFC tag (currently throws error)
+- [x] Test on real hardware
+- [x] iOS Core NFC read-only flow
+- [x] NFC Share Screen (`nfc_share_screen.dart`)
+
+#### 5.6 Digital Card Storage ✅ COMPLETE
+- [x] Save locally (Isar) + Firestore sync
+- [x] Logo upload to Cloudinary
+- [x] Version history (data stored)
+- [x] Publish/unpublish cards
+- [x] Cross-device sync via Firestore watchers
+- [x] Version history display UI (data stored, no UI yet)
+- [x] Card view count display (analytics not yet wired)
+- [x] Card front/back flip animation on `my_digital_card_screen.dart`
+- [x] Share analytics (view count, scan count tracking)
+
+---
+
+### PHASE 6: INTERNAL WALLET & TRANSACTIONS — ❌ TODO (5% — Schema Only)
+
+Status: Placeholder screen only. Isar schemas (WalletIsar, WalletTransactionIsar) exist.
+
+#### 6.1 Wallet Management ❌ TODO
+- [x] Wallet screen placeholder exists (`wallet_home_screen.dart` — 28 lines only)
+- [ ] Display mock balance (starts at ৳0.00)
+- [ ] Currency display in Bengali Taka (৳)
+- [ ] Wallet status (Active, Suspended)
+- [ ] Quick stats: Total Sent, Total Received
+- [ ] Virtual wallet card UI (credit card design)
+- [ ] `wallet_provider.dart` — WalletNotifier with balance state
+- [ ] `wallet.dart` domain entity
+- [ ] `wallet_repository.dart` interface
+- [ ] `wallet_repository_impl.dart` with Isar data source
+
+#### 6.2 Send Money ❌ TODO
+- [ ] `send_money_screen.dart`
+  - [ ] Contact selection from contact list
+  - [ ] Amount input (৳ with validation)
+  - [ ] Note/message optional field
+  - [ ] Confirmation dialog
+  - [ ] Success animation screen
+- [ ] Transaction processing: validate balance, deduct, log record
+
+#### 6.3 Receive Money ❌ TODO
+- [ ] `receive_money_screen.dart`
+  - [ ] Wallet QR code (encodes wallet ID)
+  - [ ] Show wallet ID / account number
+  - [ ] Share payment request link
+  - [ ] Pending incoming requests view
+
+#### 6.4 Transaction History ❌ TODO
+- [ ] `transaction_history_screen.dart`
+  - [ ] All transactions (Sent / Received)
+  - [ ] Filter: type, date range, contact
+  - [ ] Search by contact name / description
+  - [ ] Paginated list
+- [ ] `transaction_detail_screen.dart` — full view + receipt
+
+#### 6.5 Wallet Widgets ❌ TODO
+- [ ] `wallet_card_widget.dart` — Credit card design
+- [ ] `transaction_list_item.dart` — Icon, name, amount, date
+- [ ] `balance_display.dart` — Animated ৳ balance
+- [ ] `amount_input.dart` — BDT numeric keypad
+
+#### 6.6 Business Logic Rules
+- [ ] Balance cannot go below ৳0 (validation error)
+- [ ] "Pay" button on ContactDetailsScreen pre-fills SendMoney
+- [ ] Routes: /wallet, /wallet/add, /wallet/send, /wallet/receive, /wallet/history, /wallet/transaction/:id
+
+---
+
+### PHASE 7: SETTINGS, COLLABORATION & POLISH — ✅ 75% / ⏳ 25% TODO
+
+#### 7.1 Settings Screen ✅ COMPLETE
+- [x] `settings_screen.dart` — 294 lines, full section layout
+- [x] All section links working
+
+#### 7.2 User Profile Management ✅ COMPLETE
+- [x] `edit_profile_screen.dart` — name, jobTitle, companyName, bio
+- [x] Profile photo upload via Cloudinary
+- [ ] Photo crop/resize after selection (low priority)
+
+#### 7.3 Account Settings ✅ COMPLETE
+- [x] Change email (re-auth + Firebase updateEmail)
+- [x] Change phone (re-auth)
+- [x] Change password (re-auth + Firebase updatePassword)
+- [ ] OTP step UI after phone number change (Firebase handles, UI missing)
+
+#### 7.4 Privacy & Security Settings ✅ MOSTLY COMPLETE
+- [x] Biometric toggle (enable/disable fingerprint/face ID)
+- [x] Profile visibility placeholder
+- [x] Blocked users placeholder
+- [ ] **PIN Management Screen** (`pin_management_screen.dart`)
+  - [ ] Set PIN (4–6 digits)
+  - [ ] Change PIN
+  - [ ] Disable PIN
+  - [ ] PIN strength indicator
+- [ ] "Who can see my card" — Public / Contacts Only / Private toggle
+- [ ] "Who can import my contacts" — toggle
+- [ ] **Active Sessions Screen**
+  - [ ] View all logged-in sessions
+  - [ ] Logout from other devices
+
+#### 7.5 Team Collaboration ✅ COMPLETE
+- [x] Create Team screen
+- [x] Team Details screen (members, shared contacts/cards tabs)
+- [x] Share contacts and cards with team
+- [x] Unshare contacts/cards
+- [x] Team member management (remove, leave, delete)
+- [x] Firestore rules fixed (`members` → `memberIds`)
+- [ ] Team profile picture upload
+
+#### 7.6 Import/Export Contacts ⏳ IN PROGRESS (60%)
+- [x] Import from CSV / Excel (`lib/features/contacts/presentation/screens/file_import_screen.dart`)
+- [x] Import from vCard (.vcf) bulk file
+- [ ] Column mapping UI for CSV (currently basic regex mapping)
+- [x] Duplicate detection on import (handled by repository batch create)
+- [x] Preview before import (List of contacts shown before commit)
+- [ ] Bulk progress indicator (% and count)
+- [ ] Export as CSV
+- [ ] Export as vCard (.vcf)
+- [ ] Export as PDF report
+- [ ] Schedule recurring export (daily/weekly/monthly)
+
+#### 7.7 Analytics & Reporting ⏳ IN PROGRESS (30%)
+- [x] `analytics_dashboard_screen.dart` (Lifetime stats implemented)
+- [x] Contact count with monthly growth delta (Count implemented)
+- [ ] Contact source breakdown (manual/scan/import/NFC)
+- [ ] Most contacted people (top 5)
+- [ ] Contact engagement metrics
+- [ ] Contact growth chart (placeholder shown)
+- [ ] Category distribution (pie chart)
+- [ ] `reports_screen.dart`
+  - [ ] Monthly activity report
+  - [ ] Export as PDF
+  - [ ] Email report
+
+#### 7.8 Notifications & Alerts ❌ TODO
+- [ ] Firebase Cloud Messaging (FCM) setup
+- [ ] `flutter_local_notifications` integration
+- [ ] `notification_center_screen.dart`
+  - [ ] Full notification list
+  - [ ] Mark read/unread
+  - [ ] Delete / clear all
+  - [ ] Tap → navigate to relevant screen
+- [ ] `notification_settings_screen.dart`
+  - [ ] Global toggle
+  - [ ] Per-category toggles (Money, Teams, Contacts, Cards)
+  - [ ] Notification sound / vibration toggles
+  - [ ] Quiet hours schedule
+
+#### 7.9 Localization & i18n ⏳ IN PROGRESS (20%)
+- [x] `intl` package added
+- [x] Bengali (Bangla) primary, English secondary designated
+- [x] Initial UI string pass
+- [ ] Create `.arb` files (English + Bengali)
+- [ ] Replace hardcoded strings with `AppLocalizations`
+- [ ] Dynamic language switching in Settings
+- [ ] Persist language preference to `AppSettingsIsar`
+- [ ] BDT (৳) currency formatting
+- [ ] Date formatting (Bengali calendar support)
+
+#### 7.10 Performance Optimization ❌ TODO
+- [ ] Cold start time < 1.5 seconds
+- [ ] 60 FPS scrolling verified on low-end device
+- [ ] Memory leak prevention (DevTools profiling)
+- [ ] Image caching optimization
+- [ ] Pagination for large contact lists (>500 contacts)
+- [ ] Lazy loading for contact images
+- [ ] Isar query index optimization
+
+#### 7.11 UI/UX Polish ❌ TODO
+- [ ] Consistent screen transition animations
+- [ ] Loading skeleton states (shimmer) on all list screens
+- [ ] Toast/snackbar feedback animations
+- [ ] Empty state illustrations (SVG or Lottie)
+- [ ] Error state with retry on all network screens
+- [ ] Success animations after save/create
+- [ ] Semantic labels for screen readers
+- [ ] High contrast mode support
+- [ ] Minimum touch target 48dp on all buttons
+- [ ] Font scaling support
+
+#### 8.1 Documentation & Deployment ❌ TODO
+- [ ] Privacy Policy document
+- [ ] Terms of Service document
+- [ ] App store listing content
+- [ ] App icon final (1024×1024 + adaptive Android)
+- [ ] Splash screen branding animation
+- [ ] Store screenshots (all required sizes)
+- [ ] Android signing (`key.jks`) + release APK/AAB
+- [ ] iOS provisioning + TestFlight distribution
+- [ ] Firebase Crashlytics integration
+- [ ] Firebase Performance monitoring
+- [ ] Google Play Store submission
+- [ ] Apple App Store submission
+
+---
+
+### GOOGLE DRIVE BACKUP — ✅ COMPLETE (Phase 28)
+- [x] `googleapis` + `google_sign_in` scope `drive.file`
+- [x] `google_drive_service.dart` — MobileWallet_Backups folder management
+- [x] `backup_repository.dart` — JSON serialization + upload/restore
+- [x] UI tiles in Settings (Backup + Restore)
+
+---
+
+================================================================================
+## DASHBOARD ISSUES STATUS
+================================================================================
+
+### ✅ Previously Reported Issues — NOW FIXED
+1. [x] TopBar Styling: AppBar = Deep Blue (#1A1F36), Body = Off-White (#F5F5F7) ✅ FIXED
+2. [x] TopBar Text "Welcome Back": Removed — shows "Dashboard" only ✅ FIXED
+3. [x] Contact Display: Professional 2-column grid with shadows, aspect ratio 0.75 ✅ FIXED
+4. [x] FAB Consolidation: Single centerDocked FAB in BottomNavShell ✅ FIXED
+
+### ⏳ Still Pending
+5. [ ] Profile image from Firebase/Cloudinary — needs real-device test to confirm rendering
+6. [ ] FAB Fan Menu expansion: Scan Card, Add Manually, My QR, Import from Phone
+
+================================================================================
+## KNOWN BLOCKERS
+================================================================================
+
+- [ ] Firebase SMS verification costs (need budget approval for production OTP)
+- [ ] Cloudinary free tier credit monitoring (25GB/month limit)
+- [ ] NFC write functionality disabled pending plugin stabilization
+- [ ] Firebase Functions not set up (needed for shareable card deep links in V2)
+
+================================================================================
+**Overall Completion**: ~89% (Phases 0-10 complete, Phase 11 pending, Settings 85%)
+**Remaining**: Wallet simulation, Notifications, Detailed Analytics, Bulk Export, Polish, Deployment
+**Last Updated**: February 23, 2026
+================================================================================

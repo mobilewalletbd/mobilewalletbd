@@ -37,6 +37,8 @@ abstract class AuthRepository {
     required String email,
     required String password,
     String? displayName,
+    String? phoneNumber,
+    Map<String, dynamic>? metadata,
   });
 
   /// Signs in with Google OAuth.
@@ -110,10 +112,43 @@ abstract class AuthRepository {
   /// Returns the JWT token string
   Future<String?> getIdToken({bool forceRefresh = false});
 
+  /// Updates the user's email address.
+  ///
+  /// [email] - The new email address
+  Future<void> updateEmail(String email);
+
+  /// Updates the user's password.
+  ///
+  /// [password] - The new password
+  Future<void> updatePassword(String password);
+
+  /// Re-authenticates the user with a credential.
+  ///
+  /// [email] - User's email
+  /// [password] - User's password
+  Future<void> reauthenticateWithEmail({
+    required String email,
+    required String password,
+  });
+
+  /// Updates the user's phone number.
+  ///
+  /// [verificationId] - The verification ID from sendPhoneOTP
+  /// [smsCode] - The 6-digit SMS code
+  Future<void> updatePhoneNumber({
+    required String verificationId,
+    required String smsCode,
+  });
+
   /// Deletes the current user's account.
   ///
   /// Throws [AuthFailure] if deletion fails
   Future<void> deleteAccount();
+
+  /// Gets the authentication headers for Google API requests.
+  ///
+  /// Returns a map of headers or null if not signed in with Google.
+  Future<Map<String, String>?> get googleAuthHeaders;
 }
 
 /// Authentication failure types

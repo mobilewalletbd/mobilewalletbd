@@ -21,6 +21,12 @@ class AuthUser with _$AuthUser {
     /// User's phone number (with country code)
     String? phoneNumber,
 
+    /// User's first name
+    String? firstName,
+
+    /// User's last name
+    String? lastName,
+
     /// User's display name
     String? displayName,
 
@@ -41,6 +47,9 @@ class AuthUser with _$AuthUser {
 
     /// Custom claims from Firebase token (roles, permissions)
     List<String>? customClaims,
+
+    /// Raw profile data from auth provider (e.g., Google AdditionalUserInfo)
+    Map<String, dynamic>? rawExtraData,
   }) = _AuthUser;
 
   /// Creates an AuthUser from JSON map

@@ -151,41 +151,48 @@ final envConfigProvider = Provider<EnvConfig>((ref) {
 /// Environment configuration from .env file.
 ///
 /// Contains sensitive values that should not be in version control.
+/// Safely handles cases where .env file is not available.
 class EnvConfig {
+  /// Safely get environment variable with fallback.
+  String _getEnv(String key, [String defaultValue = '']) {
+    try {
+      if (!dotenv.isInitialized) return defaultValue;
+      return dotenv.env[key] ?? defaultValue;
+    } catch (e) {
+      return defaultValue;
+    }
+  }
+
   // Firebase Configuration
-  String get firebaseProjectId => dotenv.env['FIREBASE_PROJECT_ID'] ?? '';
-  String get firebaseApiKey => dotenv.env['FIREBASE_API_KEY'] ?? '';
-  String get firebaseAppId => dotenv.env['FIREBASE_APP_ID'] ?? '';
-  String get firebaseMessagingSenderId =>
-      dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '';
-  String get firebaseAuthDomain => dotenv.env['FIREBASE_AUTH_DOMAIN'] ?? '';
+  String get firebaseProjectId => _getEnv('FIREBASE_PROJECT_ID');
+  String get firebaseApiKey => _getEnv('FIREBASE_API_KEY');
+  String get firebaseAppId => _getEnv('FIREBASE_APP_ID');
+  String get firebaseMessagingSenderId => _getEnv('FIREBASE_MESSAGING_SENDER_ID');
+  String get firebaseAuthDomain => _getEnv('FIREBASE_AUTH_DOMAIN');
 
   // Cloudinary Configuration
-  String get cloudinaryCloudName => dotenv.env['CLOUDINARY_CLOUD_NAME'] ?? '';
-  String get cloudinaryApiKey => dotenv.env['CLOUDINARY_API_KEY'] ?? '';
-  String get cloudinaryApiSecret => dotenv.env['CLOUDINARY_API_SECRET'] ?? '';
-  String get cloudinaryUploadPreset =>
-      dotenv.env['CLOUDINARY_UPLOAD_PRESET'] ?? '';
+  String get cloudinaryCloudName => _getEnv('CLOUDINARY_CLOUD_NAME');
+  String get cloudinaryApiKey => _getEnv('CLOUDINARY_API_KEY');
+  String get cloudinaryApiSecret => _getEnv('CLOUDINARY_API_SECRET');
+  String get cloudinaryUploadPreset => _getEnv('CLOUDINARY_UPLOAD_PRESET');
 
   // Application Configuration
-  String get appEnv => dotenv.env['APP_ENV'] ?? 'development';
-  bool get debugMode => dotenv.env['DEBUG_MODE']?.toLowerCase() == 'true';
-  String get appVersion => dotenv.env['APP_VERSION'] ?? '1.0.0';
+  String get appEnv => _getEnv('APP_ENV', 'development');
+  bool get debugMode => _getEnv('DEBUG_MODE').toLowerCase() == 'true';
+  String get appVersion => _getEnv('APP_VERSION', '1.0.0');
 
   // External Links
-  String get privacyPolicyUrl => dotenv.env['PRIVACY_POLICY_URL'] ?? '';
-  String get termsOfServiceUrl => dotenv.env['TERMS_OF_SERVICE_URL'] ?? '';
-  String get supportWebsite => dotenv.env['SUPPORT_WEBSITE'] ?? '';
-  String get supportEmail => dotenv.env['SUPPORT_EMAIL'] ?? '';
+  String get privacyPolicyUrl => _getEnv('PRIVACY_POLICY_URL');
+  String get termsOfServiceUrl => _getEnv('TERMS_OF_SERVICE_URL');
+  String get supportWebsite => _getEnv('SUPPORT_WEBSITE');
+  String get supportEmail => _getEnv('SUPPORT_EMAIL');
 
   // Legacy Azure Configuration (if needed)
-  String get azureFunctionsBaseUrl =>
-      dotenv.env['AZURE_FUNCTIONS_BASE_URL'] ?? '';
-  String get azureCosmosEndpoint => dotenv.env['AZURE_COSMOS_ENDPOINT'] ?? '';
-  String get azureStorageConnectionString =>
-      dotenv.env['AZURE_STORAGE_CONNECTION_STRING'] ?? '';
+  String get azureFunctionsBaseUrl => _getEnv('AZURE_FUNCTIONS_BASE_URL');
+  String get azureCosmosEndpoint => _getEnv('AZURE_COSMOS_ENDPOINT');
+  String get azureStorageConnectionString => _getEnv('AZURE_STORAGE_CONNECTION_STRING');
 
-  /// Whether Firebase is properly configured.
+  /// Whether Firebase is properly configured via .env.
   bool get isFirebaseConfigured =>
       firebaseProjectId.isNotEmpty && firebaseApiKey.isNotEmpty;
 
@@ -209,10 +216,9 @@ Future<bool> initializeConfig() async {
   try {
     await dotenv.load(fileName: '.env');
   } catch (e) {
-    // .env file is optional in some cases
-    if (dotenv.env.isEmpty) {
-      debugPrint('[Config] Warning: .env file not found or empty');
-    }
+    // .env file is optional - app can run without it using defaults
+    debugPrint('[Config] Warning: .env file not found or failed to load: $e');
+    debugPrint('[Config] App will continue with default/fallback values');
   }
 
   // Load JSON configuration

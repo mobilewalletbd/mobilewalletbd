@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:mobile_wallet/core/theme/app_theme.dart';
+import 'package:mobile_wallet/core/theme/app_colors.dart';
 import 'package:mobile_wallet/features/auth/presentation/providers/auth_provider.dart';
 import 'package:mobile_wallet/features/auth/domain/repositories/auth_repository.dart';
 
 /// Forgot password screen for email-based password reset.
+///
+/// Design based on V1_APP_DESIGN_PLAN specifications:
+/// - Minimal, focused screen for password recovery
+/// - Lock illustration at top
+/// - Clear instructions and single email input
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -32,7 +37,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     if (value == null || value.isEmpty) {
       return 'Email is required';
     }
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
     if (!emailRegex.hasMatch(value)) {
       return 'Please enter a valid email';
     }
@@ -87,13 +92,25 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: AppColors.black),
           onPressed: () => context.pop(),
         ),
+        backgroundColor: AppColors.white,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          'Reset Password',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: AppColors.black,
+          ),
+        ),
       ),
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: _emailSent ? _buildSuccessContent() : _buildFormContent(),
         ),
       ),
@@ -109,7 +126,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           const SizedBox(height: 20),
           // Header
           _buildHeader(),
-          const SizedBox(height: 48),
+          const SizedBox(height: 40),
           // Error Message
           if (_errorMessage != null) ...[
             _buildErrorBanner(),
@@ -117,7 +134,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           ],
           // Email Field
           _buildEmailField(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
           // Send Button
           _buildSendButton(),
           const SizedBox(height: 24),
@@ -130,33 +147,36 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
   Widget _buildHeader() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Key Icon
+        // Lock Illustration
         Container(
-          width: 64,
-          height: 64,
+          width: 120,
+          height: 120,
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(16),
+            color: AppColors.primaryGreenLight.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(24),
           ),
           child: const Icon(
-            Icons.key_outlined,
-            size: 32,
-            color: AppTheme.primaryColor,
+            Icons.lock_reset_outlined,
+            size: 60,
+            color: AppColors.primaryGreen,
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 32),
         Text(
-          'Forgot password?',
-          style: Theme.of(context).textTheme.headlineLarge,
+          'Forgot your password?',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.black,
+          ),
+          textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 8),
-        Text(
-          "No worries! Enter your email and we'll send you a link to reset your password.",
-          style: Theme.of(
-            context,
-          ).textTheme.bodyLarge?.copyWith(color: AppTheme.textSecondaryColor),
+        const SizedBox(height: 12),
+        const Text(
+          'Enter your email address and we\'ll send you a link to reset your password.',
+          style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+          textAlign: TextAlign.center,
         ),
       ],
     );
@@ -166,18 +186,18 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppTheme.errorColor.withValues(alpha: 0.1),
+        color: AppColors.error.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.errorColor.withValues(alpha: 0.3)),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, color: AppTheme.errorColor, size: 20),
+          const Icon(Icons.error_outline, color: AppColors.error, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               _errorMessage!,
-              style: const TextStyle(color: AppTheme.errorColor, fontSize: 14),
+              style: const TextStyle(color: AppColors.error, fontSize: 14),
             ),
           ),
         ],
@@ -186,35 +206,89 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   }
 
   Widget _buildEmailField() {
-    return TextFormField(
-      controller: _emailController,
-      keyboardType: TextInputType.emailAddress,
-      textInputAction: TextInputAction.done,
-      autocorrect: false,
-      enabled: !_isLoading,
-      validator: _validateEmail,
-      onFieldSubmitted: (_) => _sendResetEmail(),
-      decoration: const InputDecoration(
-        labelText: 'Email',
-        hintText: 'Enter your registered email',
-        prefixIcon: Icon(Icons.email_outlined),
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Email',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.darkGray,
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextFormField(
+          controller: _emailController,
+          keyboardType: TextInputType.emailAddress,
+          textInputAction: TextInputAction.done,
+          autocorrect: false,
+          enabled: !_isLoading,
+          validator: _validateEmail,
+          onFieldSubmitted: (_) => _sendResetEmail(),
+          decoration: InputDecoration(
+            hintText: 'Enter your email',
+            filled: true,
+            fillColor: AppColors.offWhite,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
+                color: AppColors.lightGray,
+                width: 1,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
+                color: AppColors.lightGray,
+                width: 1,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
+                color: AppColors.primaryGreen,
+                width: 2,
+              ),
+            ),
+            prefixIcon: const Icon(
+              Icons.email_outlined,
+              color: AppColors.mediumGray,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildSendButton() {
-    return ElevatedButton(
-      onPressed: _isLoading ? null : _sendResetEmail,
-      child: _isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            )
-          : const Text('Send Reset Link'),
+    return SizedBox(
+      height: 48,
+      child: ElevatedButton(
+        onPressed: _isLoading ? null : _sendResetEmail,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primaryGreen,
+          foregroundColor: AppColors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
+        child: _isLoading
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                ),
+              )
+            : const Text('SEND RESET LINK'),
+      ),
     );
   }
 
@@ -222,10 +296,17 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(Icons.arrow_back, size: 16, color: AppTheme.primaryColor),
+        const Icon(Icons.arrow_back, size: 16, color: AppColors.primaryGreen),
         TextButton(
           onPressed: _isLoading ? null : () => context.pop(),
-          child: const Text('Back to Sign In'),
+          child: const Text(
+            'Back to Login',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: AppColors.primaryGreen,
+            ),
+          ),
         ),
       ],
     );
@@ -242,83 +323,114 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppTheme.successColor.withValues(alpha: 0.1),
+              color: AppColors.success.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.mark_email_read_outlined,
               size: 40,
-              color: AppTheme.successColor,
+              color: AppColors.success,
             ),
           ),
         ),
         const SizedBox(height: 32),
         Text(
           'Check your email',
-          style: Theme.of(context).textTheme.headlineMedium,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.black,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
         Text(
           "We've sent a password reset link to",
-          style: Theme.of(
-            context,
-          ).textTheme.bodyLarge?.copyWith(color: AppTheme.textSecondaryColor),
+          style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 4),
         Text(
           _emailController.text,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: AppColors.black,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),
         // Open Email App Button
-        ElevatedButton.icon(
-          onPressed: () {
-            // This would ideally use url_launcher to open email app
-            // For now, just show a snackbar
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please check your email inbox')),
-            );
-          },
-          icon: const Icon(Icons.email_outlined),
-          label: const Text('Open Email App'),
+        SizedBox(
+          height: 48,
+          child: ElevatedButton.icon(
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Please check your email inbox')),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryGreen,
+              foregroundColor: AppColors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon: const Icon(Icons.email_outlined),
+            label: const Text('Open Email App'),
+          ),
         ),
         const SizedBox(height: 16),
         // Back to Login
-        OutlinedButton(
-          onPressed: () => context.go('/login'),
-          child: const Text('Back to Sign In'),
+        SizedBox(
+          height: 48,
+          child: OutlinedButton(
+            onPressed: () => context.go('/login'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.primaryGreen,
+              side: const BorderSide(color: AppColors.primaryGreen, width: 1.5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Back to Login'),
+          ),
         ),
         const SizedBox(height: 32),
         // Didn't receive section
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppTheme.surfaceColor,
+            color: AppColors.offWhite,
             borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.lightGray),
           ),
           child: Column(
             children: [
-              Text(
+              const Text(
                 "Didn't receive the email?",
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                ),
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'Check your spam folder or try again with a different email address.',
-                style: Theme.of(context).textTheme.bodySmall,
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               TextButton(
                 onPressed: _resetForm,
-                child: const Text('Try different email'),
+                child: const Text(
+                  'Try different email',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.primaryGreen,
+                  ),
+                ),
               ),
             ],
           ),

@@ -37,6 +37,8 @@ class Authentication extends _$Authentication {
     required String email,
     required String password,
     String? displayName,
+    String? phoneNumber,
+    Map<String, dynamic>? metadata,
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
@@ -44,6 +46,8 @@ class Authentication extends _$Authentication {
         email: email,
         password: password,
         displayName: displayName,
+        phoneNumber: phoneNumber,
+        metadata: metadata,
       );
       return _repository.currentUser;
     });
@@ -131,6 +135,38 @@ class Authentication extends _$Authentication {
   /// Updates user photo URL
   Future<void> updatePhotoUrl(String photoUrl) async {
     await _repository.updatePhotoUrl(photoUrl);
+    await reloadUser();
+  }
+
+  /// Updates user email
+  Future<void> updateEmail(String email) async {
+    await _repository.updateEmail(email);
+    // Note: User needs to verify new email before it takes effect fully in some cases
+    await reloadUser();
+  }
+
+  /// Updates user password
+  Future<void> updatePassword(String password) async {
+    await _repository.updatePassword(password);
+  }
+
+  /// Re-authenticates user with email/password
+  Future<void> reauthenticateWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    await _repository.reauthenticateWithEmail(email: email, password: password);
+  }
+
+  /// Updates user phone number
+  Future<void> updatePhoneNumber({
+    required String verificationId,
+    required String smsCode,
+  }) async {
+    await _repository.updatePhoneNumber(
+      verificationId: verificationId,
+      smsCode: smsCode,
+    );
     await reloadUser();
   }
 

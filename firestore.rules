@@ -1,0 +1,301 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // =============================================================================
+    // HELPER FUNCTIONS
+    // =============================================================================
+    
+    // Check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if the user owns the document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    
+    // Check if the data is valid (not missing required fields)
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+    
+    function isTeamMember(teamId) {
+      let teamData = get(/databases/$(database)/documents/teams/$(teamId)).data;
+      return teamData.ownerId == request.auth.uid || 
+             ('memberIds' in teamData && request.auth.uid in teamData.memberIds);
+    }
+    function isTeamAdmin(teamId) {
+      let teamData = get(/databases/$(database)/documents/teams/$(teamId)).data;
+      return teamData.ownerId == request.auth.uid;
+    }
+    
+    // =============================================================================
+    // USER PROFILE RULES
+    // =============================================================================
+    
+    match /users/{userId} {
+      // Read: Own profile, OR any authenticated user can look up profiles for team invites
+      allow read: if isAuthenticated();
+      
+      // Create: User can create their own profile
+      allow create: if isOwner(userId) && 
+                       hasRequiredFields(['uid', 'fullName', 'createdAt', 'updatedAt']);
+      
+      // Update: User can only update their own profile
+      allow update: if isOwner(userId);
+      
+      // Delete: User can delete their own profile
+      allow delete: if isOwner(userId);
+    }
+    
+    // =============================================================================
+    // CONTACT RULES
+    // =============================================================================
+    
+    match /contacts/{contactId} {
+      // Read: Owner can read their own contacts
+      allow read: if isAuthenticated() && 
+                     (resource.data.ownerId == request.auth.uid ||
+                      request.auth.uid in resource.data.sharedWith);
+      
+      // Create: User can create contacts for themselves
+      allow create: if isAuthenticated() && 
+                       request.resource.data.ownerId == request.auth.uid &&
+                       hasRequiredFields(['contactId', 'ownerId', 'fullName', 'createdAt', 'updatedAt']);
+      
+      // Update: Owner can update their own contacts
+      allow update: if isAuthenticated() && 
+                       resource.data.ownerId == request.auth.uid;
+      
+      // Delete: Owner can delete their own contacts
+      allow delete: if isAuthenticated() && 
+                       resource.data.ownerId == request.auth.uid;
+    }
+    
+    // =============================================================================
+    // GLOBAL CONTACT RULES (Shared Directory)
+    // =============================================================================
+    
+    // Fixed Global Contacts Match
+    match /globalContacts/{globalId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated(); // Restrict as needed
+      
+      // Create: Any authenticated user can create global contacts
+      allow create: if isAuthenticated() &&
+                       hasRequiredFields(['globalId', 'latestData', 'version', 'versionTimestamp']);
+      
+      // Update: Only the last updater or verified users can update
+      allow update: if isAuthenticated() && 
+                       (resource.data.lastUpdaterId == request.auth.uid ||
+                        resource.data.verifiedByOwner == true);
+      
+      // Delete: Only admin or verified owner can delete
+      // (Note: In production, this should be restricted further)
+      allow delete: if false; // Global contacts should not be deleted by users
+    }
+    
+    // =============================================================================
+    // CARD DESIGN RULES
+    // =============================================================================
+    
+    match /card_designs/{cardId} {
+      // Read: Owner can read their own card designs
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      
+      // Create: User can create their own card designs
+      allow create: if isAuthenticated() && 
+                       request.resource.data.userId == request.auth.uid &&
+                       hasRequiredFields(['cardId', 'userId', 'themeColor', 'createdAt']);
+      
+      // Update: Owner can update their own card designs
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      
+      // Delete: Owner can delete their own card designs
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // =============================================================================
+    // WALLET RULES
+    // =============================================================================
+    
+    match /wallets/{walletId} {
+      // Read: Owner can read their own wallet
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      
+      // Create: User can create their own wallet
+      allow create: if isAuthenticated() && 
+                       request.resource.data.userId == request.auth.uid &&
+                       request.resource.data.balance == 0 &&
+                       hasRequiredFields(['walletId', 'userId', 'balance', 'currency', 'createdAt']);
+      
+      // Update: Owner can update their own wallet
+      // Additional validation: Balance cannot be directly modified (only through transactions)
+      allow update: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid &&
+                       request.resource.data.balance == resource.data.balance;
+      
+      // Delete: Wallets cannot be deleted
+      allow delete: if false;
+    }
+    
+    // =============================================================================
+    // TRANSACTION RULES
+    // =============================================================================
+    
+    match /transactions/{transactionId} {
+      // Read: Wallet owner can read transactions for their wallet
+      allow read: if isAuthenticated() && 
+                     exists(/databases/$(database)/documents/wallets/$(resource.data.walletId)) &&
+                     get(/databases/$(database)/documents/wallets/$(resource.data.walletId)).data.userId == request.auth.uid;
+      
+      // Create: Only wallet owner can create transactions
+      allow create: if isAuthenticated() && 
+                       exists(/databases/$(database)/documents/wallets/$(request.resource.data.walletId)) &&
+                       get(/databases/$(database)/documents/wallets/$(request.resource.data.walletId)).data.userId == request.auth.uid &&
+                       hasRequiredFields(['transactionId', 'walletId', 'type', 'amount', 'createdAt']);
+      
+      // Update: Transaction status can be updated by wallet owner
+      allow update: if isAuthenticated() && 
+                       exists(/databases/$(database)/documents/wallets/$(resource.data.walletId)) &&
+                       get(/databases/$(database)/documents/wallets/$(resource.data.walletId)).data.userId == request.auth.uid;
+      
+      // Delete: Transactions cannot be deleted
+      allow delete: if false;
+    }
+    
+    // =============================================================================
+    // TEAM RULES
+    // =============================================================================
+    
+    match /teams/{teamId} {
+      // Helper: Check if auth user is member based on memberIds array
+      function isTeamMember() {
+        return isAuthenticated() && request.auth.uid in resource.data.memberIds;
+      }
+
+      // Helper: Check if auth user is the team owner
+      function isTeamOwner() {
+        return isAuthenticated() && resource.data.ownerId == request.auth.uid;
+      }
+
+      // Helper: Check if auth user is owner OR has admin/co-admin role
+      // Members are stored as an array of objects { userId, role, ... }
+      // We use memberIds array to check membership; for admin check we verify ownerId
+      function isTeamOwnerOrAdmin() {
+        return isTeamOwner(); 
+        // NOTE: Firestore rules cannot natively check inside object arrays.
+        // Full admin role enforcement requires Cloud Functions or client-side guards.
+        // Promotion/demotion is validated in client before calling updateTeam.
+      }
+
+      // Read: Only members, invitees, or public teams can be read
+      allow read: if isAuthenticated() &&
+                     (resource.data.ownerId == request.auth.uid ||
+                      ('memberIds' in resource.data && request.auth.uid in resource.data.memberIds) ||
+                      ('visibility' in resource.data && resource.data.visibility == 'public') ||
+                      ('invitedEmails' in resource.data && request.auth.token.email != null && request.auth.token.email in resource.data.invitedEmails) ||
+                      ('invitedPhones' in resource.data && request.auth.token.phone_number != null && request.auth.token.phone_number in resource.data.invitedPhones));
+
+      // Create: Any authenticated user can create a team (they become owner)
+      allow create: if isAuthenticated() &&
+                       request.resource.data.ownerId == request.auth.uid &&
+                       hasRequiredFields(['id', 'name', 'ownerId', 'createdAt', 'updatedAt']);
+
+      // Update: Owner can update all fields. Members can only update non-member fields
+      // Requesting changes to members or memberIds requires the current user to be the owner.
+      // (Full admin enforcement is handled in Cloud Functions/client UI guards).
+      allow update: if isAuthenticated() &&
+                       (resource.data.ownerId == request.auth.uid || 
+                        request.auth.uid in resource.data.memberIds) &&
+                       (
+                         resource.data.ownerId == request.auth.uid || 
+                         !request.resource.data.diff(resource.data).affectedKeys().hasAny(['members', 'memberIds', 'invitedEmails'])
+                       );
+
+      // Delete: Only team owner can delete
+      allow delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+    }
+    
+    // =============================================================================
+    // TEAM SUB-FEATURES RULES (Expenses, Chat, Activity Logs)
+    // =============================================================================
+
+    match /team_expenses/{expenseId} {
+      allow read: if isAuthenticated() && isTeamMember(resource.data.teamId);
+      allow create: if isAuthenticated() && 
+                       request.auth.uid == request.resource.data.addedByUserId &&
+                       isTeamMember(request.resource.data.teamId);
+      allow update: if isAuthenticated() && request.auth.uid == resource.data.addedByUserId;
+      allow delete: if isAuthenticated() && request.auth.uid == resource.data.addedByUserId;
+    }
+
+    match /team_chat_messages/{messageId} {
+      allow read: if isAuthenticated() && isTeamMember(resource.data.teamId);
+      allow create: if isAuthenticated() && 
+                       request.auth.uid == request.resource.data.senderId &&
+                       isTeamMember(request.resource.data.teamId);
+      allow update, delete: if isAuthenticated() && request.auth.uid == resource.data.senderId;
+    }
+
+    match /team_activity_logs/{logId} {
+      allow read: if isAuthenticated() && isTeamMember(resource.data.teamId);
+      // Activity logs are immutable audit trails
+      allow create: if isAuthenticated() && 
+                       request.auth.uid == request.resource.data.userId &&
+                       isTeamMember(request.resource.data.teamId);
+      allow update, delete: if false; 
+    }
+
+    // =============================================================================
+    // NOTIFICATION RULES
+    // =============================================================================
+    
+    match /notifications/{notificationId} {
+      // Read: User can read their own notifications
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      
+      // Create: System or authenticated users can create notifications
+      // (In production, this should be restricted to Cloud Functions only)
+      allow create: if isAuthenticated() &&
+                       hasRequiredFields(['notificationId', 'userId', 'type', 'title', 'message', 'createdAt']);
+      
+      // Update: User can update their own notifications (e.g., mark as read)
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      
+      // Delete: User can delete their own notifications
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // =============================================================================
+    // APP SETTINGS RULES
+    // =============================================================================
+    
+    match /app_settings/{userId} {
+      // Read: User can read their own settings
+      allow read: if isOwner(userId);
+      
+      // Create: User can create their own settings
+      allow create: if isOwner(userId) &&
+                       hasRequiredFields(['userId', 'createdAt', 'updatedAt']);
+      
+      // Update: User can update their own settings
+      allow update: if isOwner(userId);
+      
+      // Delete: User can delete their own settings
+      allow delete: if isOwner(userId);
+    }
+    
+    // =============================================================================
+    // DEFAULT DENY ALL
+    // =============================================================================
+    
+    // Deny all other access by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

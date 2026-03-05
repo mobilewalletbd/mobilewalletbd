@@ -1,0 +1,94 @@
+mutation CreateDemoData @transaction @auth(level: USER, insecureReason: "This is a seed data mutation and is safe to be exposed to all logged in users.") {
+  user_insertMany(data: [
+    {
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      username: "user1",
+      email: "user1@example.com",
+      passwordHash: "hash1",
+      createdAt: "2023-01-01T00:00:00Z",
+      firstName: "John",
+      lastName: "Doe"
+    },
+    {
+      id: "550e8400-e29b-41d4-a716-446655440001",
+      username: "user2",
+      email: "user2@example.com",
+      passwordHash: "hash2",
+      createdAt: "2023-01-02T00:00:00Z",
+      firstName: "Jane",
+      lastName: "Smith"
+    }
+  ])
+  account_insertMany(data: [
+    {
+      id: "550e8400-e29b-41d4-a716-446655440002",
+      userId: "550e8400-e29b-41d4-a716-446655440000",
+      name: "Checking Account",
+      balance: 1500.75,
+      currency: "USD",
+      createdAt: "2023-01-01T08:00:00Z"
+    },
+    {
+      id: "550e8400-e29b-41d4-a716-446655440003",
+      userId: "550e8400-e29b-41d4-a716-446655440001",
+      name: "Savings Account",
+      balance: 5000.00,
+      currency: "USD",
+      createdAt: "2023-01-02T09:00:00Z"
+    }
+  ])
+  category_insertMany(data: [
+    {
+      id: "550e8400-e29b-41d4-a716-446655440004",
+      userId: "550e8400-e29b-41d4-a716-446655440000",
+      name: "Groceries",
+      type: "Expense",
+      color: "#FF5733"
+    },
+    {
+      id: "550e8400-e29b-41d4-a716-446655440005",
+      userId: "550e8400-e29b-41d4-a716-446655440001",
+      name: "Salary",
+      type: "Income",
+      color: "#33FF57"
+    }
+  ])
+  budget_insertMany(data: [
+    {
+      id: "550e8400-e29b-41d4-a716-446655440006",
+      userId: "550e8400-e29b-41d4-a716-446655440000",
+      categoryId: "550e8400-e29b-41d4-a716-446655440004",
+      amount: 300.00,
+      period: "Monthly",
+      startDate: "2023-01-01",
+      endDate: "2023-01-31",
+      createdAt: "2023-01-01T10:00:00Z"
+    }
+  ])
+  transaction_insertMany(data: [
+    {
+      id: "550e8400-e29b-41d4-a716-446655440007",
+      userId: "550e8400-e29b-41d4-a716-446655440000",
+      accountId: "550e8400-e29b-41d4-a716-446655440002",
+      categoryId: "550e8400-e29b-41d4-a716-446655440004",
+      amount: -50.25,
+      type: "Debit",
+      merchant: "Grocery Store A",
+      transactionDate: "2023-01-05",
+      description: "Weekly groceries",
+      createdAt: "2023-01-05T12:30:00Z"
+    },
+    {
+      id: "550e8400-e29b-41d4-a716-446655440008",
+      userId: "550e8400-e29b-41d4-a716-446655440001",
+      accountId: "550e8400-e29b-41d4-a716-446655440003",
+      categoryId: "550e8400-e29b-41d4-a716-446655440005",
+      amount: 2500.00,
+      type: "Credit",
+      merchant: "Employer",
+      transactionDate: "2023-01-10",
+      description: "Monthly salary",
+      createdAt: "2023-01-10T09:00:00Z"
+    }
+  ])
+}

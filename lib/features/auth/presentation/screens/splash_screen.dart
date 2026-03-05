@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:mobile_wallet/core/config/config_provider.dart';
+import 'package:mobile_wallet/core/theme/app_colors.dart';
 import 'package:mobile_wallet/features/auth/presentation/providers/auth_provider.dart';
+import 'package:mobile_wallet/features/settings/presentation/providers/permission_provider.dart';
 
 /// Splash screen that initializes services and checks auth state.
 ///
@@ -11,6 +13,12 @@ import 'package:mobile_wallet/features/auth/presentation/providers/auth_provider
 /// 1. Waiting for Firebase and other services to initialize
 /// 2. Checking authentication state
 /// 3. Navigating to appropriate screen based on auth status
+///
+/// Design based on V1_APP_DESIGN_PLAN specifications:
+/// - White background
+/// - 120x120px app icon with scale animation (0.8 → 1.0)
+/// - App name in Primary Green (#0BBF7D)
+/// - Loading spinner at bottom
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
@@ -56,6 +64,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     if (!mounted) return;
 
+    // Initialize permissions
+    await ref.read(permissionProvider.notifier).initialize();
+
+    // Check if this is first launch
+    final permissionState = ref.read(permissionProvider);
+
+    if (permissionState.isFirstLaunch) {
+      // Navigate to permission screen for first launch
+      if (mounted) {
+        context.go('/permission');
+      }
+      return;
+    }
+
     // Check auth state and navigate
     final authState = ref.read(authenticationProvider);
 
@@ -64,7 +86,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         if (user != null) {
           context.go('/home');
         } else {
-          context.go('/login');
+          context.go('/welcome');
         }
       },
       loading: () {
@@ -72,7 +94,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         _waitForAuthState();
       },
       error: (_, __) {
-        context.go('/login');
+        context.go('/welcome');
       },
     );
   }
@@ -86,12 +108,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           if (user != null) {
             context.go('/home');
           } else {
-            context.go('/login');
+            context.go('/welcome');
           }
         },
         loading: () {},
         error: (_, __) {
-          context.go('/login');
+          context.go('/welcome');
         },
       );
     }, fireImmediately: true);
@@ -108,90 +130,95 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // Get configuration values
     final appName = ref.watch(appNameProvider);
     final splashImagePath = ref.watch(splashImagePathProvider);
-    final primaryColor = ref.watch(primaryColorProvider);
 
     return Scaffold(
-      backgroundColor: primaryColor,
-      body: Center(
-        child: AnimatedBuilder(
-          animation: _animationController,
-          builder: (context, child) {
-            return Opacity(
-              opacity: _fadeAnimation.value,
-              child: Transform.scale(
-                scale: _scaleAnimation.value,
-                child: child,
-              ),
-            );
-          },
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // App Logo from assets
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
+      backgroundColor: AppColors.white,
+      body: SafeArea(
+        child: Center(
+          child: AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) {
+              return Opacity(
+                opacity: _fadeAnimation.value,
+                child: Transform.scale(
+                  scale: _scaleAnimation.value,
+                  child: child,
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Image.asset(
-                      splashImagePath,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        // Fallback to icon if image fails to load
-                        return Icon(
-                          Icons.account_balance_wallet_rounded,
-                          size: 60,
-                          color: primaryColor,
-                        );
-                      },
+              );
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Spacer(),
+                // App Logo from assets
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primaryGreen.withValues(alpha: 0.2),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(30),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Image.asset(
+                        splashImagePath,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          // Fallback to icon if image fails to load
+                          return Icon(
+                            Icons.account_balance_wallet_rounded,
+                            size: 60,
+                            color: AppColors.primaryGreen,
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              // App Name from configuration
-              Text(
-                appName,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  letterSpacing: 1.2,
+                const SizedBox(height: 24),
+                // App Name from configuration
+                Text(
+                  appName,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryGreen,
+                    letterSpacing: 0.5,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Your Digital Contact Wallet',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white.withValues(alpha: 0.8),
-                  letterSpacing: 0.5,
+                const Spacer(),
+                // Loading indicator
+                const SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primaryGreen,
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 48),
-              // Loading indicator
-              const SizedBox(
-                width: 32,
-                height: 32,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                const SizedBox(height: 8),
+                const Text(
+                  'Loading...',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.mediumGray,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 48),
+              ],
+            ),
           ),
         ),
       ),

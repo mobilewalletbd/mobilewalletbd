@@ -4,11 +4,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:mobile_wallet/core/theme/app_theme.dart';
+import 'package:mobile_wallet/core/theme/app_colors.dart';
 import 'package:mobile_wallet/features/auth/presentation/providers/auth_provider.dart';
 import 'package:mobile_wallet/features/auth/domain/repositories/auth_repository.dart';
 
 /// OTP verification screen with 6-digit input and auto-submit.
+///
+/// Design based on V1_APP_DESIGN_PLAN specifications:
+/// - 6 individual digit input boxes (48x56px each)
+/// - Auto-advance focus on digit entry
+/// - Countdown timer for resend
+/// - JetBrains Mono font for OTP codes
 class OTPVerificationScreen extends ConsumerStatefulWidget {
   final String verificationId;
   final String phoneNumber;
@@ -178,7 +184,7 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Verification code sent'),
-                    backgroundColor: AppTheme.successColor,
+                    backgroundColor: AppColors.success,
                   ),
                 );
               }
@@ -213,20 +219,32 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: AppColors.black),
           onPressed: () => context.pop(),
         ),
+        backgroundColor: AppColors.white,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          'Verify OTP',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: AppColors.black,
+          ),
+        ),
       ),
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 20),
               // Header
               _buildHeader(),
-              const SizedBox(height: 48),
+              const SizedBox(height: 40),
               // Error Message
               if (_errorMessage != null) ...[
                 _buildErrorBanner(),
@@ -237,7 +255,7 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
               const SizedBox(height: 32),
               // Verify Button
               _buildVerifyButton(),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               // Resend Section
               _buildResendSection(),
             ],
@@ -249,40 +267,46 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
 
   Widget _buildHeader() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Lock Icon
+        // Phone/SMS Illustration
         Container(
-          width: 64,
-          height: 64,
+          width: 100,
+          height: 100,
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(16),
+            color: AppColors.skyBlue.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(24),
           ),
           child: const Icon(
-            Icons.lock_outline,
-            size: 32,
-            color: AppTheme.primaryColor,
+            Icons.sms_outlined,
+            size: 50,
+            color: AppColors.skyBlue,
           ),
         ),
         const SizedBox(height: 24),
         Text(
-          'Verify your phone',
-          style: Theme.of(context).textTheme.headlineLarge,
+          'Verify OTP',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.black,
+          ),
+          textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         RichText(
+          textAlign: TextAlign.center,
           text: TextSpan(
-            style: Theme.of(
-              context,
-            ).textTheme.bodyLarge?.copyWith(color: AppTheme.textSecondaryColor),
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppColors.textSecondary,
+            ),
             children: [
-              const TextSpan(text: 'Enter the 6-digit code sent to '),
+              const TextSpan(text: 'Enter the 6-digit code sent to\n'),
               TextSpan(
-                text: _formatPhoneNumber(widget.phoneNumber),
+                text: '+880 ${_formatPhoneNumber(widget.phoneNumber)}',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.textPrimaryColor,
+                  color: AppColors.black,
                 ),
               ),
             ],
@@ -296,18 +320,18 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppTheme.errorColor.withValues(alpha: 0.1),
+        color: AppColors.error.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.errorColor.withValues(alpha: 0.3)),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, color: AppTheme.errorColor, size: 20),
+          const Icon(Icons.error_outline, color: AppColors.error, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               _errorMessage!,
-              style: const TextStyle(color: AppTheme.errorColor, fontSize: 14),
+              style: const TextStyle(color: AppColors.error, fontSize: 14),
             ),
           ),
         ],
@@ -332,32 +356,43 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
               textAlign: TextAlign.center,
               maxLength: 1,
               enabled: !_isLoading,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                fontFamily: 'JetBrainsMono',
+                color: AppColors.black,
+              ),
               decoration: InputDecoration(
                 counterText: '',
                 contentPadding: EdgeInsets.zero,
                 filled: true,
                 fillColor: _controllers[index].text.isNotEmpty
-                    ? AppTheme.primaryColor.withValues(alpha: 0.1)
-                    : AppTheme.surfaceColor,
+                    ? AppColors.primaryGreen.withValues(alpha: 0.1)
+                    : AppColors.offWhite,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: _controllers[index].text.isNotEmpty
-                      ? const BorderSide(color: AppTheme.primaryColor, width: 2)
-                      : BorderSide.none,
+                      ? const BorderSide(
+                          color: AppColors.primaryGreen,
+                          width: 2,
+                        )
+                      : const BorderSide(color: AppColors.lightGray, width: 1),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(
-                    color: AppTheme.primaryColor,
+                    color: AppColors.primaryGreen,
                     width: 2,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: _controllers[index].text.isNotEmpty
-                      ? const BorderSide(color: AppTheme.primaryColor, width: 2)
-                      : BorderSide.none,
+                      ? const BorderSide(
+                          color: AppColors.primaryGreen,
+                          width: 2,
+                        )
+                      : const BorderSide(color: AppColors.lightGray, width: 1),
                 ),
               ),
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -370,43 +405,66 @@ class _OTPVerificationScreenState extends ConsumerState<OTPVerificationScreen> {
   }
 
   Widget _buildVerifyButton() {
-    return ElevatedButton(
-      onPressed: (_isLoading || !_isOTPComplete) ? null : _verifyOTP,
-      child: _isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            )
-          : const Text('Verify'),
+    return SizedBox(
+      height: 48,
+      child: ElevatedButton(
+        onPressed: (_isLoading || !_isOTPComplete) ? null : _verifyOTP,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: _isOTPComplete
+              ? AppColors.primaryGreen
+              : AppColors.lightGray,
+          foregroundColor: AppColors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
+        child: _isLoading
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                ),
+              )
+            : const Text('VERIFY'),
+      ),
     );
   }
 
   Widget _buildResendSection() {
     return Column(
       children: [
-        Text(
-          "Didn't receive the code?",
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: AppTheme.textSecondaryColor),
-        ),
-        const SizedBox(height: 8),
         if (_canResend)
           TextButton(
             onPressed: _isLoading ? null : _resendOTP,
-            child: const Text('Resend Code'),
+            child: const Text(
+              'Resend Code',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.primaryGreen,
+              ),
+            ),
           )
         else
           Text(
-            'Resend code in ${_resendSeconds}s',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textSecondaryColor,
+            'Resend code in 00:${_resendSeconds.toString().padLeft(2, '0')}',
+            style: const TextStyle(fontSize: 14, color: AppColors.mediumGray),
+          ),
+        const SizedBox(height: 8),
+        TextButton(
+          onPressed: () => context.pop(),
+          child: const Text(
+            'Change number?',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: AppColors.primaryGreen,
             ),
           ),
+        ),
       ],
     );
   }

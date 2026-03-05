@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mobile_wallet/features/auth/presentation/providers/auth_provider.dart';
@@ -23,21 +24,105 @@ class UserProfileNotifier extends _$UserProfileNotifier {
 
     // Fetch profile from repository
     final repository = ref.read(userProfileRepositoryProvider);
-    final profile = await repository.getUserProfile(authUser.id);
+    UserProfile? profile;
 
-    // If profile doesn't exist, create a new one
-    if (profile == null && authUser.displayName != null) {
-      final newProfile = UserProfile.newUser(
-        uid: authUser.id,
-        fullName: authUser.displayName ?? 'User',
-      );
+    try {
+      profile = await repository.getUserProfile(authUser.id);
+    } catch (e) {
+      // If fetching fails, we'll try to create it if it doesn't exist
+      // This handles cases where the document is missing.
+    }
+
+    // If profile doesn't exist, auto-create from auth data
+    if (profile == null) {
+      final extraData = authUser.rawExtraData;
+
+      // Extract most accurate name possible
+      String name = authUser.displayName ?? '';
+      String? firstName = extraData?['given_name'] as String?;
+      String? lastName = extraData?['family_name'] as String?;
+
+      if (firstName != null || lastName != null) {
+        name = '${firstName ?? ''} ${lastName ?? ''}'.trim();
+      } else if (name.isNotEmpty) {
+        // Handle manual registration name splitting
+        final parts = name.trim().split(' ');
+        if (parts.length >= 2) {
+          firstName = parts[0];
+          lastName = parts.sublist(1).join(' ');
+        } else {
+          firstName = name;
+        }
+      }
+
+      if (name.isEmpty) {
+        name = authUser.email?.split('@').first ?? 'User';
+      }
+
+      final newProfile =
+          UserProfile.newUser(
+            uid: authUser.id,
+            fullName: name,
+            email: authUser.email,
+          ).copyWith(
+            firstName: firstName,
+            lastName: lastName,
+            phoneNumber: authUser.phoneNumber,
+            avatarUrl: authUser.photoUrl,
+            accountStatus: authUser.emailVerified
+                ? AccountStatus.active
+                : AccountStatus.pendingVerification,
+            timeZone: extraData?['locale'] as String?,
+          );
+
       return await repository.createUserProfile(newProfile);
+    }
+
+    // Proactive Sync: If the profile exists but is missing critical info that Auth has (like photo or email)
+    // or if the account was pending but email is now verified.
+    if ((profile.avatarUrl == null && authUser.photoUrl != null) ||
+        (profile.email == null && authUser.email != null) ||
+        (profile.firstName == null &&
+            authUser.rawExtraData?['given_name'] != null) ||
+        (profile.accountStatus == AccountStatus.pendingVerification &&
+            authUser.emailVerified)) {
+      final extraData = authUser.rawExtraData;
+
+      // Split name for manual sync if first name is missing
+      String? firstName =
+          profile.firstName ?? extraData?['given_name'] as String?;
+      String? lastName =
+          profile.lastName ?? extraData?['family_name'] as String?;
+
+      if (firstName == null && profile.fullName.isNotEmpty) {
+        final parts = profile.fullName.trim().split(' ');
+        if (parts.length >= 2) {
+          firstName = parts[0];
+          lastName = parts.sublist(1).join(' ');
+        } else {
+          firstName = profile.fullName;
+        }
+      }
+
+      final updatedProfile = profile.copyWith(
+        email: profile.email ?? authUser.email,
+        firstName: firstName,
+        lastName: lastName,
+        avatarUrl: profile.avatarUrl ?? authUser.photoUrl,
+        phoneNumber: profile.phoneNumber ?? authUser.phoneNumber,
+        accountStatus: authUser.emailVerified
+            ? AccountStatus.active
+            : profile.accountStatus,
+        timeZone: profile.timeZone ?? extraData?['locale'] as String?,
+        updatedAt: DateTime.now(),
+      );
+
+      return await repository.updateUserProfile(updatedProfile);
     }
 
     return profile;
   }
 
-  /// Creates a new user profile
   Future<void> createProfile({
     required String fullName,
     String? jobTitle,
@@ -48,6 +133,13 @@ class UserProfileNotifier extends _$UserProfileNotifier {
 
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
+      // Sync display name to Auth if different
+      if (authUser.displayName != fullName) {
+        await ref
+            .read(authenticationProvider.notifier)
+            .updateDisplayName(fullName);
+      }
+
       final repository = ref.read(userProfileRepositoryProvider);
       final profile = UserProfile.newUser(
         uid: authUser.id,
@@ -57,7 +149,6 @@ class UserProfileNotifier extends _$UserProfileNotifier {
     });
   }
 
-  /// Updates the user profile
   Future<void> updateProfile({
     String? fullName,
     String? jobTitle,
@@ -72,6 +163,16 @@ class UserProfileNotifier extends _$UserProfileNotifier {
 
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
+      // 1. Update Firebase Auth (Sync critical fields)
+      final authNotifier = ref.read(authenticationProvider.notifier);
+      if (fullName != null && fullName != currentProfile.fullName) {
+        await authNotifier.updateDisplayName(fullName);
+      }
+      if (avatarUrl != null && avatarUrl != currentProfile.avatarUrl) {
+        await authNotifier.updatePhotoUrl(avatarUrl);
+      }
+
+      // 2. Update UserProfile in Database
       final repository = ref.read(userProfileRepositoryProvider);
       final updatedProfile = currentProfile.copyWith(
         fullName: fullName ?? currentProfile.fullName,
@@ -198,4 +299,10 @@ String preferredTheme(PreferredThemeRef ref) {
 String preferredLanguage(PreferredLanguageRef ref) {
   final profile = ref.watch(userProfileNotifierProvider).valueOrNull;
   return profile?.preferredLanguage ?? 'en';
+}
+
+@riverpod
+Future<UserProfile?> userProfileById(UserProfileByIdRef ref, String uid) async {
+  final repository = ref.watch(userProfileRepositoryProvider);
+  return await repository.getUserProfile(uid);
 }

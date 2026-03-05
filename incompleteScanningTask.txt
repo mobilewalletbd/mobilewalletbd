@@ -1,0 +1,19 @@
+# Scanning Tasks Status
+
+Based on `ScanFunctionality.txt` section 10:
+
+- [ ] 1. Initialize Camera and Viewfinder Guides.
+- [ ] 2. Implement Multi-Side Logic in ScanNotifier.
+- [ ] 3. Integrate Google ML Kit for Real-time Text Feedback.
+- [ ] 4. Set up Cloudinary Flutter SDK for Image Persistence.
+- [ ] 5. Create Cloud Vision API Client for Bangla Support.
+- [ ] 6. Develop Comprehensive Regex Library for BD/Intl Phones.
+- [ ] 7. Build Address Resolver for Bangla Locations.
+- [ ] 8. Implement Designation Matcher (English/Bangla Dictionary).
+- [ ] 9. Design OcrPreview UI with Highlighted Confidence.
+- [ ] 10. Connect Review Screen to Contact Creation Pipeline.
+- [ ] 11. Add Auto-Sync logic for Offline Scans.
+- [ ] 12. Implement Image Compression Pre-processing.
+- [ ] 13. Add Haptic Feedback for Successful OCR.
+- [ ] 14. Build Test Suite for Multiscript Edge Cases.
+- [ ] 15. Finalize Documentation and User Guides.

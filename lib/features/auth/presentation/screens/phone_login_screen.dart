@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:mobile_wallet/core/theme/app_theme.dart';
+import 'package:mobile_wallet/core/theme/app_colors.dart';
 import 'package:mobile_wallet/features/auth/presentation/providers/auth_provider.dart';
 
 /// Phone login screen with country code selector.
@@ -163,13 +163,13 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
           width: 64,
           height: 64,
           decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withValues(alpha: 0.1),
+            color: AppColors.primaryGreen.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(16),
           ),
           child: const Icon(
             Icons.phone_android,
             size: 32,
-            color: AppTheme.primaryColor,
+            color: AppColors.primaryGreen,
           ),
         ),
         const SizedBox(height: 24),
@@ -182,7 +182,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
           "We'll send you a verification code to confirm your phone number.",
           style: Theme.of(
             context,
-          ).textTheme.bodyLarge?.copyWith(color: AppTheme.textSecondaryColor),
+          ).textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
         ),
       ],
     );
@@ -192,18 +192,18 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppTheme.errorColor.withValues(alpha: 0.1),
+        color: AppColors.error.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.errorColor.withValues(alpha: 0.3)),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, color: AppTheme.errorColor, size: 20),
+          const Icon(Icons.error_outline, color: AppColors.error, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               _errorMessage!,
-              style: const TextStyle(color: AppTheme.errorColor, fontSize: 14),
+              style: const TextStyle(color: AppColors.error, fontSize: 14),
             ),
           ),
         ],
@@ -222,7 +222,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
             // Country Code Dropdown
             Container(
               decoration: BoxDecoration(
-                color: AppTheme.surfaceColor,
+                color: AppColors.offWhite,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: DropdownButtonHideUnderline(
@@ -294,14 +294,14 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
         Icon(
           Icons.info_outline,
           size: 16,
-          color: AppTheme.textSecondaryColor.withValues(alpha: 0.7),
+          color: AppColors.textSecondary.withValues(alpha: 0.7),
         ),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
             'Standard SMS charges may apply',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppTheme.textSecondaryColor.withValues(alpha: 0.7),
+              color: AppColors.textSecondary.withValues(alpha: 0.7),
             ),
           ),
         ),

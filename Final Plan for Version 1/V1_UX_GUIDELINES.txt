@@ -73,8 +73,8 @@ References:
 
 3.2 Home / Dashboard
 - Contact Grid Layout
-  - Two‑column grid with card previews, front/back toggles as per APP_DESIGN_PLAN.txt.
-  - Ensure cards remain readable on small screens; truncate long names gracefully.
+  - Two‑column grid with Contact user image/First defaults Profile image previews, Add "View Card" icon to see the card's front and back .
+  - Ensure cards remain readable on small screens; truncate long names gracefully. front/back toggles as per APP_DESIGN_PLAN.txt
 - Tabs and Filtering
   - Horizontal scrollable category tabs with clear active pill.
   - Preserve filter state when the user navigates back from details.

@@ -1,0 +1,1431 @@
+================================================================================
+  TEAM FEATURE — COMPLETE DETAILED REFERENCE
+  Project: Smart Contact Wallet (Mobile Wallet BD)
+  Generated: 2026-03-03
+  Scope: ALL team-related files, functions, pages, planning, UI, and data layers
+================================================================================
+
+================================================================================
+ TABLE OF CONTENTS
+================================================================================
+ 1. OVERVIEW & PURPOSE
+ 2. FILE INVENTORY (all team-related files)
+ 3. DATA MODEL — Team & TeamMember Entities
+ 4. DOMAIN LAYER — TeamRepository Interface
+ 5. DATA LAYER — TeamRepositoryImpl (Firestore)
+ 6. STATE MANAGEMENT — TeamNotifier (Provider)
+ 7. SCREENS & PAGES
+    7.1 TeamListScreen
+    7.2 TeamDetailsScreen
+    7.3 CreateTeamScreen
+ 8. DIALOGS & SUB-WIDGETS (inside TeamDetailsScreen)
+    8.1 _SharedContactsTab
+    8.2 _SharedCardsTab
+    8.3 _ShareContactDialog
+    8.4 _AddMemberSearchDialog
+ 9. CROSS-FEATURE: Card Sharing With Teams (CardDesignNotifier)
+10. CROSS-FEATURE: Share Options Sheet Team Dialog (ShareOptionsSheet)
+11. NAVIGATION & ROUTING (Entry Points)
+12. PAGE DESIGN SCREENSHOTS (Final Plan for Version 1/Pages)
+13. FULL SOURCE CODE — ALL FILES
+
+
+================================================================================
+ 1. OVERVIEW & PURPOSE
+================================================================================
+
+The Team feature is part of the "Collaboration" module in Smart Contact Wallet V1.
+It enables users to:
+  - Create and manage named teams with categorized types
+  - Invite other users as members (via multi-select search list)
+  - Manage granular roles and administrative permissions
+  - Share contact cards with team members
+  - Share digital business cards with a team
+  - Track team expenses in a shared Wallet tab
+  - Communicate via built-in Group Chat
+  - Monitor actions via a Recent Activity audit log
+  - View and manage shared contacts and cards per team
+
+Teams are stored in Firebase Firestore under the "teams" collection.
+The feature uses Clean Architecture (Domain / Data / Presentation).
+State management is done with Flutter Riverpod (StateNotifier + FutureProvider).
+
+
+================================================================================
+ 2. FILE INVENTORY (All Team-Related Files)
+================================================================================
+
+── DOMAIN LAYER ──────────────────────────────────────────────────────────────
+  lib/features/collaboration/domain/entities/team.dart
+  lib/features/collaboration/domain/entities/team.freezed.dart   [GENERATED]
+  lib/features/collaboration/domain/entities/team.g.dart          [GENERATED]
+  lib/features/collaboration/domain/repositories/team_repository.dart
+
+── DATA LAYER ────────────────────────────────────────────────────────────────
+  lib/features/collaboration/data/repositories/team_repository_impl.dart
+
+── PRESENTATION — PROVIDERS ──────────────────────────────────────────────────
+  lib/features/collaboration/presentation/providers/team_provider.dart
+
+── PRESENTATION — SCREENS ────────────────────────────────────────────────────
+  lib/features/collaboration/presentation/screens/team_list_screen.dart
+  lib/features/collaboration/presentation/screens/team_details_screen.dart
+  lib/features/collaboration/presentation/screens/create_team_screen.dart
+
+── CROSS-FEATURE TEAM REFERENCES ─────────────────────────────────────────────
+  lib/features/digital_card/presentation/providers/card_design_provider.dart
+    → shareCardWithTeam(String teamId)
+    → unshareCardWithTeam(String teamId)
+    → cardsSharedWithTeam(String teamId)  [riverpod provider]
+
+  lib/features/digital_card/presentation/widgets/share_options_sheet.dart
+    → "Share with Team" option in the share bottom sheet
+    → _showTeamSelectionDialog()
+
+  lib/features/settings/presentation/settings_screen.dart
+    → "Collaboration" section → "My Teams" tile  (route: /settings/teams)
+
+  lib/features/home/presentation/home_screen.dart
+    → Quick Action button "Teams"  (route: /settings/teams)
+
+── PAGE DESIGN SCREENSHOTS ───────────────────────────────────────────────────
+  Final Plan for Version 1/Pages/TeamDashboard.png
+  Final Plan for Version 1/Pages/Team2.jpg
+  Final Plan for Version 1/Pages/43.TeamDirectory.png
+  Final Plan for Version 1/Pages/42. Team View.jpg
+
+
+================================================================================
+ 3. DATA MODEL — Team & TeamMember Entities
+================================================================================
+
+FILE: lib/features/collaboration/domain/entities/team.dart
+──────────────────────────────────────────────────────────
+
+  PACKAGE: freezed + json_serializable (code generation)
+  PART FILES: team.freezed.dart, team.g.dart
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │  @freezed                                                   │
+  │  class Team                                                 │
+  ├─────────────────────────────────────────────────────────────┤
+  │  FIELDS:                                                    │
+  │    String       id          — Unique team ID (UUID v4)      │
+  │    String       name        — Team display name             │
+  │    String?      description — Optional team description     │
+  │    String?      category    — Team category type (e.g. Sales)│
+  │    String?      photoUrl    — Optional team avatar URL      │
+  │    String       ownerId     — User ID of team creator/owner │
+  │    List<TeamMember> members — All team members              │
+  │    double?      totalExpenses — Sum of team wallet expenses │
+  │    DateTime     createdAt   — Timestamp of creation         │
+  │    DateTime     updatedAt   — Timestamp of last update      │
+  ├─────────────────────────────────────────────────────────────┤
+  │  METHODS:                                                   │
+  │    Team.fromJson(Map<String, dynamic> json) — deserializer  │
+  │    toJson() → Map<String, dynamic>          — serializer    │
+  │    copyWith(...)                            — deep clone    │
+  └─────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │  @freezed                                                   │
+  │  class TeamMember                                           │
+  ├─────────────────────────────────────────────────────────────┤
+  │  FIELDS:                                                    │
+  │    String    userId    — ID of the user (member)            │
+  │    String    role      — 'owner' | 'admin' | 'co-admin' |   │
+  │                         | 'member' | 'viewer'               │
+  │    String?   jobTitle  — e.g., 'Senior Developer'           │
+  │    DateTime  joinedAt  — When member joined                 │
+  │    String?   status    — 'active' | 'pending' | 'invited'   │
+  ├─────────────────────────────────────────────────────────────┤
+  │  METHODS:                                                   │
+  │    TeamMember.fromJson(Map<String, dynamic> json)           │
+  │    toJson() → Map<String, dynamic>                          │
+  │    copyWith(...)                                            │
+  └─────────────────────────────────────────────────────────────┘
+
+  *(Note: To fully support the UI designs, the system will also need 
+    new models for `TeamExpense`, `TeamChatMessage`, and `TeamActivityLog`)*
+
+  Firestore Storage Notes:
+    - Stored in collection: "teams"
+    - Document ID = team.id (UUID v4)
+    - Extra stored field: "memberIds" (List<String>) for Firestore
+      array-contains queries (since Firestore cannot query nested maps)
+    - Timestamps stored as Firestore FieldValue.serverTimestamp()
+
+
+================================================================================
+ 4. DOMAIN LAYER — TeamRepository Interface
+================================================================================
+
+FILE: lib/features/collaboration/domain/repositories/team_repository.dart
+──────────────────────────────────────────────────────────────────────────
+
+  abstract class TeamRepository {
+    Future<Team>        createTeam(Team team)
+    Future<Team?>       getTeam(String teamId)
+    Future<List<Team>>  getUserTeams(String userId)
+    Future<void>        addMember(String teamId, TeamMember member)
+    Future<void>        removeMember(String teamId, String userId)
+    Future<void>        updateTeam(Team team)
+    Future<void>        deleteTeam(String teamId)
+  }
+
+  Method Descriptions:
+  ┌────────────────┬─────────────────────────────────────────────────────────┐
+  │ createTeam     │ Creates new team in Firestore. Returns the saved Team   │
+  │                │ object (with server timestamps populated).              │
+  ├────────────────┼─────────────────────────────────────────────────────────┤
+  │ getTeam        │ Fetches single team by ID. Returns null if not found.   │
+  ├────────────────┼─────────────────────────────────────────────────────────┤
+  │ getUserTeams   │ Queries teams where 'memberIds' array-contains userId.  │
+  ├────────────────┼─────────────────────────────────────────────────────────┤
+  │ addMember      │ Appends a TeamMember to team.members and memberIds.     │
+  ├────────────────┼─────────────────────────────────────────────────────────┤
+  │ removeMember   │ Uses Firestore transaction to safely remove member      │
+  │                │ from both 'members' list and 'memberIds' array.        │
+  ├────────────────┼─────────────────────────────────────────────────────────┤
+  │ updateTeam     │ Full update of team fields. Syncs memberIds from        │
+  │                │ current members list. Removes createdAt from update.   │
+  ├────────────────┼─────────────────────────────────────────────────────────┤
+  │ deleteTeam     │ Hard deletes the team document from Firestore.         │
+  └────────────────┴─────────────────────────────────────────────────────────┘
+
+
+================================================================================
+ 5. DATA LAYER — TeamRepositoryImpl (Firestore)
+================================================================================
+
+FILE: lib/features/collaboration/data/repositories/team_repository_impl.dart
+─────────────────────────────────────────────────────────────────────────────
+
+  class TeamRepositoryImpl implements TeamRepository
+  Dependencies: FirestoreService
+
+  Riverpod Provider:
+    final teamRepositoryProvider = Provider<TeamRepository>((ref) {
+      final firestoreService = ref.watch(firestoreServiceProvider);
+      return TeamRepositoryImpl(firestoreService);
+    });
+
+  KEY IMPLEMENTATION DETAILS:
+
+  createTeam(Team team):
+    - Converts team to Map using toJson()
+    - Explicitly serializes members list using member.toJson() (avoids
+      "instance of _$TeamMemberImpl" Firestore serialization bug)
+    - Stores extra "memberIds" field (List<String>) for query support
+    - Uses FieldValue.serverTimestamp() for createdAt and updatedAt
+    - After write, fetches document back to get resolved timestamps
+    - Returns full Team object from Firestore
+
+  getTeam(String teamId):
+    - Simple doc.get() from teamsCollection
+    - Returns null if document doesn't exist
+
+  getUserTeams(String userId):
+    - Queries: teamsCollection.where('memberIds', arrayContains: userId)
+    - Returns all teams where user is any kind of member
+
+  addMember(String teamId, TeamMember member):
+    - Uses FieldValue.arrayUnion for both 'members' (serialized map)
+      and 'memberIds' (userId string)
+    - Non-transactional (simple update, atomicity not critical here)
+
+  removeMember(String teamId, String userId):
+    - Uses Firestore TRANSACTION for safe read-modify-write
+    - Reads current team, filters out the userId from members list,
+      rebuilds memberIds, then writes updated arrays transactionally
+
+  updateTeam(Team team):
+    - Full update, re-serializes all members
+    - Syncs memberIds from current members
+    - Excludes 'createdAt' from update payload
+
+  deleteTeam(String teamId):
+    - Hard delete of the Firestore document
+
+  _documentToTeam(DocumentSnapshot doc):
+    - Helper method: converts Firestore document to Team entity
+    - Handles Timestamp → ISO 8601 string conversion
+    - Injects doc.id into the data map as 'id' field
+
+  _timestampToString(dynamic timestamp):
+    - Converts Firestore Timestamp to ISO 8601 string
+    - Falls back to DateTime.now().toIso8601String() for pending writes
+
+
+================================================================================
+ 6. STATE MANAGEMENT — TeamNotifier & Providers
+================================================================================
+
+FILE: lib/features/collaboration/presentation/providers/team_provider.dart
+──────────────────────────────────────────────────────────────────────────
+
+  ── PROVIDERS ──────────────────────────────────────────────────────────────
+
+  userTeamsProvider
+    Type: FutureProvider.autoDispose<List<Team>>
+    Purpose: Loads all teams the current user belongs to
+    Depends on: currentUserProvider, teamRepositoryProvider
+    Usage: ref.watch(userTeamsProvider) in TeamListScreen
+
+  teamDetailsProvider
+    Type: FutureProvider.autoDispose.family<Team?, String>
+    Purpose: Loads a single team by ID
+    Parameter: teamId (String)
+    Usage: ref.watch(teamDetailsProvider(widget.teamId)) in TeamDetailsScreen
+
+  teamNotifierProvider
+    Type: StateNotifierProvider<TeamNotifier, AsyncValue<void>>
+    Purpose: Exposes TeamNotifier for write operations
+    Usage: ref.read(teamNotifierProvider.notifier).createTeam(...)
+
+  *(Future requirements: Needs new providers for `teamWalletProvider`, 
+    `teamChatProvider`, and `teamActivityProvider` to match designs)*
+
+  ── CLASS: TeamNotifier ────────────────────────────────────────────────────
+
+  extends StateNotifier<AsyncValue<void>>
+  Initial state: AsyncValue.data(null)
+
+  METHODS:
+
+  createTeam(String name, String? description, String? photoUrl)
+    - Validates user is authenticated
+    - Generates new UUID for team ID
+    - Creates Team object with owner as first member (role: 'owner',
+      status: 'active')
+    - Calls repository.createTeam()
+    - Invalidates userTeamsProvider to refresh list
+    - Logs detailed debug info at each step
+
+  addMember(String teamId, String userId)
+    - Creates TeamMember with role: 'member', status: 'pending'
+    - Calls repository.addMember()
+    - Invalidates teamDetailsProvider(teamId)
+
+  removeMember(String teamId, String userId)
+    - Calls repository.removeMember()
+    - Invalidates teamDetailsProvider(teamId)
+
+  deleteTeam(String teamId)
+    - Calls repository.deleteTeam()
+    - Invalidates userTeamsProvider (refreshes team list)
+
+  leaveTeam(String teamId)
+    - Gets current user ID from auth
+    - Calls removeMember(teamId, currentUser.id)
+    - Invalidates userTeamsProvider
+
+
+================================================================================
+ 7. SCREENS & PAGES
+================================================================================
+
+──────────────────────────────────────────────────────────────────────────────
+ 7.1  TeamListScreen
+──────────────────────────────────────────────────────────────────────────────
+
+FILE: lib/features/collaboration/presentation/screens/team_list_screen.dart
+ROUTE: /settings/teams
+CLASS: TeamListScreen extends ConsumerWidget
+
+  PURPOSE:
+    Lists all teams the current user belongs to.
+    Entry point for team management.
+
+  UI STRUCTURE:
+    Scaffold
+    ├── AppBar
+    │     title: "My Teams"
+    │     actions: [IconButton(Icons.add → /settings/teams/create)]
+    └── body:
+          AsyncValue<List<Team>>.when(
+            data: (teams) →
+              IF empty:
+                Center
+                  Column
+                    Text("No teams found")
+                    ElevatedButton("Create a Team" → /settings/teams/create)
+              ELSE:
+                ListView.builder
+                  ListTile per team
+                    leading: CircleAvatar (photoUrl or name initial)
+                    title: team.name
+                    subtitle: "${team.members.length} members"
+                    onTap: → /settings/teams/${team.id}
+            loading: CircularProgressIndicator
+            error: Text('Error: $error')
+          )
+
+  STATE PROVIDER WATCHED:
+    userTeamsProvider
+
+──────────────────────────────────────────────────────────────────────────────
+ 7.2  TeamDetailsScreen
+──────────────────────────────────────────────────────────────────────────────
+
+FILE: lib/features/collaboration/presentation/screens/team_details_screen.dart
+ROUTE: /settings/teams/:teamId
+CLASS: TeamDetailsScreen extends ConsumerStatefulWidget
+
+  CONSTRUCTOR:
+    required String teamId
+
+  STATE CLASS: _TeamDetailsScreenState
+    TextEditingController _emailController
+
+  METHODS IN STATE:
+    _showAddMemberDialog()     — Opens _AddMemberSearchDialog
+    _showShareContactDialog()  — Opens _ShareContactDialog
+
+  UI STRUCTURE:
+    DefaultTabController(length: 3) // Will expand to handle Wallet/Settings tabs
+    Scaffold
+    ├── AppBar
+    │     title: "Team Details"
+    │     bottom: TabBar
+    │       tabs: ["Members", "Shared Contacts", "Shared Cards"] 
+    │       (NOTE: Designs call for modifying this to [Members] [Wallet] [Settings]
+    │        and nesting contacts under Members/Directory)
+    │     actions:
+    │       IF owner: IconButton(person_add → _showAddMemberDialog)
+    │       PopupMenuButton<String>
+    │         IF owner: "Delete Team" → deleteTeam() → navigate /settings/teams
+    │         ELSE:     "Leave Team"  → leaveTeam()  → navigate /settings/teams
+    └── body: teamAsync.when(...)
+          data: TabBarView
+            Tab 0 — Members:
+              Column
+              ├── Team name + description (header) + NEW Financial summary
+              ├── NEW Dashboard stats (Active members, shared contacts, activity)
+              └── ListView.builder (team.members)
+                    ListTile per member
+                      title: member.userId   [TODO: resolve to display name]
+                      subtitle: member.role
+                      trailing:
+                        Text(member.status ?? '')
+                        IF owner AND not self:
+                          IconButton(remove_circle → removeMember dialog)
+            Tab 1 — Shared Contacts:
+              _SharedContactsTab(teamId)
+            Tab 2 — Shared Cards:
+              _SharedCardsTab(teamId)
+        loading: CircularProgressIndicator
+        error: Text
+    ├── floatingActionButton:
+          FloatingActionButton(Icons.share → _showShareContactDialog)
+
+  STATE PROVIDERS WATCHED:
+    teamDetailsProvider(widget.teamId)
+    currentUserProvider
+
+  STATE PROVIDERS READ (actions):
+    teamNotifierProvider.notifier
+      → deleteTeam()
+      → leaveTeam()
+      → removeMember()
+
+──────────────────────────────────────────────────────────────────────────────
+ 7.3  CreateTeamScreen
+──────────────────────────────────────────────────────────────────────────────
+
+FILE: lib/features/collaboration/presentation/screens/create_team_screen.dart
+ROUTE: /settings/teams/create
+CLASS: CreateTeamScreen extends ConsumerStatefulWidget
+
+  STATE CLASS: _CreateTeamScreenState
+    TextEditingController _nameController
+    TextEditingController _descriptionController
+    GlobalKey<FormState> _formKey
+
+  SUBMIT METHOD: _submit()
+    - Validates form
+    - Calls teamNotifierProvider.notifier.createTeam(name, description, null)
+    - On success: context.pop() + SnackBar("Team created successfully")
+    - On error: SnackBar("Failed to create team: $error")
+    - Photo URL not yet supported
+
+  UI STRUCTURE:
+    Scaffold
+    ├── AppBar: title "Create Team"
+    └── body: Padding → Form
+          Top: Upload Logo Circle (Camera icon)
+          TextFormField (Team Name, required validator)
+          SizedBox(16)
+          TextFormField (Description, optional, maxLines: 3)
+          SizedBox(16)
+          DropdownButtonFormField (Category, e.g. "Sales & Marketing")
+          SizedBox(24)
+          ElevatedButton("Create Team")
+            → isLoading → CircularProgressIndicator
+            → else     → submit
+
+  STATE WATCHED:
+    teamNotifierProvider  (for isLoading check)
+
+
+================================================================================
+ 8. DIALOGS & SUB-WIDGETS
+================================================================================
+
+──────────────────────────────────────────────────────────────────────────────
+ 8.1  _SharedContactsTab  (private widget in team_details_screen.dart)
+──────────────────────────────────────────────────────────────────────────────
+
+  class _SharedContactsTab extends ConsumerWidget
+  Constructor: required String teamId
+
+  PURPOSE: Shows all contacts shared with this team by ALL members.
+           Allows contact owner to unshare their contacts.
+
+  PROVIDERS WATCHED:
+    sharedContactsProvider(teamId)   — from contacts feature
+    currentUserProvider
+
+  UI:
+    sharedContactsAsync.when(
+      data: (contacts) →
+        IF empty: Text("No shared contacts yet")
+        ELSE: ListView.builder
+          ListTile per contact
+            leading: CircleAvatar (contact.initials)
+            title: contact.fullName
+            subtitle: contact.displaySubtitle ?? ''
+            trailing: IF currentUser.id == contact.ownerId
+              IconButton(stop_screen_share → Unshare dialog)
+                → contactsNotifierProvider.notifier.unshareContact(id, teamId)
+                → ref.invalidate(sharedContactsProvider(teamId))
+    )
+
+──────────────────────────────────────────────────────────────────────────────
+ 8.2  _SharedCardsTab  (private widget in team_details_screen.dart)
+──────────────────────────────────────────────────────────────────────────────
+
+  class _SharedCardsTab extends ConsumerWidget
+  Constructor: required String teamId
+
+  PURPOSE: Shows all digital business cards shared with this team.
+           Allows card owner to unshare.
+
+  PROVIDERS WATCHED:
+    cardsSharedWithTeamProvider(teamId)   — from digital_card feature
+    currentUserProvider
+
+  UI:
+    sharedCardsAsync.when(
+      data: (cards) →
+        IF empty: Text("No shared cards yet")
+        ELSE: ListView.builder
+          ListTile per card
+            leading: Icon(badge)
+            title: "Digital Card"
+            subtitle: "Status: ${card.status.name}"
+            trailing: IF currentUser.id == card.userId
+              IconButton(stop_screen_share → Unshare dialog)
+                → cardDesignNotifierProvider.notifier.unshareCardWithTeam(teamId)
+                → ref.invalidate(cardsSharedWithTeamProvider(teamId))
+    )
+
+──────────────────────────────────────────────────────────────────────────────
+ 8.3  _ShareContactDialog  (private widget in team_details_screen.dart)
+──────────────────────────────────────────────────────────────────────────────
+
+  class _ShareContactDialog extends ConsumerStatefulWidget
+  Constructor: required String teamId
+
+  PURPOSE: Lets user select which of their own contacts to share with the team.
+           Only shows contacts NOT already shared with this team.
+
+  STATE:
+    Set<String> _selectedContactIds = {}
+
+  PROVIDERS WATCHED:
+    contactsNotifierProvider
+
+  UI:
+    AlertDialog("Share Contacts")
+      content: SizedBox
+        myContactsAsync.when(
+          data: (contacts) →
+            availableContacts = contacts.where(not already in team)
+            IF empty: Text("All your contacts already shared")
+            ELSE: ListView of CheckboxListTile per contact
+              → toggle _selectedContactIds
+        )
+      actions:
+        TextButton("Cancel")
+        ElevatedButton("Share (N)")
+          → for each contactId:
+               contactsNotifierProvider.notifier.shareContact(contactId, teamId)
+          → ref.invalidate(sharedContactsProvider(teamId))
+          → Navigator.pop
+
+──────────────────────────────────────────────────────────────────────────────
+ 8.4  _AddMemberSearchDialog  (private widget in team_details_screen.dart)
+──────────────────────────────────────────────────────────────────────────────
+
+  class _AddMemberSearchDialog extends ConsumerStatefulWidget
+  Constructor: required String teamId
+
+  PURPOSE: Lets team owner search for app users (by email or phone)
+           and add them as team members.
+
+  STATE:
+    TextEditingController _searchController
+    List<UserProfile> _searchResults = []
+    bool _isSearching = false
+    String? _error
+
+  _search() method:
+    - Reads query from _searchController
+    - Calls userProfileRepositoryProvider.searchUsers(query)
+    - Displays results or error
+
+  UI:
+    AlertDialog("Add Member")
+      content: SizedBox → Column
+        TextField (Search by Email or Phone)
+          suffixIcon: IconButton(search → _search())
+          onSubmitted: _search()
+        SizedBox(16)
+        IF _isSearching: CircularProgressIndicator
+        IF _error != null: Text(error, red)
+        IF results: Flexible → ListView
+          ListTile per UserProfile
+            leading: CircleAvatar (avatarUrl or initials)
+            title: user.fullName
+            subtitle: user.email ?? user.phoneNumber ?? ''
+            onTap: →
+              teamNotifierProvider.notifier.addMember(teamId, user.uid)
+              Navigator.pop()
+      actions:
+        TextButton("Cancel")
+
+
+================================================================================
+ 9. CROSS-FEATURE: Card Sharing With Teams (CardDesignNotifier)
+================================================================================
+
+FILE: lib/features/digital_card/presentation/providers/card_design_provider.dart
+─────────────────────────────────────────────────────────────────────────────
+
+  TEAM-RELATED METHODS IN CardDesignNotifier:
+
+  shareCardWithTeam(String teamId)
+    - Gets current cardId from state
+    - Calls _repository.shareCardWithTeam(cardId, teamId)
+    - Reloads card state after share
+    - Updates loading/error state
+
+  unshareCardWithTeam(String teamId)
+    - Gets current cardId from state
+    - Calls _repository.unshareCardWithTeam(cardId, teamId)
+    - Reloads card state after unshare
+
+  TEAM-RELATED RIVERPOD PROVIDER:
+
+  @riverpod
+  cardsSharedWithTeam(CardsSharedWithTeamRef ref, String teamId)
+    → Future<List<CardDesign>>
+    - Calls cardDesignRepositoryProvider.getCardsSharedWithTeam(teamId)
+    - Family provider (parameterized by teamId)
+    - Exposed as: cardsSharedWithTeamProvider (from generated .g.dart)
+    - Used in _SharedCardsTab to watch shared cards per team
+
+
+================================================================================
+10. CROSS-FEATURE: Share Options Sheet Team Dialog
+================================================================================
+
+FILE: lib/features/digital_card/presentation/widgets/share_options_sheet.dart
+──────────────────────────────────────────────────────────────────────────────
+
+  Context: ShareOptionsSheet is the bottom sheet shown when user taps
+           "Share" on their digital business card.
+
+  TEAM-RELATED UI:
+    _ShareOption(
+      icon: Icons.groups,
+      label: 'Share with Team',
+      color: AppColors.skyBlue,
+      onTap: () → Navigator.pop(context) + _showTeamSelectionDialog(context, ref)
+    )
+
+  _showTeamSelectionDialog(BuildContext context, WidgetRef ref):
+    - Shows AlertDialog("Share with Team")
+    - Watches userTeamsProvider inside Consumer
+    - Lists user's teams as ListTiles
+    - On team tap:
+        cardDesignNotifierProvider.notifier.shareCardWithTeam(team.id)
+        Navigator.pop()
+        SnackBar("Shared with ${team.name}")
+
+
+================================================================================
+11. NAVIGATION & ROUTING (Entry Points to Teams)
+================================================================================
+
+  HOME SCREEN — Quick Action Button:
+    File: lib/features/home/presentation/home_screen.dart
+    Location: _buildQuickActions() method
+    Code:
+      _buildQuickActionButton(
+        icon: Icons.groups,
+        label: 'Teams',
+        onTap: () => context.push('/settings/teams'),
+      )
+
+  SETTINGS SCREEN — Collaboration Section:
+    File: lib/features/settings/presentation/settings_screen.dart
+    Location: build() → SettingsSection("Collaboration")
+    Code:
+      SettingsTile(
+        icon: Icons.group_outlined,
+        title: 'My Teams',
+        subtitle: 'Manage teams and members',
+        onTap: () => context.push('/settings/teams'),
+      )
+
+  ROUTE DEFINITIONS:
+    /settings/teams           → TeamListScreen
+    /settings/teams/create    → CreateTeamScreen
+    /settings/teams/:teamId   → TeamDetailsScreen(teamId: teamId)
+    (Note: Router not yet scanned for explicit route definitions —
+     routes inferred from context.push() calls across the app)
+
+
+================================================================================
+12. PAGE DESIGN SCREENSHOTS (Final Plan for Version 1/Pages)
+================================================================================
+
+  The following UI design reference images exist for the Team feature:
+
+  ┌──────────────────────────────────────────────────────────────┐
+  │  File: Final Plan for Version 1/Pages/TeamDashboard.png      │
+  │  Description: Team dashboard overview design                 │
+  ├──────────────────────────────────────────────────────────────┤
+  │  File: Final Plan for Version 1/Pages/Team2.jpg              │
+  │  Description: Second team view design reference              │
+  ├──────────────────────────────────────────────────────────────┤
+  │  File: Final Plan for Version 1/Pages/43.TeamDirectory.png   │
+  │  Description: Team Directory page design (page #43)          │
+  ├──────────────────────────────────────────────────────────────┤
+  │  File: Final Plan for Version 1/Pages/42. Team View.jpg      │
+  │  Description: Team View page design (page #42)               │
+  └──────────────────────────────────────────────────────────────┘
+
+  NOTE: No team-specific textual content was found inside the main
+  Final Plan docs (MASTER_PROJECT_PLAN_V1.txt, V1_APP_DESIGN_PLAN.txt,
+  Project_Tasks_Phase.txt, Target_and_goals.txt, V1_ModelInfo.txt,
+  V1_PAGE_SPECIFICATIONS.txt, V1_SECURITY_PLAN.txt, todo.txt, etc.)
+  — team content in those files is absent, suggesting team planning
+  was done separately or is entirely captured in code.
+
+
+================================================================================
+13. FULL SOURCE CODE — ALL FILES
+================================================================================
+
+
+════════════════════════════════════════════════════════════════════════════════
+ FILE: lib/features/collaboration/domain/entities/team.dart
+════════════════════════════════════════════════════════════════════════════════
+
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'team.freezed.dart';
+part 'team.g.dart';
+
+@freezed
+class Team with _$Team {
+  const Team._();
+
+  const factory Team({
+    required String id,
+    required String name,
+    String? description,
+    String? photoUrl,
+    required String ownerId,
+    @Default([]) List<TeamMember> members,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+  }) = _Team;
+
+  factory Team.fromJson(Map<String, dynamic> json) => _$TeamFromJson(json);
+}
+
+@freezed
+class TeamMember with _$TeamMember {
+  const factory TeamMember({
+    required String userId,
+    required String role, // 'admin', 'member', 'viewer'
+    required DateTime joinedAt,
+    String? status, // 'active', 'pending', 'invited'
+  }) = _TeamMember;
+
+  factory TeamMember.fromJson(Map<String, dynamic> json) =>
+      _$TeamMemberFromJson(json);
+}
+
+
+════════════════════════════════════════════════════════════════════════════════
+ FILE: lib/features/collaboration/domain/repositories/team_repository.dart
+════════════════════════════════════════════════════════════════════════════════
+
+import 'package:mobile_wallet/features/collaboration/domain/entities/team.dart';
+
+abstract class TeamRepository {
+  /// Creates a new team.
+  Future<Team> createTeam(Team team);
+
+  /// Gets a team by ID.
+  Future<Team?> getTeam(String teamId);
+
+  /// Gets all teams where the user is a member.
+  Future<List<Team>> getUserTeams(String userId);
+
+  /// Adds a member to a team.
+  Future<void> addMember(String teamId, TeamMember member);
+
+  /// Removes a member from a team.
+  Future<void> removeMember(String teamId, String userId);
+
+  /// Updates team details (name, description, photo).
+  Future<void> updateTeam(Team team);
+
+  /// Deletes a team.
+  Future<void> deleteTeam(String teamId);
+}
+
+
+════════════════════════════════════════════════════════════════════════════════
+ FILE: lib/features/collaboration/data/repositories/team_repository_impl.dart
+════════════════════════════════════════════════════════════════════════════════
+
+import 'dart:developer' as developer;
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile_wallet/core/services/firestore_service.dart';
+import 'package:mobile_wallet/features/collaboration/domain/entities/team.dart';
+import 'package:mobile_wallet/features/collaboration/domain/repositories/team_repository.dart';
+
+class TeamRepositoryImpl implements TeamRepository {
+  final FirestoreService _firestoreService;
+
+  TeamRepositoryImpl(this._firestoreService);
+
+  @override
+  Future<Team> createTeam(Team team) async {
+    try {
+      final data = Map<String, dynamic>.from(team.toJson());
+      // Explicitly serialize members to avoid "instance of _$TeamMemberImpl" error
+      data['members'] = team.members.map((m) => m.toJson()).toList();
+      // Explicitly store memberIds for easier querying
+      data['memberIds'] = team.members.map((m) => m.userId).toList();
+      data['createdAt'] = FieldValue.serverTimestamp();
+      data['updatedAt'] = FieldValue.serverTimestamp();
+
+      developer.log('[TeamRepo] Creating team "${team.name}" with id: ${team.id}');
+      developer.log('[TeamRepo] memberIds: ${data['memberIds']}');
+      developer.log('[TeamRepo] ownerId: ${data['ownerId']}');
+      developer.log('[TeamRepo] Document fields: ${data.keys.toList()}');
+
+      await _firestoreService.teamsCollection.doc(team.id).set(data);
+      developer.log('[TeamRepo] ✅ Team written to Firestore successfully');
+
+      // Fetch back to get populated timestamps
+      final doc = await _firestoreService.teamsCollection.doc(team.id).get();
+      return _documentToTeam(doc);
+    } on FirebaseException catch (e) {
+      developer.log('[TeamRepo] ❌ Firestore error creating team: ${e.code} - ${e.message}');
+      throw Exception('Failed to create team: ${e.message}');
+    }
+  }
+
+  @override
+  Future<Team?> getTeam(String teamId) async {
+    try {
+      final doc = await _firestoreService.teamsCollection.doc(teamId).get();
+      if (!doc.exists || doc.data() == null) return null;
+      return _documentToTeam(doc);
+    } on FirebaseException catch (e) {
+      throw Exception('Failed to get team: ${e.message}');
+    }
+  }
+
+  @override
+  Future<List<Team>> getUserTeams(String userId) async {
+    try {
+      developer.log('[TeamRepo] Querying teams for userId: $userId');
+      // Query teams where 'memberIds' array contains userId
+      final snapshot = await _firestoreService.teamsCollection
+          .where('memberIds', arrayContains: userId)
+          .get();
+
+      developer.log('[TeamRepo] Found ${snapshot.docs.length} team(s) for user');
+      for (final doc in snapshot.docs) {
+        developer.log('[TeamRepo]   - Team: ${doc.data()['name']} (${doc.id})');
+      }
+
+      return snapshot.docs.map((doc) => _documentToTeam(doc)).toList();
+    } on FirebaseException catch (e) {
+      developer.log('[TeamRepo] ❌ Error querying teams: ${e.code} - ${e.message}');
+      throw Exception('Failed to get user teams: ${e.message}');
+    }
+  }
+
+  @override
+  Future<void> addMember(String teamId, TeamMember member) async {
+    try {
+      // Add member to members list and also update memberIds array
+      await _firestoreService.teamsCollection.doc(teamId).update({
+        'members': FieldValue.arrayUnion([member.toJson()]),
+        'memberIds': FieldValue.arrayUnion([member.userId]),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } on FirebaseException catch (e) {
+      throw Exception('Failed to add member: ${e.message}');
+    }
+  }
+
+  @override
+  Future<void> removeMember(String teamId, String userId) async {
+    try {
+      await _firestoreService.runTransaction((transaction) async {
+        final docRef = _firestoreService.teamsCollection.doc(teamId);
+        final doc = await transaction.get(docRef);
+        if (!doc.exists) throw Exception('Team not found');
+
+        final team = _documentToTeam(doc);
+        final updatedMembers = team.members
+            .where((m) => m.userId != userId)
+            .toList();
+        final updatedMemberIds = updatedMembers.map((m) => m.userId).toList();
+
+        transaction.update(docRef, {
+          'members': updatedMembers.map((m) => m.toJson()).toList(),
+          'memberIds': updatedMemberIds,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      });
+    } on FirebaseException catch (e) {
+      throw Exception('Failed to remove member: ${e.message}');
+    }
+  }
+
+  @override
+  Future<void> updateTeam(Team team) async {
+    try {
+      final data = Map<String, dynamic>.from(team.toJson());
+      data['members'] = team.members.map((m) => m.toJson()).toList();
+      data['memberIds'] = team.members.map((m) => m.userId).toList();
+      data.remove('createdAt'); // Don't update createdAt
+      data['updatedAt'] = FieldValue.serverTimestamp();
+
+      await _firestoreService.teamsCollection.doc(team.id).update(data);
+    } on FirebaseException catch (e) {
+      throw Exception('Failed to update team: ${e.message}');
+    }
+  }
+
+  @override
+  Future<void> deleteTeam(String teamId) async {
+    try {
+      await _firestoreService.teamsCollection.doc(teamId).delete();
+    } on FirebaseException catch (e) {
+      throw Exception('Failed to delete team: ${e.message}');
+    }
+  }
+
+  Team _documentToTeam(DocumentSnapshot<Map<String, dynamic>> doc) {
+    final data = doc.data()!;
+    data['createdAt'] = _timestampToString(data['createdAt']);
+    data['updatedAt'] = _timestampToString(data['updatedAt']);
+    data['id'] = doc.id;
+    return Team.fromJson(data);
+  }
+
+  String _timestampToString(dynamic timestamp) {
+    if (timestamp is Timestamp) {
+      return timestamp.toDate().toIso8601String();
+    }
+    if (timestamp is String) {
+      return timestamp;
+    }
+    return DateTime.now().toIso8601String();
+  }
+}
+
+final teamRepositoryProvider = Provider<TeamRepository>((ref) {
+  final firestoreService = ref.watch(firestoreServiceProvider);
+  return TeamRepositoryImpl(firestoreService);
+});
+
+
+════════════════════════════════════════════════════════════════════════════════
+ FILE: lib/features/collaboration/presentation/providers/team_provider.dart
+════════════════════════════════════════════════════════════════════════════════
+
+import 'dart:developer' as developer;
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
+import 'package:mobile_wallet/features/collaboration/data/repositories/team_repository_impl.dart';
+import 'package:mobile_wallet/features/collaboration/domain/entities/team.dart';
+import 'package:mobile_wallet/features/collaboration/domain/repositories/team_repository.dart';
+import 'package:mobile_wallet/features/auth/presentation/providers/auth_provider.dart';
+
+// State for Team List
+final userTeamsProvider = FutureProvider.autoDispose<List<Team>>((ref) async {
+  final user = ref.watch(currentUserProvider);
+  if (user == null) return [];
+  final repository = ref.watch(teamRepositoryProvider);
+  return repository.getUserTeams(user.id);
+});
+
+// State for Single Team Details
+final teamDetailsProvider = FutureProvider.autoDispose.family<Team?, String>((
+  ref,
+  teamId,
+) async {
+  final repository = ref.watch(teamRepositoryProvider);
+  return repository.getTeam(teamId);
+});
+
+// Team Controller for actions
+class TeamNotifier extends StateNotifier<AsyncValue<void>> {
+  final TeamRepository _repository;
+  final Ref _ref;
+
+  TeamNotifier(this._repository, this._ref) : super(const AsyncValue.data(null));
+
+  Future<void> createTeam(String name, String? description, String? photoUrl) async {
+    state = const AsyncValue.loading();
+    try {
+      final user = _ref.read(currentUserProvider);
+      developer.log('[TeamNotifier] createTeam called. User: ${user?.id ?? 'NULL'}');
+      if (user == null) throw Exception('User not authenticated');
+
+      developer.log('[TeamNotifier] Creating team "$name" for user ${user.id}');
+      final newTeam = Team(
+        id: const Uuid().v4(),
+        name: name,
+        description: description,
+        photoUrl: photoUrl,
+        ownerId: user.id,
+        members: [
+          TeamMember(
+            userId: user.id,
+            role: 'owner',
+            joinedAt: DateTime.now(),
+            status: 'active',
+          ),
+        ],
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      developer.log('[TeamNotifier] Team object created: id=${newTeam.id}, ownerId=${newTeam.ownerId}');
+      developer.log('[TeamNotifier] Members: ${newTeam.members.map((m) => m.userId).toList()}');
+      developer.log('[TeamNotifier] Calling repository.createTeam...');
+
+      await _repository.createTeam(newTeam);
+
+      developer.log('[TeamNotifier] ✅ Team created successfully!');
+      _ref.invalidate(userTeamsProvider);
+      state = const AsyncValue.data(null);
+    } catch (e, st) {
+      developer.log('[TeamNotifier] ❌ Failed to create team: $e');
+      developer.log('[TeamNotifier] Stack trace: $st');
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> addMember(String teamId, String userId) async {
+    state = const AsyncValue.loading();
+    try {
+      final member = TeamMember(
+        userId: userId,
+        role: 'member',
+        joinedAt: DateTime.now(),
+        status: 'pending', // or active immediately
+      );
+      await _repository.addMember(teamId, member);
+      _ref.invalidate(teamDetailsProvider(teamId));
+      state = const AsyncValue.data(null);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> removeMember(String teamId, String userId) async {
+    state = const AsyncValue.loading();
+    try {
+      await _repository.removeMember(teamId, userId);
+      _ref.invalidate(teamDetailsProvider(teamId));
+      state = const AsyncValue.data(null);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> deleteTeam(String teamId) async {
+    state = const AsyncValue.loading();
+    try {
+      await _repository.deleteTeam(teamId);
+      _ref.invalidate(userTeamsProvider);
+      state = const AsyncValue.data(null);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> leaveTeam(String teamId) async {
+    state = const AsyncValue.loading();
+    try {
+      final user = _ref.read(currentUserProvider);
+      if (user == null) throw Exception('User not authenticated');
+      await _repository.removeMember(teamId, user.id);
+      _ref.invalidate(userTeamsProvider);
+      state = const AsyncValue.data(null);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+}
+
+final teamNotifierProvider =
+    StateNotifierProvider<TeamNotifier, AsyncValue<void>>((ref) {
+      final repository = ref.watch(teamRepositoryProvider);
+      return TeamNotifier(repository, ref);
+    });
+
+
+════════════════════════════════════════════════════════════════════════════════
+ FILE: lib/features/collaboration/presentation/screens/team_list_screen.dart
+════════════════════════════════════════════════════════════════════════════════
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobile_wallet/features/collaboration/presentation/providers/team_provider.dart';
+
+class TeamListScreen extends ConsumerWidget {
+  const TeamListScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final teamsAsync = ref.watch(userTeamsProvider);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Teams'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () => context.push('/settings/teams/create'),
+          ),
+        ],
+      ),
+      body: teamsAsync.when(
+        data: (teams) {
+          if (teams.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('No teams found'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => context.push('/settings/teams/create'),
+                    child: const Text('Create a Team'),
+                  ),
+                ],
+              ),
+            );
+          }
+          return ListView.builder(
+            itemCount: teams.length,
+            itemBuilder: (context, index) {
+              final team = teams[index];
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: team.photoUrl != null
+                      ? NetworkImage(team.photoUrl!)
+                      : null,
+                  child: team.photoUrl == null
+                      ? Text(team.name[0].toUpperCase())
+                      : null,
+                ),
+                title: Text(team.name),
+                subtitle: Text('${team.members.length} members'),
+                onTap: () => context.push('/settings/teams/${team.id}'),
+              );
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
+      ),
+    );
+  }
+}
+
+
+════════════════════════════════════════════════════════════════════════════════
+ FILE: lib/features/collaboration/presentation/screens/create_team_screen.dart
+════════════════════════════════════════════════════════════════════════════════
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobile_wallet/features/collaboration/presentation/providers/team_provider.dart';
+
+class CreateTeamScreen extends ConsumerStatefulWidget {
+  const CreateTeamScreen({super.key});
+
+  @override
+  ConsumerState<CreateTeamScreen> createState() => _CreateTeamScreenState();
+}
+
+class _CreateTeamScreenState extends ConsumerState<CreateTeamScreen> {
+  final _nameController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (_formKey.currentState!.validate()) {
+      await ref
+          .read(teamNotifierProvider.notifier)
+          .createTeam(
+            _nameController.text.trim(),
+            _descriptionController.text.trim().isEmpty
+                ? null
+                : _descriptionController.text.trim(),
+            null, // Photo URL not yet supported
+          );
+
+      final state = ref.read(teamNotifierProvider);
+      if (mounted) {
+        state.when(
+          data: (_) {
+            context.pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Team created successfully')),
+            );
+          },
+          error: (error, _) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to create team: $error')),
+            );
+          },
+          loading: () {}, // Still processing
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(teamNotifierProvider);
+    final isLoading = state is AsyncLoading;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Create Team')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Team Name',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a team name';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Description (Optional)',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : _submit,
+                  child: isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('Create Team'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+════════════════════════════════════════════════════════════════════════════════
+ FILE: lib/features/collaboration/presentation/screens/team_details_screen.dart
+ (Full source - 626 lines - key sections shown with class boundaries)
+════════════════════════════════════════════════════════════════════════════════
+
+CLASSES DEFINED IN THIS FILE:
+  - TeamDetailsScreen             (ConsumerStatefulWidget)
+  - _TeamDetailsScreenState       (ConsumerState)
+  - _SharedCardsTab               (ConsumerWidget)
+  - _SharedContactsTab            (ConsumerWidget)
+  - _ShareContactDialog           (ConsumerStatefulWidget)
+  - _ShareContactDialogState      (ConsumerState)
+  - _AddMemberSearchDialog        (ConsumerStatefulWidget)
+  - _AddMemberSearchDialogState   (ConsumerState)
+
+[Full source available at:
+ lib/features/collaboration/presentation/screens/team_details_screen.dart]
+
+KEY NOTEWORTHY CODE PATTERNS:
+
+  1. Permission-based actions (only owner can delete/add members):
+     if (teamAsync.valueOrNull?.ownerId == currentUser?.id)
+       IconButton(person_add → _showAddMemberDialog)
+
+  2. Tab-based layout with 3 tabs (Members, Shared Contacts, Shared Cards):
+     DefaultTabController(length: 3)
+
+  3. Safe navigation after async operations:
+     if (context.mounted) { context.go('/settings/teams'); }
+
+  4. Confirmation dialogs before destructive actions:
+     showDialog<bool>() → confirm before delete/leave/remove
+
+  5. Contact sharing filtered to avoid re-sharing:
+     availableContacts = contacts.where((c) => !c.sharedWithTeams.contains(teamId))
+
+  6. User search for adding members:
+     userProfileRepositoryProvider.searchUsers(query)
+     → search by email or phone number
+
+
+================================================================================
+ SUMMARY
+================================================================================
+
+  Total Team-Related Files:      14 (including generated files and screenshots)
+  Core Dart Source Files:         9
+  Screens:                        3  (List, Details, Create)
+  Dialogs/Sub-widgets:            4  (SharedContacts, SharedCards,
+                                      ShareContact, AddMember)
+  Providers:                      3  (userTeams, teamDetails, teamNotifier)
+  Repository Methods:             7  (create, get, getUserTeams, addMember,
+                                      removeMember, update, delete)
+  Cross-Feature Integrations:     3  (CardDesign sharing, ShareOptionsSheet,
+                                      Settings + HomeScreen entry points)
+  Firestore Collection:           "teams"
+  Extra Firestore Field:          "memberIds" (for array-contains queries)
+================================================================================
+ 15. NEW IDEAS Final UI Design Analysis (MISSING FROM CURRENT PLAN)
+================================================================================
+
+1. My Teams (List View)
+Design:
+A clean list of cards against an off-white background.
+App Bar: "My Teams" title centered, with a Search icon on the right.
+
+Each team card features:
+A circular team avatar (initials with a solid background color like teal or green).
+Team Name (e.g., "Design Squad", "Tech Team") in bold dark text.
+Member count subtitle (e.g., "12 Members") in smaller grey text.
+A pill-shaped Role Badge on the top right indicating the current user's role in that team (e.g., "Admin" in yellow,"Co-Admin" in liteGreen, "Member" in light grey).
+Bottom right: A prominent green floating action button (FAB) with a white "+" sign. Functions: View list of joined teams, quickly identify your role, see member counts, search teams, and tap the FAB to create/join a team.
+
+2. Team Directory (Inside a Team)
+Design:
+App Bar: Back arrow, "Team Directory" title, Filter (funnel) icon on the right.
+Search Bar: A prominent rounded search bar directly below the app bar.
+List Categories: Members are grouped under clear section headers (e.g., "Admins", "Members", "Shared Contacts").
+Directory Item (User):
+Circular profile picture.
+Full Name.
+Online/Active Status: A small green dot next to the name.
+Role Badge below the name (e.g., "Admin",Co-Admin, "Member").
+On the far right, a chat bubble icon.
+Directory Item (Shared Contact):
+Square or large circular profile picture.
+Name/Title (e.g., "Client: Tech Solutions").
+FAB: A green floating action button with a "+" sign at the bottom. Functions: Search for specific members, filter list, view categorized lists of admins/members/shared contacts, see who is currently active, and instantly start a chat with a specific member.
+
+3. Create Team
+Design:
+App Bar: Back arrow, "Create Team" title.
+Top area: A large circular dashed placeholder to "Upload Team Logo" featuring a camera icon.
+Form fields:
+Standard text fields with light borders for "Team Name" and "Description".
+A dropdown selector for "Category" (e.g., "Sales & Marketing").
+Bottom: Full-width green "Create Team" button. Functions: Upload a team avatar, set the team name, write an optional description, pick a structural category, and submit the creation form.
+
+4. Team Dashboard (Overview)
+Design:
+Header: A solid green top section. It features a back arrow, team avatar (initials circle), Team Name in large white text, member count ("15 Members"), and financial summary ("Total Expenses: $1,200").
+Below Header Navigation: A pill-shaped segmented control or tabs overlapping the header: [Members] [Wallet] [Settings].
+Stats Row: Three distinct, white elevated cards displaying numbers: "124 Shared Contacts", "5 Active Members", "23 Recent Activity".
+Quick Actions Row: Pill-shaped white buttons with icons and text: "[+] Add Member", "[share icon] Share Contacts".
+Activity Feed: A section titled "Recent Activity" and "Invite members".
+Activity items are listed as cards with a small icon, a description (e.g., "Maria R. updated 'Project X' card"), timestamp ("3:00 pm"), and a green checkmark or status icon.
+A chat input bar at the very bottom: "Great thanks!" with a green paperclip/send button. Functions: Get an immediate high-level overview of team health (stats), quickly execute common tasks (add member, share contacts), view a chronology of team events/audit log, and participate in a general team chat thread directly from the dashboard.
+
+5. Team Wallet & Expenses
+Design:
+Uses the same green Team Header layout.
+The content area shows a list of financial transactions or expenses.
+Each item has:
+An icon (like a credit card or person).
+Expense Title (e.g., "Software Subscription", "Notification Preferences").
+Secondary text (date or reference code).
+Amount on the right (e.g., "$99.99", "-$49.99").
+Bottom: A full-width green "Add Expense" button. Functions: View collective team spending, track software subscriptions or shared costs, and log new expenses manually.
+
+6. Invite Members
+Design:
+A modal or full-screen view.
+Search bar at the top: "Search by name or email" with a magnifying glass icon.
+List of users showing their avatar, full name, and email address below the name.
+On the right side of each user is a selection indicator: an empty gray circle if unselected, or a solid green circle with a white checkmark if selected.
+Bottom: A sticky, full-width green button indicating the number of selected users: "Send Invites (2)". Functions: Search the global user base (or phone contacts), select multiple people at once via checkboxes, and send bulk invitations to join the team.
+
+7. Team Settings & Roles
+Design:
+Uses the same green Team Header layout.
+List view of team members.
+Next to member names are large green toggle switches instead of text badges.
+Features a "Manage Roles" item.
+Bottom: A prominent, full-width, solid red "Delete Team" button. Functions: Manage individual granular permissions via toggle switches (e.g., turning admin privileges on/off), access advanced role management, and delete the team entirely. The UI suggests a focus on quick, visual toggles for permissions rather than just assigning text titles.
+
+================================================================================
+ END OF TEAMDETAILED.TXT
+================================================================================

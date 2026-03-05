@@ -1,9 +1,10 @@
 # SMART CONTACT WALLET V1 - FINALIZED TODO LIST
-# Last Updated: January 28, 2026
-# Status: READY FOR DEVELOPMENT ✅
+# Last Updated: February 23, 2026
+# Status: Phases 0-10 COMPLETE ✅ | Phase 11 (Wallet) IN PROGRESS 🔄
+# Overall: ~87% Complete
 
 ================================================================================
-PROJECT STATUS SUMMARY
+PROJECT STATUS SUMMARY (Updated Feb 23, 2026)
 ================================================================================
 
 ✅ PLANNING PHASE: COMPLETE
@@ -11,11 +12,21 @@ PROJECT STATUS SUMMARY
 ✅ DOCUMENTATION: UPDATED
 ✅ FIREBASE CORE SETUP: COMPLETE
 ✅ AUTHENTICATION SYSTEM: COMPLETE (Phases 1-3)
-🔄 DEVELOPMENT PHASE: IN PROGRESS (Phase 4 Starting)
+✅ CONTACT MANAGEMENT: COMPLETE (Phase 3 / Phase 8)
+✅ BUSINESS CARD SCANNING: COMPLETE 98% (Phase 4 / Phase 9)
+✅ DIGITAL CARD CREATOR: COMPLETE (Phase 5 / Phase 10)
+✅ SETTINGS & TEAMS: 75% COMPLETE (Phase 7-Extra)
+✅ GOOGLE DRIVE BACKUP: COMPLETE
+🔄 WALLET (SIMULATION): IN PROGRESS — 5% (Phase 6 / Phase 11)
+❌ NOTIFICATIONS: NOT STARTED (Phase 7.8)
+❌ ANALYTICS: NOT STARTED (Phase 7.7)
+❌ IMPORT/EXPORT TOOLS: NOT STARTED (Phase 7.6)
+❌ APP STORE SUBMISSION: NOT STARTED
 
-**Architecture**: Firebase (Auth + Firestore) + Cloudinary
-**Timeline**: 2.5-3 months (Simplified)
-**Total Cost**: $0/month (Free Tier focused)
+**Architecture**: Firebase (Auth + Firestore) + Isar (Local) + Cloudinary (Media)
+**State Management**: Riverpod 2.x with code generation
+**Navigation**: GoRouter with StatefulShellRoute
+**V1.0 Target Launch**: April–May 2026
 
 
 ================================================================================
@@ -31,221 +42,389 @@ DOCUMENTATION REFERENCE
 6. Project_Tasks_Phase.txt - Phase descriptions
 7. task.md (artifact) - Detailed task breakdown
 
+**Progress Reports** (CurrentProgress/ folder):
+- 00_PROJECT_OVERVIEW.md - Dashboard & index
+- 01_COMPLETED_PHASES.md - All completed tasks
+- 02_INPROGRESS_TASKS.md - Current work
+- 03_TODO_TASKS.md - Pending tasks
+- 04_MISSING_SCREENS_FEATURES.md - Missing files/screens
+- 05_KNOWN_ISSUES_TECH_DEBT.md - Bugs & tech debt
+- 06_IMPLEMENTATION_PLANS_MERGED.md - All plans merged
+
 **Architecture Documents**:
 - FIREBASE_SYSTEM_ARCHITECTURE.txt - System architecture overview
 - required_info.json - Non-sensitive configuration
 
-**Migration Documents**:
-- implementation_plan.md (artifact) - Firebase migration plan
-- walkthrough.md (artifact) - Migration summary
-
 
 ================================================================================
-IMMEDIATE ACTION ITEMS (START HERE)
+IMMEDIATE ACTION ITEMS
 ================================================================================
 
 ## Week 1: Development Environment Setup
-
-### For Team Lead:
-[ Done ] 1. Create Firebase project at console.firebase.google.com
-[ Done ] 2. Share Firebase project access with all developers
-[ Done ] 3. Firebase project created and configured
-[ Done ] 4. Cloudinary account set up for image storage
-[ Done ] 5. Create Git repository and invite team members
-[ Done ] 6. Set up project management board (Jira/Trello/GitHub Projects)
-
-### For All Developers:
-[ Done ] 7. Install Flutter SDK (latest stable)
-[ Done ] 8. Install Android Studio / VS Code with Flutter extensions
-[ Done ] 9. Clone Git repository
-[ Done ] 10. Review FIREBASE_AUTH_SETUP_GUIDE.txt
-[x] 12. Review MASTER_PROJECT_PLAN_V1.txt
-
+### Firebase & Environment:
+[x] 1.  Create Firebase project at console.firebase.google.com
+[x] 2.  Share Firebase project access with all developers
+[x] 3.  Firebase project created and configured
+[x] 4.  Cloudinary account set up for image storage
+[x] 5.  Create Git repository and invite team members
+[x] 6.  Set up project management board (Jira/Trello/GitHub Projects)
+[x] 7.  Install Flutter SDK (latest stable)
+[x] 8.  Install Android Studio / VS Code with Flutter extensions
+[x] 9.  Clone Git repository
+[x] 10. Review FIREBASE_AUTH_SETUP_GUIDE.txt
+[x] 11. Review MASTER_PROJECT_PLAN_V1.txt
 
 ### Firebase & Media Setup:
-[Done] 13. Enable Email/Password authentication in Firebase
-[Done] 14. Enable Phone number authentication in Firebase
-[Done] 15. Enable Google Sign-In in Firebase (optional)
-[Done] 16. Add Android app to Firebase project
-[Done] 17. Download google-services.json → place in android/app/
-[Done] 18. Add iOS & Web apps to Firebase project
-[Done] 19. Download GoogleService-Info.plist → place in ios/Runner/
-[Done] 20. Extract Firebase configuration values
-[Done] 21. **Enable Cloud Firestore** (Database)
-[Done] 22. **Set up Cloudinary** (Follow CLOUDINARY_SETUP_GUIDE.txt)
-
-### Firebase Backend Setup (Completed):
-[ Skip ] 23-27. Azure services removed. Using Firebase/Cloudinary.
+[x] 12. Enable Email/Password authentication in Firebase
+[x] 13. Enable Phone number authentication in Firebase
+[x] 14. Enable Google Sign-In in Firebase
+[x] 15. Add Android app to Firebase project
+[x] 16. Download google-services.json → placed in android/app/
+[x] 17. Add iOS & Web apps to Firebase project
+[x] 18. Download GoogleService-Info.plist → placed in ios/Runner/
+[x] 19. Extract Firebase configuration values
+[x] 20. Enable Cloud Firestore (Database)
+[x] 21. Set up Cloudinary (Follow CLOUDINARY_SETUP_GUIDE.txt)
+[x] 22. Azure services removed — replaced by Firebase/Cloudinary
 
 ### Flutter Project Setup:
-[Done] 28. Run: flutter create mobile_wallet
-[Done] 29. Update pubspec.yaml with all dependencies (see task.md Phase 0)
-[Done] 30. Run: flutter pub get
-[Done] 31. Create .env file in project root
-[Done] 32. Fill .env with Firebase and Cloudinary credentials (see ENV_details.txt)
-[Done] 33. Add .env to .gitignore
-[Done] 34. Run: dart run build_runner build
-[Done] 35. Test app launches successfully
+[x] 23. Run: flutter create mobile_wallet
+[x] 24. Update pubspec.yaml with all dependencies
+[x] 25. Run: flutter pub get
+[x] 26. Create .env file in project root
+[x] 27. Fill .env with Firebase and Cloudinary credentials
+[x] 28. Add .env to .gitignore
+[x] 29. Run: dart run build_runner build
+[x] 30. Test app launches successfully
 
 
-
--------------------------------------------------------------------------------
-
--------------------------------------------------------------------------------
 ================================================================================
-DEVELOPMENT PHASES (Detailed in task.md)
+DEVELOPMENT PHASES (UPDATED STATUS — Feb 23, 2026)
 ================================================================================
 
 ## Phase 0: Infrastructure (Week 1)
-Status: [x] Complete
-Tasks: 35 items
-Key Deliverables:
-- Firebase project configured
-- Cloudinary account configured
-- Flutter project initialized
-- .env file configured
-- All dependencies installed
+Status: [x] COMPLETE ✅
+- [x] Firebase project configured
+- [x] Cloudinary account configured
+- [x] Flutter project initialized
+- [x] .env file configured
+- [x] All dependencies installed
+- [x] Isar local database initialized (11 schemas)
+- [x] GoRouter navigation setup
+- [x] Riverpod state management configured
 
 ## Phase 1: Core Infrastructure (Week 1-2)
-Status: [x] Complete ✅
-Tasks: See task.md Section "Phase 1"
-Key Deliverables:
-- Firestore service created
-- Cloudinary service created
-- Isar database initialized
-- Riverpod state management configured
-- GoRouter navigation setup
+Status: [x] COMPLETE ✅
+- [x] Firestore service created
+- [x] Cloudinary service created (with JPEG compression, max 1920px)
+- [x] Cloudinary thumbnail generation (200×200px)
+- [x] Isar database initialized (11 schemas + sync queue)
+- [x] Riverpod state management configured
+- [x] GoRouter navigation setup
+- [x] Session Manager (token refresh every 50 min)
+- [x] Security Service (AES-256, biometric, PIN lockout)
+- [x] Permission Service
+- [x] Google Drive Service (backup/restore)
+- [x] 11 Isar schemas: AuthUser, UserProfile, Contact, GlobalContact, CardDesign, Wallet, WalletTransaction, Team, Notification, AppSettings, SyncQueue
 
 ## Phase 2: Authentication (Week 2-4)
-Status: [x] Complete ✅
-Tasks: See task.md Section "Phase 2"
-Key Deliverables:
-- Email/Password authentication
-- Phone OTP authentication
-- Google Sign-In (optional)
-- Login/Register screens
-- Session persistence
-- Auth state management
+Status: [x] COMPLETE ✅
+- [x] Email/Password authentication
+- [x] Phone OTP authentication (with country picker)
+- [x] Google Sign-In (Android/iOS client IDs correct)
+- [x] SHA-1 fingerprint configured in Firebase
+- [x] 10 auth screens: Splash, Welcome, Login, Register, PhoneLogin, OTP, ForgotPassword, Permissions, Intro Carousel
+- [x] Session persistence across app restarts
+- [x] Auth state management with Riverpod
+- [x] Auto-logout on session expiry
 
 ## Phase 3: Contact Management (Week 4-7)
-Status: [x] Complete ✅
-Tasks: See task.md Section "Phase 3"
-Key Deliverables:
-- Add/Edit/Delete contacts
-- Contact list with search
-- Categories and tags
-- Favorites
-- Offline-first with Firestore sync
-- Pagination
+Status: [x] COMPLETE ✅
+- [x] Full CRUD (Create, Read, Update, Delete)
+- [x] Contact list with search and alphabetical scrubber
+- [x] Categories and tags (Business, Friends, Family, Uncategorized)
+- [x] Favorites with star indicator
+- [x] Offline-first (Isar + Firestore sync)
+- [x] Phone contact import (flutter_contacts)
+- [x] Batch contact creation (createContacts)
+- [x] Duplicate detection on import
+- [x] firstName, lastName, rawExtraData entity fields added
+- [x] Contact screens: List, Add Method, Add (Manual), Edit, Details, Import
+- [x] 15+ Riverpod providers
+- [x] Firestore rules fix: members → memberIds
 
-## Phase 4: Business Card Scanning (Week 7-9)
-Status: [ ] Not Started
-Tasks: See task.md Section "Phase 4"
-Key Deliverables:
-- Camera integration
-- OCR text extraction
-- Field mapping
-- Image storage (Cloudinary)
-- Duplicate detection
+## Phase 4: Business Card Scanning & OCR (Week 7-9)
+Status: [x] COMPLETE ✅ (98%)
+- [x] Camera integration with alignment guide (300×190px card frame)
+- [x] Flash toggle, front/back side indicator
+- [x] Google ML Kit OCR (replaced Azure OCR)
+- [x] Multi-language support: Latin, Bengali, Arabic, Chinese, Devanagari, Japanese, Korean
+- [x] Bangla digit normalization, script detection
+- [x] Field mapping with regex (OcrFieldMapper — 600 lines)
+- [x] Enhanced regex: fax mitigation, obfuscated emails, BD phone patterns, URL extraction (Feb 23, 2026)
+- [x] Confidence scoring (block/line level)
+- [x] Auto-save for >80% confidence scans
+- [x] Barcode/QR detection + vCard QR parsing
+- [x] Advanced duplicate detection (Levenshtein, composite scoring: Name 35%, Phone 30%, Email 20%, Company 15%)
+- [x] Merge suggestion sheet UI
+- [x] 29/29 duplicate detection unit tests passing
+- [x] Cloudinary JPEG upload + thumbnail
+- [x] OCR Preview screen with editable fields + confidence indicators
+- [x] Image storage in contact entity
+- [ ] Scan History Screen — TODO (see Phase 4.3)
+- [ ] Batch scan / Rescan — TODO
 
 ## Phase 5: Digital Card Creator (Week 9-11)
-Status: [ ] Not Started
-Tasks: See task.md Section "Phase 5"
-Key Deliverables:
-- Card design templates
-- QR code generation
-- NFC sharing
-- vCard export
-- PDF export
-- Shareable link
+Status: [x] COMPLETE ✅ (100%)
+- [x] 15 professional card templates (6 categories: Minimal, Corporate, Creative, Tech, Modern, Elegant)
+- [x] 2 Premium templates (Elegant Black, Warm Brown)
+- [x] Dynamic template editor (Template / Theme / Fields tabs)
+- [x] Real-time live preview canvas
+- [x] Pattern painting engine (dots, grid, waves, lines, circles)
+- [x] Gradient support (enableGradient toggle)
+- [x] QR code generation (vCard format, PNG export, theme-colored)
+- [x] vCard (.vcf) export + native share
+- [x] PDF export (printable business card, gradient-aware, 381 lines)
+- [x] PNG/image sharing
+- [x] Share options sheet (QR, vCard, PDF, NFC dialog, image)
+- [x] NFC service stub (NfcCardData model, sessions state — write disabled)
+- [x] Card storage: Isar local + Firestore cloud sync
+- [x] Logo upload to Cloudinary
+- [x] Version history data stored
+- [x] Publish/unpublish cards
+- [x] Cross-device sync via Firestore watchers
+- [ ] Card front/back flip animation — TODO
+- [ ] Version history UI — TODO
+- [ ] Card view/scan count analytics — TODO
+- [ ] NFC actual write to tag — TODO
+- [ ] NFC Share Screen — TODO
 
 ## Phase 6: Internal Wallet (Week 11-13)
-Status: [ ] Not Started
-Tasks: See task.md Section "Phase 6"
-Key Deliverables:
-- Mock wallet balance
-- Send/Receive money (demo)
-- Transaction history
-- Pay from contact detail
+Status: [ ] TODO ❌ (5% — Isar schemas exist only)
+- [x] Isar schemas exist: WalletIsar, WalletTransactionIsar (defined, unused)
+- [x] Wallet placeholder screen exists (28 lines — no real content)
+- [ ] wallet.dart domain entity
+- [ ] wallet_transaction.dart domain entity
+- [ ] wallet_repository.dart interface
+- [ ] local_wallet_datasource.dart (Isar CRUD)
+- [ ] wallet_repository_impl.dart
+- [ ] wallet_provider.dart (Riverpod)
+- [ ] transaction_provider.dart
+- [ ] wallet_home_screen.dart — FULL IMPLEMENTATION (replace placeholder)
+    - [ ] Virtual wallet card UI (credit card design)
+    - [ ] Balance display: ৳0.00 (animated)
+    - [ ] Quick stats: Total Sent / Received
+    - [ ] Recent transactions mini-list
+    - [ ] Action buttons: Add, Send, Receive, History
+- [ ] add_money_screen.dart — Demo only
+- [ ] send_money_screen.dart — Contact picker + amount + confirm
+- [ ] receive_money_screen.dart — Wallet QR + share
+- [ ] transaction_history_screen.dart — Full list, filter, search
+- [ ] transaction_detail_screen.dart — Detail + receipt
+- [ ] Wallet widgets: wallet_card_widget, transaction_list_item, balance_display, amount_input
+- [ ] "Pay" button on ContactDetailsScreen → pre-fills SendMoney
+- [ ] Routes: /wallet, /wallet/add, /wallet/send, /wallet/receive, /wallet/history, /wallet/transaction/:id
+- [ ] Business rules: balance cannot go below ৳0
 
 ## Phase 7: Settings & Polish (Week 13-16)
-Status: [ ] Not Started
-Tasks: See task.md Section "Phase 7"
-Key Deliverables:
-- Complete settings module
-- Import/Export contacts
-- Team collaboration (basic)
-- Performance optimization
-- UI/UX polish
-- App store preparation
+Status: [/] 75% COMPLETE ✅ / ❌ 25% Pending
+
+### Settings Done: ✅
+- [x] Settings screen (294 lines, all section links working)
+- [x] Edit Profile (name, jobTitle, companyName, bio, photo via Cloudinary)
+- [x] Account Settings: email/phone/password change with re-auth
+- [x] Security Settings: biometric toggle (local_auth)
+- [x] Privacy Settings: visibility placeholder, blocked users placeholder
+- [x] Team Collaboration: create team, invite, share contacts/cards, manage members
+- [x] Firestore rules fix (members → memberIds)
+- [x] Google Drive Backup & Restore (full implementation)
+
+### Settings TODO: ❌
+- [ ] PIN Management Screen (pin_management_screen.dart)
+    - [ ] Set PIN (4–6 digits)
+    - [ ] Change PIN
+    - [ ] Disable PIN
+    - [ ] PIN strength validator
+- [ ] "Who can see my card" toggle (Public / Contacts Only / Private)
+- [ ] "Who can import my contacts" toggle
+- [ ] Active Sessions Screen — view + remote logout
+- [ ] OTP step UI after phone number change
+- [ ] Team profile picture upload
+- [ ] Photo crop/resize after selection (low priority)
+
+### Import/Export (Phase 7.6) ❌ TODO
+- [ ] Import from CSV / Excel
+- [ ] Import from vCard (.vcf) bulk file
+- [ ] Column mapping UI for CSV
+- [ ] Duplicate detection on import (flag/skip/merge)
+- [ ] Preview before import (first 10 rows)
+- [ ] Bulk progress indicator
+- [ ] Export as CSV
+- [ ] Export as vCard bulk (.vcf)
+- [ ] Export as PDF contact report
+- [ ] Schedule recurring export
+
+### Notifications (Phase 7.8) ❌ TODO — 0% Complete
+- [ ] Firebase Cloud Messaging (FCM) setup — firebase_messaging package
+- [ ] Local notifications — flutter_local_notifications package
+- [ ] Notification permission request on first run
+- [ ] Background message handler
+- [ ] notification_center_screen.dart
+    - [ ] Full list with unread badge indicators
+    - [ ] Mark read / Mark all read
+    - [ ] Delete / clear all
+    - [ ] Tap → navigate to relevant screen
+- [ ] notification_settings_screen.dart
+    - [ ] Global enable/disable toggle
+    - [ ] Per-category toggles (Money, Teams, Contacts, Cards)
+    - [ ] Sound / vibration toggles
+    - [ ] Quiet hours schedule
+- [ ] Notification types:
+    - [ ] Contact added
+    - [ ] Team invitation
+    - [ ] Money received
+    - [ ] Card viewed N times
+    - [ ] Backup completed / failed
+    - [ ] Import completed
+
+### Analytics (Phase 7.7) ❌ TODO — 0% Complete
+- [ ] analytics_dashboard_screen.dart
+    - [ ] Contact count + monthly growth delta (↑12 this month)
+    - [ ] Source breakdown chart (manual/scan/import/NFC)
+    - [ ] Most contacted people (top 5)
+    - [ ] Contact growth line chart (last 6 months)
+    - [ ] Category distribution pie chart
+- [ ] reports_screen.dart — Monthly report, PDF export, email
+- [ ] Add chart package (fl_chart or syncfusion)
+
+### Localization (Phase 7.9) ⏳ IN PROGRESS — 20%
+- [x] intl package added
+- [x] Bengali primary, English secondary designated
+- [x] Initial UI string identification pass
+- [ ] Create .arb files (English + Bengali)
+- [ ] Replace hardcoded strings with AppLocalizations
+- [ ] Language switcher in Settings (persist to AppSettingsIsar)
+- [ ] BDT currency formatting (৳)
+- [ ] Date formatting (Bengali calendar support)
+
+### Performance Optimization (Phase 7.10) ❌ TODO
+- [ ] Cold start time < 1.5 seconds
+- [ ] 60 FPS scrolling on low-end device
+- [ ] Memory leak audit with Flutter DevTools
+- [ ] Image caching optimization (cached_network_image)
+- [ ] Pagination for >500 contact lists
+- [ ] Lazy loading for contact images
+- [ ] Isar query index optimization
+
+### UI/UX Polish (Phase 7.11) ❌ TODO
+- [ ] Consistent screen transition animations
+- [ ] Shimmer loading on all list screens
+- [ ] Empty state illustrations (SVG or Lottie)
+- [ ] Success animations after save/create
+- [ ] Error states with retry button
+- [ ] Semantic labels for screen readers
+- [ ] High contrast mode support
+- [ ] Minimum touch target 48dp
+- [ ] Font scaling support
+
+### App Store Prep (Phase 7.12) ❌ TODO
+- [ ] Privacy Policy document (web-hosted)
+- [ ] Terms of Service document (web-hosted)
+- [ ] Final app icon (1024×1024 + adaptive Android)
+- [ ] Splash screen branding animation
+- [ ] Store screenshots (Android + iOS all sizes)
+- [ ] App store listing (title, description, keywords, category)
+- [ ] Android signing (key.jks) + release APK/AAB
+- [ ] iOS provisioning profile + distribution certificate
+- [ ] Firebase Crashlytics integration
+- [ ] Firebase Performance monitoring
+- [ ] Closed beta (TestFlight / Play internal track)
+- [ ] Google Play Store submission
+- [ ] Apple App Store submission
+- [ ] CHANGELOG.md maintenance
 
 
 ================================================================================
-TEAM ASSIGNMENTS (Suggested)
+MISSING SCREENS (Not Yet Created — Feb 23, 2026)
 ================================================================================
 
-**Developer 1 (Lead)**: 
-- Phase 0: Project setup
-- Phase 1: Core infrastructure
-- Phase 2: Authentication module
-- Code reviews for all phases
+### Wallet Module (15 new files needed)
+[ ] lib/features/wallet/domain/entities/wallet.dart
+[ ] lib/features/wallet/domain/entities/wallet_transaction.dart
+[ ] lib/features/wallet/domain/repositories/wallet_repository.dart
+[ ] lib/features/wallet/data/datasources/local_wallet_datasource.dart
+[ ] lib/features/wallet/data/repositories/wallet_repository_impl.dart
+[ ] lib/features/wallet/presentation/providers/wallet_provider.dart
+[ ] lib/features/wallet/presentation/providers/transaction_provider.dart
+[ ] lib/features/wallet/presentation/screens/add_money_screen.dart
+[ ] lib/features/wallet/presentation/screens/send_money_screen.dart
+[ ] lib/features/wallet/presentation/screens/receive_money_screen.dart
+[ ] lib/features/wallet/presentation/screens/transaction_history_screen.dart
+[ ] lib/features/wallet/presentation/screens/transaction_detail_screen.dart
+[ ] lib/features/wallet/presentation/widgets/wallet_card_widget.dart
+[ ] lib/features/wallet/presentation/widgets/transaction_list_item.dart
+[ ] lib/features/wallet/presentation/widgets/balance_display.dart
+[ ] lib/features/wallet/presentation/widgets/amount_input.dart
 
-**Developer 2**:
-- Phase 3: Contact management
-- Phase 4: OCR scanning (parallel with Dev 3)
-- Code reviews
+### Notifications Module (5 new files)
+[ ] lib/features/notifications/domain/entities/notification.dart
+[ ] lib/features/notifications/domain/repositories/notification_repository.dart
+[ ] lib/features/notifications/data/repositories/notification_repository_impl.dart
+[ ] lib/features/notifications/presentation/screens/notification_center_screen.dart
+[ ] lib/features/notifications/presentation/screens/notification_settings_screen.dart
+[ ] lib/features/notifications/presentation/providers/notification_provider.dart
 
-**Developer 3**:
-- Phase 5: Digital card creator (parallel with Dev 2)
-- Phase 6: Internal wallet
-- Code reviews
+### Analytics Module (4 new files)
+[ ] lib/features/analytics/domain/services/analytics_service.dart
+[ ] lib/features/analytics/presentation/screens/analytics_dashboard_screen.dart
+[ ] lib/features/analytics/presentation/screens/reports_screen.dart
+[ ] lib/features/analytics/presentation/providers/analytics_provider.dart
 
-**Developer 4 (if available)**:
-- Phase 7: Settings and polish
-- Testing and QA
-- Deployment preparation
+### Settings Missing (3 new files)
+[ ] lib/features/settings/presentation/screens/pin_management_screen.dart
+[ ] lib/features/settings/presentation/screens/active_sessions_screen.dart
+[ ] lib/features/settings/presentation/screens/export_contacts_screen.dart
 
-================================================================================
-WEEKLY MILESTONES
-================================================================================
+### Scanning Remaining (1 new file)
+[ ] lib/features/scanning/presentation/screens/scan_history_screen.dart
 
-**Week 1**: Environment setup complete, app launches
-**Week 2**: Firebase auth working, basic navigation
-**Week 3**: Login/Register screens functional
-**Week 4**: Authentication complete, session persistence ✅ COMPLETED
-**Week 5**: Contact CRUD operations working
-**Week 6**: Contact list with search and filters ✅ COMPLETED
-**Week 7**: Contact sync to Firestore working ✅ COMPLETED
-**Week 8**: Camera integration for card scanning ⏳ IN PROGRESS
+### Digital Card Remaining (1 new file)
+[ ] lib/features/digital_card/presentation/screens/nfc_share_screen.dart
+
+### Dashboard TODO
+[ ] FAB fan menu implementation in bottom_nav_shell.dart
+[ ] Verify profile image renders from Firebase/Cloudinary
+
 
 ================================================================================
 ACCEPTANCE CRITERIA (Before Launch)
 ================================================================================
 
 ### Functionality:
-[ ] All 60 screens implemented and functional (15/60 complete)
-[x] App works 100% offline (except initial login) ✅
+[ ] ~45 screens implemented and functional (29 complete, ~16 remaining)
+[x] App works 100% offline  ✅
 [x] Data syncs to Firebase when online ✅
 [ ] No crashes in 100 test sessions
-[ ] All features from MASTER_PROJECT_PLAN_V1.txt complete
+[ ] All V1 features complete
 
 ### Performance:
 [ ] App launches in < 1.5 seconds (cold start)
 [ ] 60 FPS maintained during scrolling
 [ ] No memory leaks after 30 minutes of use
-[ ] Images load within 2 seconds
+[ ] Images load within 2 seconds on 4G
 
 ### Quality:
 [ ] 4.5+ star rating in internal testing
 [ ] Passes accessibility tests
-[ ] Zero lint warnings
-[ ] 80%+ code coverage
+[ ] Zero lint warnings (currently ~158 warnings)
+[ ] 80%+ code coverage (currently ~40%)
 
 ### Security:
 [x] No credentials in code ✅
-[x] All sensitive data encrypted ✅
+[x] All sensitive data AES-256 encrypted ✅
 [x] Firebase rules configured ✅
-[ ] HTTPS only for all network calls
+[x] Biometric / PIN protection ✅
+[ ] HTTPS only for all network calls (verify)
 
 ### Compliance:
 [ ] Privacy policy complete and hosted
@@ -253,71 +432,72 @@ ACCEPTANCE CRITERIA (Before Launch)
 [ ] Support contact available
 [ ] App store listings prepared
 
+
 ================================================================================
 COST MONITORING
 ================================================================================
 
-**Monthly Cost Estimate**: $2-7/month
+**Monthly Cost Estimate**: $0–5/month (Free Tier focused)
 
 **Breakdown**:
 - Firebase Auth: $0 (FREE)
-- Firebase Firestore: $0 (Free Tier)
-- Cloudinary: $0 (Free Credits)
+- Firebase Firestore: $0 (Free Tier, monitor reads/writes)
+- Cloudinary: $0 (25GB free, monitor usage)
+- Firebase SMS OTP: COST per message (budget approval needed for production)
 
 **Budget Alerts**:
-[ ] Monitor Firebase usage
-[ ] Monitor Cloudinary credits
+[ ] Monitor Firebase Firestore reads/writes
+[ ] Monitor Cloudinary storage credits (25GB/month)
 [ ] Review costs weekly during development
+[ ] Get budget approval for SMS OTP in production
+
 
 ================================================================================
 RISK MITIGATION
 ================================================================================
 
 **Identified Risks**:
-1. OCR accuracy < 70% → Mitigation: Allow manual editing, test multiple OCR providers
-2. API costs exceed budget → Mitigation: Monitor usage, optimize queries
-3. Team member unavailable → Mitigation: Cross-train, document code, use Git branches
-4. Firebase SMS2. API costs exceed budget → Mitigation: Monitor usage, optimize queries
-5. Firestore sync conflicts → Mitigation: Implement last-write-wins strategy
+1. OCR accuracy (MITIGATED: ML Kit + manual editing allowed + all regex enhanced)
+2. API costs exceeding budget → Monitor Cloudinary + Firebase usage
+3. Firestore sync conflicts → MITIGATED: Last-write-wins strategy implemented
+4. Firebase SMS costs → Budget approval needed for production
+5. NFC write not supported on iOS → DOCUMENTED: iOS read-only only
+6. Firebase Functions not set up → Needed for shareable card deep links (V2)
 
 ================================================================================
-NEXT STEPS (IMMEDIATE)
+PROGRESS TRACKING (Updated Feb 23, 2026)
 ================================================================================
 
-**Completed This Week**:
-1. ✅ Authentication system fully implemented
-2. ✅ All auth screens completed (Login, Register, Phone, OTP, Forgot Password)
-3. ✅ App router and navigation guards working
-4. ✅ User profile entity and repository complete
-
-**Focus This Week (Phase 4 - Card Scanning)**:
-1. Start Phase 4: Business Card Scanning & OCR
-2. Implement camera integration
-3. Set up OCR text extraction
-4. Configure Cloudinary for card image storage
-
-**Next Week**:
-1. Complete Phase 4: Business Card Scanning
-2. Start Phase 5: Digital Card Creator
-3. Continue testing and quality assurance
-
-================================================================================
-PROGRESS TRACKING
-================================================================================
-
-**Overall Progress**: 45% Complete (Phases 0-3 Complete)
+**Overall Progress**: ~87% Complete
 
 **Phase Status**:
-- Phase 0 (Setup): [x] Complete
-- Phase 1 (Infrastructure): [x] Complete
-- Phase 2 (Authentication): [x] Complete
-- Phase 3 (Contacts): [x] Complete
-- Phase 4 (OCR): [ ] In Progress ⏳
-- Phase 5 (Digital Card): [ ] Not Started
-- Phase 6 (Wallet): [ ] Not Started
-- Phase 7 (Polish): [ ] Not Started
+- Phase 0 (Setup):          [x] COMPLETE ✅
+- Phase 1 (Infrastructure): [x] COMPLETE ✅
+- Phase 2 (Authentication): [x] COMPLETE ✅
+- Phase 3 (Contacts):       [x] COMPLETE ✅
+- Phase 4 (OCR Scanning):   [x] COMPLETE ✅ (98% — Scan History pending)
+- Phase 5 (Digital Card):   [x] COMPLETE ✅ (NFC write + analytics pending)
+- Phase 6 (Wallet):         [ ] TODO ❌ (Domain + Screens all pending)
+- Phase 7 (Settings):       [/] 75% ✅ / Notifications + Analytics + Polish pending
+- Phase 7 (Notifications):  [ ] TODO ❌ (0%)
+- Phase 7 (Analytics):      [ ] TODO ❌ (0%)
+- Phase 7 (Import/Export):  [ ] TODO ❌ (0%)
+- Phase 7 (Localization):   [/] IN PROGRESS (20%)
+- App Store Prep:           [ ] TODO ❌ (0%)
 
-**Update this file weekly with progress!**
+**Weekly Milestones**:
+- Week 4:  Authentication complete ✅
+- Week 7:  Contact CRUD working ✅
+- Week 8:  Contact Management fully implemented ✅ (Jan 30, 2026)
+- Week 12: Business Card Scanning complete ✅ (Feb 16, 2026)
+- Week 14: Digital Card Creator complete ✅ (Feb 22, 2026)
+- Week 14: Advanced OCR regex + Google Drive Backup ✅ (Feb 23, 2026)
+- Week 15: Wallet simulation + Dashboard FAB → NEXT 🔄
+- Week 17: Notifications + Import/Export
+- Week 19: Analytics + Localization
+- Week 21: App Store Preparation
+- Week 22: V1.0 LAUNCH 🚀 (Target: April–May 2026)
+
 
 ================================================================================
 SUPPORT & RESOURCES
@@ -327,18 +507,15 @@ SUPPORT & RESOURCES
 - Firebase: https://firebase.google.com/docs
 - FlutterFire: https://firebase.flutter.dev
 - Cloudinary: https://cloudinary.com/documentation
-- Cloudinary Flutter: https://cloudinary.com/documentation/flutter_integration
 - Flutter: https://flutter.dev/docs
+- Google ML Kit: https://developers.google.com/ml-kit
+- Riverpod: https://riverpod.dev
 
 **Community**:
 - Flutter Discord: https://discord.gg/flutter
 - Firebase Discord: https://discord.gg/firebase
-- Stack Overflow: Tag questions with [flutter], [firebase], [firestore]
+- Stack Overflow: Tags [flutter], [firebase], [firestore], [riverpod]
 
-**Internal**:
-- Project repository: [Add Git URL]
-- Project board: [Add board URL]
-- Team chat: [Add Slack/Discord URL]
 
 ================================================================================
 NOTES
@@ -346,14 +523,16 @@ NOTES
 
 - Mark items as [/] when in progress, [x] when complete
 - Update progress weekly in team standup
-- Refer to task.md for detailed task breakdown
+- Refer to CurrentProgress/ folder for detailed tracking
 - Keep this file updated as single source of truth for project status
-- Celebrate milestones! 🎉
+- All screens follow Feature-First Clean Architecture (Domain/Data/Presentation)
+- Offline-first: All screens must show Isar cached data before Firestore loads
+- Error handling pattern: Either<Failure, T> from fpdart
 
 ================================================================================
 END OF TODO LIST
 ================================================================================
 
-**Status**: In Development - Phase 4 Starting 🚀
-**Last Updated**: January 29, 2026
-**Next Review**: February 5, 2026 (Week 8 completion)
+**Status**: Phase 11 (Wallet) Starting 🚀
+**Last Updated**: February 23, 2026
+**Next Milestone**: Wallet Simulation screens + Dashboard FAB fan menu

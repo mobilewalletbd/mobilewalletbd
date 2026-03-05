@@ -1,0 +1,827 @@
+================================================================================
+COMMON COMPONENTS & WIDGETS - SMART CONTACT WALLET V1.0
+================================================================================
+Document Version: 1.0
+Last Updated: January 30, 2026
+Source: V1_APP_DESIGN_PLAN.txt, V1_UX_GUIDELINES.txt, MASTER_PROJECT_PLAN_V1.txt
+
+PURPOSE: Comprehensive catalogue of reusable UI components and widgets used
+across all 60 pages of the Smart Contact Wallet application.
+
+===============================================================================
+1. BUTTONS
+================================================================================
+
+1.1 PRIMARY BUTTON (Filled)
+---------------------------
+Specifications:
+• Height: 48px
+• Background: Primary Green (#0BBF7D)
+• Text: White (#FFFFFF), Inter SemiBold 14px
+• Border Radius: 12px
+• Shadow: 0 4px 12px rgba(0, 168, 107, 0.3) (optional)
+• Padding: Full-width or 16px horizontal
+
+States:
+• Default: Primary Green background
+• Hover: Primary Green Dark (#099D66)
+• Pressed: Scale 0.98x, darker background
+• Disabled: Light Gray (#E5E5E5) background, Medium Gray (#8E8E9A) text
+• Loading: Spinner icon, disabled state
+
+Usage: Primary actions like "Save", "Login", "Register", "Add Contact"
+
+1.2 SECONDARY BUTTON (Outlined)
+--------------------------------
+Specifications:
+• Height: 48px
+• Background: Transparent or White
+• Border: 1.5px Primary Green (#0BBF7D)
+• Text: Primary Green (#0BBF7D), Inter SemiBold 14px
+• Border Radius: 12px
+• Padding: 16px horizontal
+
+States:
+• Default: Green border, green text
+• Hover: Light green background (#F0FDF4)
+• Pressed: Slightly darker background
+• Disabled: Light Gray border and text
+
+Usage: Secondary actions like "Cancel", "Skip", alternative options
+
+1.3 TEXT BUTTON (Link Style)
+-----------------------------
+Specifications:
+• Height: Auto (inline with text)
+• Background: Transparent
+• Text: Primary Green (#0BBF7D) or Dark Gray (#4A4A5A)
+• Font: Inter Medium 14px
+• No border or radius
+
+States:
+• Default: Colored text
+• Hover: Underline
+• Pressed: Slightly darker color
+• Disabled: Medium Gray (#8E8E9A)
+
+Usage: "Forgot Password?", "Sign Up", tertiary actions
+
+1.4 FLOATING ACTION BUTTON (FAB)
+---------------------------------
+Specifications:
+• Size: 56x56px (Main FAB) or 48x48px (Secondary FABs)
+• Background: Primary Green (#0BBF7D)
+• Icon: White (#FFFFFF), 24px (main) or 20px (secondary)
+• Border Radius: 50% (circular)
+• Shadow: 0 6px 16px rgba(0, 168, 107, 0.3)
+• Position: Fixed bottom-right (16px from edges)
+
+Fan Menu (Expanded State):
+• Expands vertically above main FAB
+• 4 secondary FABs: Add Contact, Scan Card, QR Code, Manual Entry
+• Background: Deep Blue (#1E3A5F) for secondary FABs
+• Vertical spacing: 12px between FABs
+• Animation: Fan out from center, 300ms ease-out
+
+Usage: Main action on Dashboard and module home pages
+
+1.5 ICON BUTTON
+---------------
+Specifications:
+• Size: 44x44px touch target
+• Icon: 24x24px actual size
+• Background: Transparent or circular colored
+• Border Radius: 50% (if background)
+
+Usage: Back button, notification bell, menu hamburger, action icons
+
+================================================================================
+2. INPUT FIELDS
+================================================================================
+
+2.1 STANDARD TEXT FIELD
+------------------------
+Specifications:
+• Height: 56px (standard touch target)
+• Background: Off White (#F5F5F7) OR White with Border
+• Border: 1px Light Gray (#E5E5E5)
+• Border Radius: 12px
+• Padding: 16px horizontal
+• Label: Floating or top-aligned, Inter Medium 12px, Dark Gray
+• Placeholder: Inter Regular 16px, Medium Gray (#8E8E9A)
+• Input Text: Inter Regular 16px, Black (#181A2E)
+
+States:
+• Default: Light border
+• Focus: 2px Primary Green (#0BBF7D) border, White background
+• Error: 2px Coral Accent (#FF6B6B) border, error text below
+• Success: 2px Success Green (#28A745) border, checkmark icon (optional)
+• Disabled: Light Gray background, Medium Gray text
+
+Usage: Name, Email, Phone, Address, all standard text inputs
+
+2.2 PASSWORD FIELD
+------------------
+Specifications:
+• Same as Standard Text Field
+• Additional: Eye icon (show/hide) 24x24px, right-aligned
+• Password displayed as bullets (••••••••)
+• Toggle touch target: 44x44px
+
+Usage: Password fields in Login, Register, Security settings
+
+2.3 SEARCH BAR
+--------------
+Specifications:
+• Container: Full-width x 48px (16px horizontal margins = 343px)
+• Background: Off White (#F5F5F7)
+• Border Radius: 12px
+• Left Icon: Search (magnifying glass) 20px, Medium Gray
+• Placeholder: "Search contacts...", Inter Regular 14px, Medium Gray
+• Right Icon: Filter funnel 20px (optional)
+• Padding: 12px horizontal
+
+States:
+• Default: Off-white background
+• Focus: White background, green outline
+• Active: Typing state with clear (X) button
+
+Usage: Global search, contact search, filter search
+
+2.4 DROPDOWN/SELECT FIELD
+--------------------------
+Specifications:
+• Same as Standard Text Field
+• Additional: Dropdown arrow icon 16x16px, right-aligned
+• Tap opens bottom sheet or modal with options
+
+Usage: Category selection, Country code, Language selection
+
+2.5 DATE PICKER FIELD
+---------------------
+Specifications:
+• Same as Standard Text Field
+• Additional: Calendar icon 24x24px, right-aligned
+• Placeholder: "DD/MM/YYYY" or localized format
+• Tap triggers native date picker
+
+Usage: Date of Birth, Filter by date
+
+2.6 MULTI-LINE TEXT AREA
+-------------------------
+Specifications:
+• Min Height: 100px
+• Max Height: 200px (scrollable)
+• Same styling as Standard Text Field
+• Auto-expand as user types
+
+Usage: Notes, Messages, Bio, Description fields
+
+================================================================================
+3. CARDS
+================================================================================
+
+3.1 CONTACT CARD (Grid View)
+-----------------------------
+Specifications:
+• Dimensions: Flexible, approx 165x200px (card aspect ratio)
+• Background: White (#FFFFFF)
+• Border Radius: 16px
+• Shadow: 0 4px 12px rgba(0,0,0,0.08)
+• Padding: 12px
+
+Content Layout:
+• Card Image Area: Top 60% (120px), rounded top corners (12px)
+• Name: Inter SemiBold 14px, Black, below image (8px margin-top)
+• Job Title: Inter Regular 12px, Dark Gray (optional if space)
+• Front/Back Toggle: Two pill buttons ("F" and "B"), 24x24px each
+  - Active: Primary Green background, White text
+  - Inactive: Light Gray background, Dark Gray text
+  - Font: Inter SemiBold 12px
+
+Interactions:
+• Tap: View full contact details
+• Long press: Quick actions menu (Share, Favorite, Delete)
+
+Usage: Home Dashboard grid, Favorites, Team Directory
+
+3.2 CONTACT CARD (List View)
+-----------------------------
+Specifications:
+• Height: 72px
+• Background: White (#FFFFFF)
+• Padding: 16px horizontal
+• Divider: 1px Light Gray (#E5E5E5), 72px left inset
+
+Content Layout:
+• Avatar: 48x48px circular, left-aligned
+  - Border: 1px Light Gray
+  - Fallback: Initials on Primary Green Light (#4DC591)
+• Text Container: 12px left of avatar
+  - Name: Inter SemiBold 16px, Black
+  - Company/Title: Inter Regular 14px, Dark Gray
+• Right Chevron: 16x16px, Light Gray
+
+Swipe Actions:
+• Swipe Left (Delete): Red background, trash icon
+• Swipe Right (Favorite): Gold background, star icon
+• Reveal Width: 80px each
+
+Usage: Contact List View, Search Results
+
+3.3 WALLET CARD (Payment Method)
+---------------------------------
+Specifications:
+• Dimensions: Full-width x 200px (aspect ratio 1.586)
+• Background: Gradient (Primary Green gradient or Blue gradient)
+• Border Radius: 16px
+• Shadow: 0 6px 16px rgba(0,0,0,0.15)
+• Padding: 20px
+
+Content Layout:
+• Chip Icon: Top-left, 48x32px
+• Bank Logo: Top-right, 60x24px
+• Card Number: Masked (•••• •••• •••• 1234), Inter Mono 18px, White
+• Card Holder Name: Inter Regular 14px, White with 80% opacity
+• Expiry Date: Inter Regular 12px, bottom-right, White with 80% opacity
+
+Visual Style:
+• Gradient background (brand or metallic)
+• Embossed effect for numbers
+• Premium card appearance
+
+Usage: Wallet Home, Add Payment Card, Card Details
+
+3.4 TRANSACTION CARD
+--------------------
+Specifications:
+• Height: 80px
+• Background: White (#FFFFFF)
+• Border Radius: 12px
+• Padding: 16px
+• Margin: 8px between cards
+
+Content Layout:
+• Icon: 40x40px circular, left-aligned
+  - Background: Green (income) or Red (expense)
+  - Arrow icon: Up/Down 20px, White
+• Text Container:
+  - Transaction Type/Name: Inter SemiBold 14px, Black
+  - Date/Time: Inter Regular 12px, Dark Gray
+• Amount: Right-aligned
+  - Font: Inter SemiBold 18px
+  - Color: Green (+৳500.00) or Red (-৳200.00)
+
+Usage: Transaction History, Wallet Home
+
+3.5 NOTIFICATION CARD
+---------------------
+Specifications:
+• Min Height: 80px
+• Background: White (#FFFFFF)
+• Padding: 16px
+• Unread indicator: 8px circular dot, Primary Green, left edge
+
+Content Layout:
+• Icon: 40x40px circular, colored by type
+  - Payment: Primary Green
+  - Contact: Sky Blue
+  - Reminder: Warm Gold
+  - Alert: Coral Red
+• Content:
+  - Title: Inter SemiBold 14px, Black
+  - Message: Inter Regular 13px, Dark Gray (max 2 lines, ellipsis)
+• Timestamp:  Top-right, Inter Regular 12px, Medium Gray
+
+Swipe Actions:
+• Swipe Left: Full-width red dismiss with X icon
+
+Usage: Notifications page
+
+================================================================================
+4. NAVIGATION COMPONENTS
+================================================================================
+
+4.1 TOP HEADER BAR (AppBar)
+----------------------------
+Specifications:
+• Height: 56px (excluding status bar)
+• Background: White (#FFFFFF) or Transparent
+• Bottom Border: 1px Light Gray (#E5E5E5) (optional)
+
+Content Layout:
+• Back Button: Left-aligned, 44x44px touch target
+  - Icon: Chevron left 24x24px, Black
+  - Position: 8px from left edge
+• Title: Centered or left-aligned after back button
+  - Font: Inter SemiBold 18px, Black
+• Action Icons: Right-aligned, 44x44px touch targets
+  - Examples: Save, Filter, More (•••)
+
+Usage: All inner pages
+
+4.2 BOTTOM NAVIGATION SHELL (CRITICAL FOOTER DESIGN)
+-----------------------------------------------------
+Specifications:
+• Height: 80px (including safe area)
+• Background: White (#FFFFFF)
+• Top Border: 1px Light Gray (#E5E5E5)
+• Shadow: 0 -2px 10px rgba(0,0,0,0.03)
+• Position: Fixed at bottom of screen
+
+Layout (4 Tabs - Left to Right):
+1. HOME TAB (First):
+   - Position: 25% from left
+   - Icon: House 24x24px
+   - Touch Target: Full width of tab area
+   - Label: "Home" 10px below icon, Inter Regular 10px
+   - Color: Medium Gray (#8E8E9A) inactive → Primary Green (#0BBF7D) active
+   - Action: Navigate to Home Dashboard
+
+2. CONTACTS TAB (Second):
+   - Position: 50% from left (25% width)
+   - Icon: User group/people 24x24px
+   - Touch Target: Full width of tab area
+   - Label: "Contacts" 10px below icon, Inter Regular 10px
+   - Color: Medium Gray (#8E8E9A) inactive → Primary Green (#0BBF7D) active
+   - Action: Navigate to Contact List View
+
+3. WALLET TAB (Third):
+   - Position: 75% from left (25% width)
+   - Icon: Wallet/Credit card 24x24px
+   - Touch Target: Full width of tab area
+   - Label: "Wallet" 10px below icon, Inter Regular 10px
+   - Color: Medium Gray (#8E8E9A) inactive → Primary Green (#0BBF7D) active
+   - Action: Navigate to Wallet Home
+
+4. SETTINGS TAB (Fourth):
+   - Position: Rightmost (25% width)
+   - Icon: Gear/Cog 24x24px
+   - Touch Target: Full width of tab area
+   - Label: "Settings" 10px below icon, Inter Regular 10px
+   - Color: Medium Gray (#8E8E9A) inactive → Primary Green (#0BBF7D) active
+   - Action: Navigate to Settings Home
+
+Active State Styling:
+• Active tab: Primary Green (#0BBF7D) icon and text
+• Inactive tabs: Medium Gray (#8E8E9A) icon and text
+• Active indicator: Optional 3px green line at top of tab
+• Smooth transition: 200ms ease-in-out
+
+FLOATING ACTION BUTTON (FAB) - OVERLAY:
+In addition to the bottom navigation, some pages (Dashboard, Contact List) 
+include a FLOATING ACTION BUTTON that overlays the bottom navigation:
+• Size: 56x56px
+• Position: Bottom-right, 16px from right edge, 96px from bottom (above nav)
+• Background: Primary Green (#0BBF7D)
+• Icon: Plus (+) 24px, White
+• Shadow: 0 6px 16px rgba(0, 168, 107, 0.3)
+• Action: Opens quick action menu for adding contacts
+• Sub-actions: Add Contact, Scan Card, QR Code, Manual Entry
+
+Usage Logic:
+• Visible on: Home Dashboard, Contact List, Wallet Home, Settings Home
+• Hidden on: Full-screen flows (Auth, Onboarding, Scanner), Deep inner pages
+• Consistent across all main module pages
+
+CRITICAL FOOTER DESIGN SUMMARY:
+-------------------------------
+The Bottom Navigation is a STANDARD 4-TAB NAVIGATION BAR with equal spacing:
+  [Home] [Contacts] [Wallet] [Settings]
+
+Each tab shows an icon with a label below it. The active tab is highlighted
+in Primary Green, while inactive tabs appear in Medium Gray. This provides
+consistent navigation across ALL major sections of the application.
+
+Additional floating action buttons (like the FAB) may overlay this navigation
+on specific pages, but the 4-tab bottom navigation remains the PRIMARY and
+CONSISTENT navigation mechanism throughout the entire application.
+
+4.3 CATEGORY TAB BAR
+--------------------
+Specifications:
+• Container Height: 52px
+• Padding: 16px horizontal, 8px vertical
+• Background: White (#FFFFFF)
+• Horizontal Scrollable: Yes
+
+Tab Pill Specifications:
+• Height: 32px
+• Padding: 12px horizontal, 8px vertical
+• Border Radius: 16px (full pill shape)
+• Spacing: 8px between pills
+
+States:
+• Active:
+  - Background: Primary Green (#0BBF7D)
+  - Text: Inter SemiBold 14px, White (#FFFFFF)
+• Inactive:
+  - Background: Off White (#F5F5F7)
+  - Text: Inter Regular 14px, Dark Gray (#4A4A5A)
+
+Usage: Home Dashboard (All/Business/Friends/Family/Uncategorized)
+
+4.4 ALPHABET SCRUBBER
+---------------------
+Specifications:
+• Position: Fixed right edge, 12px from edge
+• Letters: A-Z + # (for numbers)
+• Font: Inter Medium 10px
+• Color: Primary Green (#0BBF7D)
+• Spacing: 3px vertical between letters
+• Haptic feedback: On letter change
+
+Usage: Contact List View alphabetical navigation
+
+================================================================================
+5. FEEDBACK & STATE COMPONENTS
+================================================================================
+
+5.1 LOADING SPINNER
+-------------------
+Specifications:
+• Size: 32x32px (standard) or 48x48px (large)
+• Color: Primary Green (#0BBF7D)
+• Type: Circular indeterminate spinner
+• Animation: Smooth rotation
+
+Usage: Button loading states, page loading
+
+5.2 SKELETON LOADER (Shimmer)
+------------------------------
+Specifications:
+• Background: Light Gray (#E5E5E5)
+• Shimmer Gradient: Lighter gray moving left to right
+• Animation: 1.5s continuous loop
+• Border Radius: Matches content (12px for cards, 50% for avatars)
+
+Layouts:
+• Contact Card Skeleton: Rectangular image placeholder + text lines
+• List Item Skeleton: Circle (avatar) + two horizontal lines
+• Full Page Skeleton: Multiple skeleton cards in grid/list
+
+Usage: List loading states, image loading placeholders
+
+5.3 EMPTY STATE
+---------------
+Specifications:
+• Container: Centered vertically and horizontally
+• Illustration: 120x120px, Simple line art or icon
+• Headline: Inter SemiBold 20px, Black (#1A1A2E)
+• Description: Inter Regular 14px, Dark Gray (#4A4A5A), max-width 300px, centered
+• CTA Button: Primary button (optional)
+
+Examples:
+• No Contacts: Star illustration, "No contacts yet", "Add your first contact"
+• No Favorites: Star with dotted outline, "No favorites yet", "Star important contacts"
+• No Notifications: Bell with checkmark, "All caught up!", "No new notifications"
+
+Usage: Empty lists, first-time user states
+
+5.4 ERROR STATE
+---------------
+Specifications:
+• Container: Centered
+• Icon: Error icon or illustration, 100x100px, Coral Red
+• Headline: "Couldn't load [content]", Inter SemiBold 18px, Black
+• Description: Error reason, Inter Regular 14px, Dark Gray
+• Retry Button: Secondary button
+
+Usage: Failed data loads, network errors
+
+5.5 SUCCESS TOAST/SNACKBAR
+---------------------------
+Specifications:
+• Width: Full-width (16px margins) or 343px centered
+• Height: 48px minimum
+• Background: Success Green (#28A745) or Primary Green
+• Border Radius: 12px
+• Position: Top-floating (16px from top) or bottom (above nav, 96px from bottom)
+• Duration: 3 seconds auto-dismiss
+
+Content:
+• Icon: Checkmark circle 20px, White (optional)
+• Text: Inter Regular 14px, White
+• Close Button: X icon 20px, White (optional)
+
+Usage: "Contact saved", "Changes saved", success confirmations
+
+5.6 ERROR TOAST/SNACKBAR
+-------------------------
+Specifications:
+• Same as Success Toast
+• Background: Error Red (#DC3545)
+• Icon: X circle or warning triangle
+
+Usage: "Failed to save", "Invalid email", error messages
+
+5.7 INFO TOAST (SYNC ALERTS)
+-----------------------------
+Specifications:
+• Same as Success Toast
+• Background: Info Blue (#4DABF7)
+• Text: "New info available for [Name]"
+• Actions: [Update] and [Ignore] buttons (text buttons, white)
+
+Usage: Global sync alerts, contact update notifications
+
+================================================================================
+6. MODAL & DIALOG COMPONENTS
+================================================================================
+
+6.1 BOTTOM SHEET
+----------------
+Specifications:
+• Width: Full-width
+• Max Height: 75% of screen height
+• Background: White (#FFFFFF)
+• Border Radius: 24px (top corners only)
+• Handle: 32×4px rounded rectangle, Light Gray, centered at top
+• Padding: 24px
+• Backdrop: Semi-transparent dark overlay (rgba(0,0,0,0.5))
+
+Usage: Filter options, Share menu, Action sheets
+
+6.2 MODAL DIALOG
+----------------
+Specifications:
+• Width: 327px (24px margins on sides)
+• Min Height: Auto (content-based)
+• Background: White (#FFFFFF)
+• Border Radius: 16px
+• Padding: 24px
+• Shadow: 0 8px 16px rgba(0,0,0,0.12)
+• Backdrop: Semi-transparent dark overlay
+
+Content Layout:
+• Icon/Illustration: 48x48px, centered (optional)
+• Title: Inter SemiBold 18px, Black, centered or left-aligned
+• Description: Inter Regular 14px, Dark Gray, 16px margin-top
+• Actions: Horizontal button row (Cancel + Confirm)
+
+Usage: Delete confirmation, Important alerts, Merge dialogs
+
+6.3 ALERT BANNER (In-Page)
+---------------------------
+Specifications:
+• Width: Full-width (16px margins)
+• Height: Auto (min 56px)
+• Background: Based on type (Info Blue bg-light, Warning Amber bg-light, Error Red bg-light)
+• Border Radius: 12px
+• Border Left: 4px solid color (same as background type)
+• Padding: 16px
+• Margin: 16px vertical
+
+Content:
+• Icon: 24x24px, color-matched
+• Text: Inter Regular 14px, Dark Gray
+• Close Button: X icon (optional)
+
+Usage: In-page warnings, informational messages
+
+================================================================================
+7. SPECIALIZED COMPONENTS
+================================================================================
+
+7.1 OTP INPUT BOXES
+-------------------
+Specifications:
+• Number of Boxes: 6 (or 4 depending on requirement)
+• Box Dimensions: 48x56px each
+• Spacing: 12px between boxes
+• Background: White (#FFFFFF)
+• Border: 2px Light Gray (#E5E5E5)
+• Border Radius: 12px
+
+States:
+• Default: Light gray border
+• Focus: Primary Green (#0BBF7D) border
+• Filled: Primary Green border, text visible
+
+Text:
+• Font: JetBrains Mono SemiBold 24px
+• Color: Black (#1A1A2E)
+• Alignment: Center
+
+Behavior:
+• Auto-focus first box
+• Auto-advance on digit entry
+• Backspace returns to previous
+• Paste support for full OTP
+
+Usage: OTP Verification page
+
+7.2 QR CODE DISPLAY
+-------------------
+Specifications:
+• Size: 256x256px (large display) or 128x128px (small)
+• Border: 16px white padding around QR
+• Container Background: White
+• Container Border Radius: 16px
+• Container Shadow: 0 4px 12px rgba(0,0,0,0.08)
+
+Usage: QR Code Page, Share Contact, Receive Money
+
+7.3 AVATAR/PROFILE PICTURE
+---------------------------
+Specifications:
+• Sizes: 32x32px (small), 48x48px (standard), 64x64px (large), 96x96px (profile)
+• Shape: Circular (50% border radius)
+• Border: 2px White (on colored backgrounds) or 1px Light Gray
+• Fallback: Initials on Primary Green Light (#4DC591) background
+  - Font: Inter SemiBold, size relative to avatar (18px for 48px avatar)
+  - Color: White
+
+Edit State (Profile Settings):
+• Plus icon overlay: 24x24px, Primary Green, bottom-right corner
+• Touch target: Full avatar clickable
+
+Usage: Profile headers, Contact cards, Team members, Chat/Comments
+
+7.4 PROGRESS INDICATOR (Horizontal)
+------------------------------------
+Specifications:
+• Height: 4px or 8px
+• Background: Light Gray (#E5E5E5)
+• Fill: Primary Green (#0BBF7D)
+• Border Radius: 2px or 4px
+• Animation: Smooth transition on percentage change
+
+Usage: Upload progress, Multi-step forms, Transaction limits
+
+7.5 COUNTDOWN TIMER
+-------------------
+Specifications:
+• Format: "Resend code in 00:45"
+• Font: Inter Regular 14px
+• Color: Medium Gray (#8E8E9A)
+• Updates: Every second
+
+Expired State:
+• Text: "Resend Code"
+• Color: Primary Green (#0BBF7D)
+• Font: Inter Medium 14px
+• Tappable link
+
+Usage: OTP Verification
+
+7.6 TOGGLE SWITCH
+-----------------
+Specifications:
+• Dimensions: 51x31px
+• Track: Rounded rectangle
+• Thumb: 27px diameter circle, White
+
+OFF State:
+• Track: Light Gray (#E5E5E5)
+• Thumb: Left position
+
+ON State:
+• Track: Primary Green (#0BBF7D)
+• Thumb: Right position
+
+Animation: 200ms ease-out slide
+
+Usage: Settings toggles, Permission requests
+
+7.7 RADIO BUTTON
+----------------
+Specifications:
+• Size: 20x20px
+• Border: 2px Light Gray (#E5E5E5)
+• Shape: Circular
+
+Selected State:
+• Border: Primary Green (#0BBF7D)
+• Inner Circle: 12px Primary Green, centered
+
+Usage: Language selection, Single-choice options
+
+7.8 CHECKBOX
+------------
+Specifications:
+• Size: 20x20px
+• Border: 2px Light Gray (#E5E5E5)
+• Border Radius: 4px
+
+Checked State:
+• Background: Primary Green (#0BBF7D)
+• Icon: White checkmark 14px
+
+Usage: Multi-select options, Terms acceptance
+
+================================================================================
+9. TRUST & FEATURE BADGES (NEW)
+================================================================================
+
+9.1 MFS INDICATOR BADGES
+------------------------
+Specifications:
+• Size: 24x24px (Small) or 32x32px (Standard)
+• Shape: Circular or Rounded Square (4px radius)
+• Background: White
+• Border: 1px Light Gray (#E5E5E5)
+• Icon: Brand Logo (bKash = Pink, Nagad = Orange, Rocket = Purple)
+
+Usage:
+• Contact Details: Row showing which MFS wallets the contact has.
+• Contact List: Mini icon next to name (optional).
+
+9.2 VERIFIED USER BADGE
+-----------------------
+Specifications:
+• Size: 16x16px or 20x20px
+• Icon: Solid checkmark circle
+• Color: Twitter Blue (#1DA1F2) or Success Green (#28A745)
+• Position: Right of User Name
+
+Usage:
+• Self-created "My Cards" that have been verified.
+• Contacts synced from Global Directory (Trusted).
+
+9.3 TEAM MEMBER BADGE
+---------------------
+Specifications:
+• Size: Height 20px, Width auto
+• Background: Light Blue (#E3F2FD)
+• Text: "Team" or Team Abreviation, Inter Bold 10px, Blue (#1976D2)
+• Border Radius: 4px
+
+Usage:
+• Contact List: Distinguishes team-shared contacts from personal ones.
+
+================================================================================
+10. EDITOR CONTROLS (CARD CREATOR)
+================================================================================
+
+10.1 COLOR PRESET PICKER
+------------------------
+Specifications:
+• Component: Horizontal scrollable list of circles
+• Item Size: 40x40px
+• Item Shape: Circle
+• Selected State: 2px White border + 2px Primary Green outer ring
+• Colors: Brand presets (Navy, Black, Green, Teal, White, etc.)
+
+Usage: My Card Creator -> Theme Color
+
+10.2 THEME CAROUSEL (LAYOUT SELECTOR)
+-------------------------------------
+Specifications:
+• Component: Horizontal carousel of card previews
+• Item Size: 120x75px (mini card aspect ratio)
+• Spacing: 16px
+• Selected State: Green border (#0BBF7D) + Checkmark badge
+• Label: Below item ("Modern", "Classic", "Minimal")
+
+Usage: My Card Creator -> Layout Style
+
+10.3 VISIBLE FIELDS TOGGLE LIST
+-------------------------------
+Specifications:
+• Layout: Vertical list of items
+• Item: Label (Left) + Toggle Switch (Right)
+• Divider: 1px Light Gray between items
+
+Usage: My Card Creator -> Choose what info to show on card.
+
+================================================================================
+11. SUMMARY & WIDGET COUNT
+================================================================================
+
+TOTAL COMPONENT CATEGORIES: 10
+1. Buttons: 5 types
+2. Input Fields: 6 types
+3. Cards: 5 types
+4. Navigation: 4 types
+5. Feedback & States: 7 types
+6. Modals & Dialogs: 3 types
+7. Specialized: 8 types
+8. Trust & Badges: 3 types (NEW)
+9. Editor Controls: 3 types (NEW)
+
+TOTAL COMPONENTS: 44 distinct reusable components
+
+COMPONENT USAGE FREQUENCY (HIGH TO LOW):
+1. Primary Button - Used in 45+ pages
+2. Standard Text Field - Used in 35+ pages
+3. Top Header Bar - Used in 54 pages
+4. Bottom Navigation Shell - Used in 20+ pages
+5. Contact Card - Used in 10+ pages
+6. FAB - Used in 12+ pages
+
+CRITICAL COMPONENTS FOR V1 MVP:
+✓ Bottom Navigation Shell (Settings-FAB-Search footer)
+✓ Primary & Secondary Buttons
+✓ Standard Text Field
+✓ Contact Card (Grid & List views)
+✓ Top Header Bar
+✓ FAB with Fan Menu
+✓ Skeleton Loader
+✓ Empty State
+✓ Toast/Snackbar
+✓ Bottom Sheet
+
+================================================================================
+END OF COMMON COMPONENTS & WIDGETS DOCUMENTATION
+================================================================================

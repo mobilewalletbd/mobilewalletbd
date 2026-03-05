@@ -1,0 +1,46 @@
+type User @table {
+  username: String!
+  passwordHash: String!
+  createdAt: Timestamp!
+  email: String
+  firstName: String
+  lastName: String
+}
+
+type Account @table {
+  user: User!
+  name: String!
+  balance: Float!
+  currency: String!
+  createdAt: Timestamp!
+  description: String
+}
+
+type Category @table {
+  user: User!
+  name: String!
+  type: String!
+  color: String
+}
+
+type Transaction @table {
+  user: User!
+  account: Account!
+  category: Category!
+  amount: Float!
+  type: String!
+  transactionDate: Date!
+  createdAt: Timestamp!
+  description: String
+  merchant: String
+}
+
+type Budget @table {
+  user: User!
+  category: Category!
+  amount: Float!
+  period: String!
+  startDate: Date!
+  createdAt: Timestamp!
+  endDate: Date
+}

@@ -1,0 +1,467 @@
+================================================================================
+TOTAL PAGES INFORMATION - SMART CONTACT WALLET V1.0
+================================================================================
+Document Version: 1.0
+Last Updated: January 30, 2026
+Source: V1_PAGE_SPECIFICATIONS.txt, MASTER_PROJECT_PLAN_V1.txt, V1_APP_DESIGN_PLAN.txt
+
+TOTAL PAGE COUNT: 60 Screens
+
+================================================================================
+MODULE 1: AUTHENTICATION (6 Pages)
+================================================================================
+
+Page 1: Splash Screen
+  - Purpose: Quick brand intro and app loading
+  - Content: App logo, loading animation
+  - Design: Minimal white background, centered logo, soft fade-in
+  - Demo Image: 1.jpg
+
+Page 2: Welcome / Logo Page  
+  - Purpose: Primary entry point after splash
+  - Content: App logo, Log In button, Sign Up button, Social login icons (Google, Facebook, Apple)
+  - Design: Centered logo → Large buttons → Social icons bottom
+  - Demo Image: 2 Opening App First Time.jpg
+
+Page 3: Log In
+  - Purpose: User authentication
+  - Content: Username/Email field, Password field, "Forgot Password?" link, Log In button, "Don't have an account? Sign Up" link, Social login buttons
+  - Design: Clean card-style form, rounded fields, elevated button
+  - Demo Image: 3. logIn.jpg
+
+Page 4: Register / Sign Up  
+  - Purpose: New user account creation
+  - Content: Full Name, Contact Number (+880), Email, Date of Birth, Password, Register button, Social login buttons
+  - Design: Single-step clean vertical form
+  - Demo Image: 4.SignUp.jpg
+
+Page 5: Forgot Password / Reset Password
+  - Purpose: Password recovery
+  - Content: Email field, "Send Reset Link" button, Back to Login link
+  - Design: Minimal modal or centered card with illustration
+  - Demo Image: 5. Reset_Password.jpg
+
+Page 6: OTP / Verification
+  - Purpose: Verify user phone/email via OTP
+  - Content: 6-digit OTP input, Timer ("Resend in 00:45"), Verify button, Change number link
+  - Design: Centered input boxes with auto-fill, auto-focus
+  - Demo Image: 6. Verify_OTP.jpg
+
+================================================================================
+MODULE 2: ONBOARDING (2 Pages)
+================================================================================
+
+Page 7: Permission Page
+  - Purpose: Request device permissions
+  - Content: Camera access toggle, Contact access toggle, Notification access toggle, Continue button, Skip option
+  - Design: Illustration + clear switch toggles + permission cards
+  - Demo Image: 7. Permission.jpg
+
+Page 8: Intro / How It Works (Carousel)
+  - Purpose: Introduce app features
+  - Content: 3-4 slides (Scan & Save, Connect & Share, Pay Securely, Stay Organized)
+  - Design: Full-width illustrations with dot indicators, Next/Get Started button
+  - Demo Image: 8. Guide_line.jpg
+
+================================================================================
+MODULE 3: HOME/DASHBOARD (5 Pages)
+================================================================================
+
+Page 9: Home Dashboard
+  - Purpose: Central hub for contact management
+  - Content: Profile picture, User name + contact, Category tabs (All/Business/Friends/Family/Uncategorized), Contact card grid (front/back preview), FAB cluster, Notification bell
+  - Design: 2-column grid of contact cards with F/B toggle
+  - Demo Image: 9. Dashboard.jpg
+
+Page 10: Contact List View
+  - Purpose: Alphabetical list of contacts
+  - Content: Search bar, Sticky headers (A-Z), Contact rows (avatar + name + company), Alphabet scrubber
+  - Design: Apple Contacts style with small card thumbnails
+  - Demo Image: 10. Contact_list.jpg
+
+Page 11: Favorites
+  - Purpose: Quick access to starred contacts
+  - Content: Grid/List of favorited contacts with star icons
+  - Design: Same as home grid but filtered to favorites only
+  - Demo Image: 11. Favorite.jpg
+
+Page 12: Recent Activity
+  - Purpose: Timeline of contact-related actions
+  - Content: Log of added/edited/contacted/deleted contacts, Date section headers
+  - Design: Chronological timeline with activity icons
+  - Demo Image: 12. Recent Activity.jpg
+
+Page 13: Notifications
+  - Purpose: App alerts and updates
+  - Content: Payment alerts, Contact updates, Team invites, Mark all read button
+  - Design: Grouped sections (New, Earlier Today, Yesterday) with swipe to dismiss
+  - Demo Image: 13. Notification.jpg
+
+================================================================================
+MODULE 4: CONTACT MANAGEMENT (13 Pages)
+================================================================================
+
+Page 14: Add Contact – Choose Method
+  - Purpose: Select how to add new contact
+  - Content: "Scan Card" option, "Manual Entry" option, "Import from Phone" option
+  - Design: Three large option cards with icons
+  - Demo Image: 14. Add_Contact.jpg
+
+Page 15: Add Contact – Manual Form
+  - Purpose: Manual contact entry
+  - Content: Name*, Position, Company, Phone (+880), Email, Address, Website, Category dropdown, Notes, Add Contact button
+  - Design: Scrollable form with labeled fields
+  - Demo Image: 15. AddContactManualForm.jpg
+
+Page 16: Auto Scan (Front)
+  - Purpose: Scan front of business card  
+  - Content: Camera viewfinder, Card alignment frame (3:2 ratio), Capture button, Flash toggle, "Scan Back" button
+  - Design: Semi-transparent overlay with dashed green border guide
+  - Demo Image: 16. Scan Front.jpg
+
+Page 17: Auto Scan (Back)
+  - Purpose: Scan back of business card
+  - Content: Same as Page 16
+  - Design: Same as Page 16
+  - Demo Image: 17.AutoScan.jpg
+
+Page 18: Scan Preview + OCR Confirmation
+  - Purpose: Review and edit OCR results
+  - Content: Scanned image preview (front/back), Auto-filled editable fields, Confidence indicators, Save button
+  - Design: Image at top, form below with yellow highlights for low-confidence fields
+  - Demo Image: 18.OCR Preview_Conf1irmation.jpg
+
+Page 19: Edit Contact
+  - Purpose: Modify existing contact
+  - Content: Same fields as Manual Form but pre-filled, Save button
+  - Design: Same as Add Contact form
+  - Demo Image: 19. EditContact.jpg
+
+Page 20: Contact Details
+  - Purpose: View complete contact information
+  - Content: Front/Back card carousel, Name, Title, Phone, Email, Company, Address, Quick action row (Call, SMS, Email, Pay, Map), Edit button, Share button, Delete button
+  - "Edit" (Pencil icon): Opens Edit Contact form
+  - "Share" (Share icon): Opens Share Sheet
+  - "Verify" (Checkmark icon): Checks if contact info is outdated (NEW)
+  - "Star" (Star icon): Toggle Favorite status
+  • MFS & TRUST BADGES (NEW SECTION):
+    - Row displaying icons of detected wallets (bKash, Nagad, Rocket)
+    - "Trust Indicator": Shows if contact is Verified or Team Member
+  - Design: Card preview at top, action buttons, detailed fields below
+  - Demo Image: 20. Contact_Details.jpg
+
+Page 21-22: View Card – Front/Back (Full Screen)
+  - Purpose: Full-screen card image viewer
+  - Content: Zoomable high-res card image, Pinch to zoom support
+  - Design: Black background, centered image, minimal UI
+  - Demo Image: 21_22.CardView.jpg
+
+Page 23: Share Contact
+  - Purpose: Share contact with others
+  - Content: QR Code (large, centered), Share Link button, Export vCard (.vcf) button, NFC Share option, PDF Export option, Social share sheet
+  - Design: Centered QR with action buttons below
+  - Demo Image: 23.Share_contact.jpg
+
+Page 24: Duplicate Contact Merge
+  - Purpose: Resolve duplicate contacts
+  - Content: Side-by-side comparison of duplicate fields, "Merge" button, "Keep Both" button
+  - Design: Split view with comparison table
+  - Demo Image: 24.DublicateFound.jpg
+
+Page 25: Delete Confirmation
+  - Purpose: Confirm contact deletion
+  - Content: Warning message, "Delete" button (red), "Cancel" button
+  - Design: Modal dialog with destructive action styling
+  - Demo Image: 25,Delete Contact Confirmation.jpg
+
+Page 26: Export Contacts  
+  - Purpose: Bulk export contacts
+  - Content: Format selection (CSV/vCard/PDF), Contact selection (All/Specific), Download/Share buttons
+  - Design: Options list with checkboxes
+  - Demo Image: 26.Export_Contacts.jpg
+
+================================================================================
+MODULE 5: SEARCH (3 Pages)
+================================================================================
+
+Page 27: Search Page
+  - Purpose: Global contact search
+  - Content: Search bar (auto-focus), Recent searches chips, Popular filters, Search suggestions
+  - Design: Clean search-focused UI
+  - Demo Image: 27.Search_page.jpg
+
+Page 28: Advanced Filters
+  - Purpose: Refine search results
+  - Content: Category filter, Company filter, Location filter, Date added filter, Tags filter, Apply/Reset buttons
+  - Design: Bottom sheet with filter chips and toggles
+  - Demo Image: 28.Filter_contact.jpg
+
+Page 29: Search Results Page
+  - Purpose: Display search results
+  - Content: Live updating list/grid based on query, Result count, Sort options
+  - Design: Same layout as Contact List View
+  - Demo Image: 29.Search_result.jpg
+
+================================================================================
+MODULE 6: WALLET (8 Pages - Internal Ledger Only)
+================================================================================
+
+Page 30: Wallet Home
+  - Purpose: Internal wallet dashboard
+  - Content: Balance card (৳), Action tiles (Add Money, Send, Receive, Payment, Add Card, Cash Out), Recent transactions list
+  - Design: Card visualization + action grid + transaction list
+  - Demo Image: 30.Wallet_Home.jpg
+
+Page 31: Add Payment Card
+  - Purpose: Save payment card (mock)
+  - Content: Card Number, Expiry Date, Name on Card, CVV, Billing Address, Save button
+  - Design: Card input form with real-time validation
+  - Demo Image: 31. AddPaymentCard.jpg
+
+Page 32: Add Business Card to Wallet
+  - Purpose: Save contact as wallet card
+  - Content: Contact selection, Quick save option
+  - Design: Similar to Add Contact
+  - Demo Image: 32.AddBusinessCardToWallet.jpg
+
+Page 33: Card Details Page
+  - Purpose: View saved card information
+  - Content: Card visualization (front/back), Masked details, Edit button, Remove button
+  - Design: Card preview + detail fields
+  - Demo Image: 33.CardDetails.jpg
+
+Page 34: Send Money (Simulated)
+  - Purpose: Internal money transfer
+  - Content: Select contact, Enter amount, Add note, Confirm button, PIN/FaceID verification
+  - Design: Step-by-step flow
+  - Demo Image: 34.SendMoney.jpg
+
+Page 35: Receive Money
+  - Purpose: Generate payment QR code
+  - Content: Personal QR Code, Wallet ID (copyable), Payment instructions, Share button
+  - Design: Large centered QR with share options
+  - Demo Image: 35.ReciveMoney.jpg
+
+Page 36: Scan QR for Payment
+  - Purpose: Scan another user's payment QR
+  - Content: Camera viewfinder, QR alignment guide, Manual entry option
+  - Design: Similar to card scanner
+  - Demo Image: 36.QRScanforPay.jpg
+
+Page 37: Transaction History
+  - Purpose: View all wallet transactions
+  - Content: Transaction list (date, type, amount, status), Filter options (All/Sent/Received), Date range picker
+  - Design: List view with arrow indicators (up/down), color-coded amounts
+  - Demo Image: 37.TransactionHistory.jpg
+
+================================================================================
+MODULE 7: SHARE (4 Pages)
+================================================================================
+
+Page 38: Your Digital Business Card
+  - Purpose: User's personal digital card
+  - Content: Card preview (front/back), Edit design button, Share button, QR code
+  - "Share" (FAB or Button): Opens sharing options (QR, NFC, Link)
+  - "Edit Design" (Pencil Overlay): Opens Card Creator Modal (See below)
+  • CARD CREATOR OVERLAY (EDIT MODE - NEW):
+    - Modal/Sheet appearing from bottom (80% height)
+    - "Design" Tab:
+      * Theme Carousel: Swipe to choose layout (Modern, Classic, etc.)
+      * Color Picker: Row of preset brand colors
+    - "Content" Tab:
+      * Visible Fields Toggle: Switch on/off Phone, Email, Address
+      * Badge Toggle: Show/Hide "Verified" badge
+    - "Preview" Area: Real-time update of card view
+    - Actions: "Save Design", "Cancel"
+  - Design: Centered card with action buttons
+  - Demo Image: 38 Your Digital Business Card.jpg
+
+Page 39: QR Code Page
+  - Purpose: Personal QR code for sharing
+  - Content: Large high-contrast QR code, Download button, Share button, "Scan to add me" text
+  - Design: Minimal, QR-focused
+  - Demo Image: 39 QR Code Page.jpg
+
+Page 40: NFC Share Page
+  - Purpose: NFC-based contact exchange
+  - Content: NFC animation ("Tap phone to share"), Ripple effect, State indicators (Looking/Found/Complete), Haptic feedback prompts
+  - Design: Animated illustration showing phone-to-phone tap
+  - Demo Image: 40.NFC_Share.png
+
+Page 41: PDF Export Page
+  - Purpose: Download printable business card
+  - Content: PDF preview (A4 layout), Download button, Print button, Email button
+  - Design: Document preview with action toolbar
+  - Demo Image: 41 PDF Export Page.jpg
+
+================================================================================
+MODULE 8: TEAM (4 Pages - Basic Collaboration)
+================================================================================
+
+Page 42: Team Dashboard
+  - Purpose: Team overview
+  - Content: Team name, Team avatar, Member list, Shared contacts count, Invite Member button
+  - Design: Header card + member grid + stats
+  - Demo Image: 42. Team View.jpg, Team2.jpg, TeamDashboard.png
+
+Page 43: Team Directory
+  - Purpose: Shared team contacts
+  - Content: Directory of contacts shared by team, Filter by member, Search within team
+  - Design: Similar to Contact List but with "Shared by" indicator
+  - Demo Image: 43.TeamDirectory.png
+
+Page 44: Invite Member
+  - Purpose: Add team members
+  - Content: Email field, Invitation message, Send Invite button, Or share invite link
+  - Design: Simple form with invitation preview
+  - Demo Image: 44 Invite Member.png
+
+Page 45: Role Management
+  - Purpose: Manage team member permissions
+  - Content: Member list with role toggles (Admin/Member), Remove member option
+  - Design: List with role selectors
+  - Demo Image: 45 Role Management.png
+
+================================================================================
+MODULE 9: SETTINGS (12 Pages)
+================================================================================
+
+Page 46: Settings Home
+  - Purpose: Settings navigation hub
+  - Content: Grouped list (Account, App Preferences, Data & Privacy, Help & Support), Profile header with avatar
+  - Design: Sectioned list with dividers
+  - Demo Image: 46 Settings Home.png, 46 Settings Home_all.png
+
+Page 47: Profile Settings
+  - Purpose: Edit user profile
+  - Content: Avatar upload, Full Name, Job Title, Company Name, Bio, Social links, Save button
+  - Design: Form with avatar picker
+  - Demo Image: 47.ProfileSettings.png
+
+Page 48: Account Settings
+  - Purpose: Account management
+  - Content: Email (change), Phone (change), Password (change), Delete account option
+  - Design: List of editable fields
+  - Demo Image: 48.AccountSettings.png
+
+Page 49: Security
+  - Purpose: Security settings
+  - Content: App PIN toggle + setup, Biometric unlock toggle, Two-factor authentication, Trusted devices list
+  - Design: Toggle switches with descriptions
+  - Demo Image: 49.Security.png
+
+Page 50: Backup & Sync
+  - Purpose: Data backup management
+  - Content: Auto-sync toggle, Cloud backup (Google Drive/iCloud), Backup now button, Restore from backup button, Last backup timestamp
+  - Design: Actions with status indicators
+  - Demo Image: 50.Backup_sync.png
+
+Page 51: Category Management
+  - Purpose: Manage contact categories
+  - Content: List of categories (Business, Personal, Friends, Family), Add category button, Edit/Delete options, Color picker
+  - Design: List with inline editing
+  - Demo Image: 51_52.Category_Tags.png
+
+Page 52: Tags Management
+  - Purpose: Organize contact tags
+  - Content: Tag list with colors, Add tag button, Edit/Delete options, Usage count
+  - Design: Color-coded tag chips
+  - Demo Image: 51_52.Category_Tags.png
+
+Page 53: Notification Settings
+  - Purpose: Configure notifications
+  - Content: Push notification toggle, Email notification toggle, Contact updates toggle, Payment alerts toggle, Team notifications toggle
+  - Design: Grouped toggles with descriptions
+  - Demo Image: 53.Notification Settings.jpg
+
+Page 54: Language Settings
+  - Purpose: Change app language
+  - Content: Language selection (English/Bangla), RTL support toggle, Date format preference
+  - Design: Radio button list
+  - Demo Image: 54 Language Settings.jpg
+
+Page 55: Import / Restore Backup
+  - Purpose: Import data from file
+  - Content: File picker (CSV/vCard), Import preview, Import button, Merge options
+  - Design: File upload interface with preview
+  - Demo Image: 55.Import  Restore Backup.jpg
+
+Page 56: Privacy Settings
+  - Purpose: Privacy controls
+  - Content: Data permissions, Export your data button, Privacy policy link, Terms of service link, Clear cache option
+  - Design: List with action buttons
+  - Demo Image: 56_57.Privacy_logout.png
+
+Page 57: Logout Page
+  - Purpose: Sign out confirmation
+  - Content: "Are you sure?" message, Logout button, Cancel button
+  - Design: Confirmation modal
+  - Demo Image: 56_57.Privacy_logout.png
+
+================================================================================
+MODULE 10: HELP & SUPPORT (3 Pages)
+================================================================================
+
+Page 58: Help Center
+  - Purpose: Self-service help resources
+  - Content: Help topics list (Account, Contacts, Payments, Security), Search help, Contact Support link
+  - Design: Categorized list with expandable sections
+  - Demo Image: 58_59_HelpCenter_FAQ.png
+
+Page 59: FAQ
+  - Purpose: Frequently asked questions
+  - Content: Accordion list of common questions, Search FAQ, Categories filter
+  - Design: Expandable Q&A cards
+  - Demo Image: 58_59_HelpCenter_FAQ.png
+
+Page 60: Contact Support
+  - Purpose: Get help from support team
+  - Content: Message form (Name, Email, Issue description), Attach screenshot option, Start Chat button, Email support option
+  - Design: Form with chat trigger
+  - Demo Image: 60.ContactSupport.png
+
+================================================================================
+SUMMARY STATISTICS
+================================================================================
+
+Total Pages: 60
+Total Demo Images: 60 (1 image per page, some pages combined)
+
+Pages by Module:
+- Authentication: 6 (10%)
+- Onboarding: 2 (3.3%)
+- Dashboard: 5 (8.3%)
+- Contact Management: 13 (21.7%)
+- Search: 3 (5%)
+- Wallet: 8 (13.3%)
+- Share: 4 (6.7%)
+- Team: 4 (6.7%)
+- Settings: 12 (20%)
+- Help & Support: 3 (5%)
+
+Form-Heavy Pages: 18
+Full-Screen Pages: 8
+List/Grid Pages: 15
+Detail/View Pages: 12
+Modal/Dialog Pages: 7
+
+================================================================================
+12. EMPTY & ERROR STATES (IMPLICIT PAGES)
+================================================================================
+
+12.1 EMPTY STATES
+----------------
+• Page 9 (Dashboard): "No recent contacts" illustration + "Add your first contact" button.
+• Page 10 (Contact List): "List is empty" illustration + "Import contacts" button.
+• Page 29 (Search): "No results found" illustration + "Try different keywords".
+• Page 37 (Transactions): "No recent transactions" placeholder.
+
+12.2 ERROR STATES
+-----------------
+• Network Error: "No internet connection" Toast/Banner on sync failure.
+• Scan Error: "Could not detect card" overlay on Camera Viewfinder.
+• 404 Error: "Contact not found" full page if deleted link accessed.
+
+================================================================================
+END OF TOTAL PAGES INFORMATION
+================================================================================

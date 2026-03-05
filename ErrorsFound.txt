@@ -1,0 +1,354 @@
+================================================================================
+  ERRORS FOUND - Mobile Wallet V1 Build & Runtime Analysis
+  Date: 2026-02-22 (Updated with latest session logs)
+================================================================================
+
+================================================================================
+  🔴 ERROR 1: USER PROFILE DOCUMENT DOES NOT EXIST (CRITICAL)
+================================================================================
+
+ERROR:
+  I/flutter: [UserProfileRepo] Fetching profile for UID: Z1vuF6tM9oQdWN2VV2agpxk5vpJ3
+  I/flutter: [UserProfileRepo] Profile not found for UID: Z1vuF6tM9oQdWN2VV2agpxk5vpJ3
+
+DESCRIPTION:
+  The user successfully authenticates (Firebase Auth confirms UID
+  Z1vuF6tM9oQdWN2VV2agpxk5vpJ3) but there is NO corresponding document
+  in the Firestore "users" collection. This means:
+    - The settings screen will show empty/default data.
+    - Any feature relying on user profile data will fail.
+    - The user document was never created during sign-up, or was deleted.
+
+SOLUTION:
+  Option A (Quick Fix - Create the document manually):
+    1. Go to Firebase Console > Firestore Database > "users" collection
+    2. Click "Add document"
+    3. Set Document ID = Z1vuF6tM9oQdWN2VV2agpxk5vpJ3
+    4. Add fields: displayName, email, phoneNumber, createdAt, updatedAt
+
+  Option B (Permanent Fix - Auto-create profile on sign-in):
+    In auth_repository_impl.dart, after successful sign-in/sign-up,
+    ensure a user profile document is created if one doesn't exist:
+
+    // After sign-in, in the AuthProvider or a post-login hook:
+    final userDoc = await firestoreService.getUser(user.uid);
+    if (!userDoc.exists) {
+      await firestoreService.createUser(user.uid, {
+        'displayName': user.displayName ?? '',
+        'email': user.email ?? '',
+        'phoneNumber': user.phoneNumber ?? '',
+        'photoUrl': user.photoUrl ?? '',
+      });
+    }
+
+  File to modify:
+    g:\wallet\mobilewalletbd\lib\features\settings\presentation\providers\user_profile_provider.dart
+    or
+    g:\wallet\mobilewalletbd\lib\features\auth\presentation\providers\auth_provider.dart
+
+================================================================================
+  🔴 ERROR 2: TEAMS FIRESTORE PERMISSION DENIED (CRITICAL)
+================================================================================
+
+ERROR:
+  W/Firestore: Listen for Query(target=Query(teams where memberIds
+  array_contains Z1vuF6tM9oQdWN2VV2agpxk5vpJ3 order by __name__))
+  failed: Status{code=PERMISSION_DENIED, description=Missing or
+  insufficient permissions.}
+
+DESCRIPTION:
+  The Dart code queries teams using the "memberIds" field:
+    .where('memberIds', arrayContains: userId)
+
+  But the Firestore rules check the "members" field:
+    request.auth.uid in resource.data.members
+
+  This is a FIELD NAME MISMATCH between code and rules:
+    - Code queries: "memberIds" (array of user ID strings)
+    - Rules check:  "members"   (which is actually an array of objects)
+
+  Additionally, Firestore Security Rules cannot evaluate list queries
+  (arrayContains) on read rules. For list queries, the rule must check
+  a field that the query itself filters on, or use a simpler approach.
+
+SOLUTION:
+  Update firestore.rules to check "memberIds" instead of "members":
+
+  BEFORE (current - broken):
+    allow read: if isAuthenticated() &&
+                   (resource.data.ownerId == request.auth.uid ||
+                    request.auth.uid in resource.data.members);
+
+  AFTER (fixed):
+    allow read: if isAuthenticated() &&
+                   (resource.data.ownerId == request.auth.uid ||
+                    request.auth.uid in resource.data.memberIds);
+
+  Also fix the update rule:
+  BEFORE (current - broken):
+    allow update: if isAuthenticated() &&
+                     (resource.data.ownerId == request.auth.uid ||
+                      resource.data.members[request.auth.uid] == 'admin');
+
+  AFTER (fixed - use memberIds for membership, check members for role):
+    allow update: if isAuthenticated() &&
+                     (resource.data.ownerId == request.auth.uid ||
+                      request.auth.uid in resource.data.memberIds);
+
+  NOTE: The admin role check (members[uid] == 'admin') won't work because
+  "members" is an array of objects, not a map. If you need admin-only
+  updates, restructure "members" as a map: { "uid1": "admin", "uid2": "member" }
+  OR add a separate "memberRoles" map field.
+
+  File to modify:
+    g:\wallet\mobilewalletbd\firestore.rules (lines 179-196)
+
+================================================================================
+  🔴 ERROR 3: GOOGLE API MANAGER - DEVELOPER_ERROR / SHA-1 MISMATCH (HIGH)
+================================================================================
+
+ERROR:
+  E/GoogleApiManager: Failed to get service from broker.
+  E/GoogleApiManager: java.lang.SecurityException: Unknown calling
+  package name 'com.google.android.gms'.
+  W/GoogleApiManager: ConnectionResult{statusCode=DEVELOPER_ERROR}
+
+DESCRIPTION:
+  This error means Google Play Services cannot verify your app's identity.
+  The most common cause is a SHA-1 certificate fingerprint mismatch:
+    - The app is signed with a debug key that is NOT registered in the
+      Firebase Console for the Android app "com.mobilewallet.v1".
+    - The google-services.json is missing the SHA-1 based oauth_client.
+
+  Impact:
+    - Google Sign-In will fail completely.
+    - ProviderInstaller cannot update (security provider outdated).
+    - Some Firebase features may not work correctly.
+
+  Note: This error is MUCH more severe on physical devices. On emulators
+  it may partially work because Firebase Auth uses a different path.
+
+SOLUTION:
+  1. Get your current debug SHA-1 fingerprint:
+     Run in terminal (from android/ folder):
+       gradlew.bat signingReport
+
+     Look for the "debug" variant > SHA1 line.
+
+  2. Add SHA-1 to Firebase Console:
+     a. Go to https://console.firebase.google.com/
+     b. Select project "smartwallet-c97fe"
+     c. Go to Project Settings > General
+     d. Scroll to "Your apps" > Android app (com.mobilewallet.v1)
+     e. Click "Add fingerprint"
+     f. Paste your debug SHA-1 and save
+
+  3. Download updated google-services.json:
+     a. Click "Download google-services.json" button
+     b. Replace: g:\wallet\mobilewalletbd\android\app\google-services.json
+     c. The new file will have oauth_client entries with client_type: 1
+        (Android client) which are currently missing.
+
+  4. Rebuild:
+     flutter clean && flutter run
+
+================================================================================
+  🔴 ERROR 4: IMAGE DECODE FAILURE (HIGH)
+================================================================================
+
+ERROR:
+  E/FlutterJNI: Failed to decode image
+  E/FlutterJNI: android.graphics.ImageDecoder$DecodeException:
+  Failed to create image decoder with message 'unimplemented'
+  Input contained an error.
+
+DESCRIPTION:
+  Flutter's Impeller rendering backend failed to decode an image asset.
+  This can happen when:
+    a) An image file is corrupted or in an unsupported format (e.g., WebP
+       with animation, or a malformed PNG/JPEG).
+    b) The image is being loaded from a network URL that returned an error
+       page (HTML) instead of an actual image.
+    c) The emulator's GPU doesn't support certain image codecs.
+
+  This error appeared right after the sign-out event, suggesting it may
+  be related to loading a user profile photo or avatar placeholder.
+
+SOLUTION:
+  a) Check all image assets in assets/ folder for corruption:
+     - Try opening each image in a normal image viewer.
+     - Ensure no SVG files are being loaded as raster images.
+
+  b) Add error handling for network images:
+     Use Image.network() with an errorBuilder:
+       Image.network(
+         url,
+         errorBuilder: (context, error, stackTrace) =>
+           Icon(Icons.person, size: 48),
+       )
+
+  c) If the issue is with a specific widget, wrap the image loading with
+     a try-catch or use a fallback icon/placeholder.
+
+  d) If this only happens on the emulator, it may be an Impeller issue.
+     Test on a physical device to confirm.
+
+================================================================================
+  🟠 ERROR 5: AUTH STATE FLICKERING - SIGN OUT THEN SIGN IN (MEDIUM)
+================================================================================
+
+ERROR:
+  D/FirebaseAuth: Notifying auth state listeners about a sign-out event.
+  ... (GC pause) ...
+  D/FirebaseAuth: Notifying auth state listeners about user (Z1vuF6...vpJ3).
+
+DESCRIPTION:
+  Firebase Auth fires a sign-out event followed immediately by a sign-in
+  event for the same user. This "auth state flicker" can cause:
+    - Brief flash of the login screen.
+    - Streams/listeners to reset and re-fetch data unnecessarily.
+    - The session clear we see: "Session cleared" followed by "Token refreshed".
+
+  This happens because Firebase Auth re-authenticates after a token refresh,
+  which temporarily appears as a sign-out.
+
+SOLUTION:
+  In auth_provider.dart, debounce the auth state changes:
+    - Add a short delay (500ms) before reacting to sign-out events.
+    - Or use authStateChanges().distinct() to filter duplicate states.
+    - Or switch to idTokenChanges() which is more granular.
+
+  Example:
+    _firebaseAuth.authStateChanges()
+      .debounceTime(Duration(milliseconds: 500))
+      .distinct((a, b) => a?.uid == b?.uid)
+      .listen((user) { ... });
+
+================================================================================
+  🟠 ERROR 6: DEX VERIFICATION SLOWNESS (MEDIUM - PERFORMANCE)
+================================================================================
+
+ERROR:
+  W/mobilewallet.v1: Verification of ... FirestoreClient ... took 195.670ms
+  W/mobilewallet.v1: Verification of ... io.grpc.Metadata ... took 102.023ms
+  W/mobilewallet.v1: Verification of ... ProviderInstaller ... took 1.178s
+  W/mobilewallet.v1: Verification of ... ActivityScope ... took 495.757ms
+
+DESCRIPTION:
+  Android's DEX bytecode verifier is taking an unusually long time to verify
+  Firebase and gRPC classes on first launch. Total verification overhead:
+    - ProviderInstaller: 1,178ms (1.2 seconds!)
+    - ActivityScope: 496ms
+    - FirestoreClient: 196ms
+    - Several others: 100-180ms each
+    Total: ~2.5 seconds of verification overhead
+
+  This is caused by the emulator's slow CPU and cold-start class loading.
+  It will be significantly faster on physical devices.
+
+SOLUTION:
+  NO CODE CHANGE NEEDED. This is an emulator-only performance issue.
+  On physical devices, DEX verification is cached after first install.
+  If it's bothering you during development:
+    - Use "flutter run --profile" to skip DEX verification.
+    - Consider R8/ProGuard minification for release builds.
+    - Use hot reload instead of full restarts.
+
+================================================================================
+  🟡 ERROR 7: GC PRESSURE / BLOCKING (MEDIUM-LOW)
+================================================================================
+
+ERROR:
+  I/mobilewallet.v1: WaitForGcToComplete blocked ClassLinker on
+  Background for 986.272ms
+  I/mobilewallet.v1: WaitForGcToComplete blocked ClassLinker on
+  ClassLinker for 657.486ms
+
+DESCRIPTION:
+  The Java garbage collector is blocking the class linker for nearly
+  1 second. This contributes to frame drops and slow startup. The GC
+  is under pressure because many large classes (Firebase, gRPC, Isar)
+  are being loaded simultaneously during startup.
+
+SOLUTION:
+  This is primarily an emulator issue. On physical devices with more RAM
+  and faster CPUs, GC pauses are much shorter. For development:
+    - Increase emulator RAM allocation in AVD Manager (4GB+ recommended).
+    - Close other heavy apps running on the emulator.
+
+================================================================================
+  🟡 ERROR 8: MISSING .ENV FILE (LOW)
+================================================================================
+
+ERROR:
+  I/flutter: [Config] Warning: .env file not found or failed to load
+
+SOLUTION:
+  Create g:\wallet\mobilewalletbd\.env with configuration values.
+  See Option A or Option B in previous ErrorsFound.txt entry.
+  App works without it — this is informational only.
+
+================================================================================
+  🟡 ERROR 9: PROVIDER INSTALLER FAILURE (LOW - EMULATOR ONLY)
+================================================================================
+
+ERROR:
+  W/ProviderInstaller: Failed to load providerinstaller module:
+  No acceptable module com.google.android.gms.providerinstaller.dynamite
+  found. Local version is 0 and remote version is 0.
+
+DESCRIPTION:
+  Google Play Services cannot update the security provider on this
+  emulator. This means the app uses the system's default SSL/TLS
+  implementation instead of the latest from Google.
+
+SOLUTION:
+  NO ACTION NEEDED for development. This is an emulator limitation.
+  On physical devices with up-to-date Google Play Services, this works
+  automatically. The ProviderInstaller eventually succeeds via fallback:
+    I/ProviderInstaller: Installed default security provider GmsCore_OpenSSL
+
+================================================================================
+  ⚪ ERROR 10: FIRESTORE WATCHSTREAM IDLE DISCONNECT (INFORMATIONAL)
+================================================================================
+
+ERROR:
+  W/Firestore: [WatchStream]: Stream closed with status:
+  Status{code=CANCELLED, description=Disconnecting idle stream.
+  Timed out waiting for new targets.}
+
+DESCRIPTION:
+  This is normal Firestore behavior. When no active listeners exist,
+  Firestore closes the gRPC stream to save resources. It will
+  automatically reconnect when a new query or listener is added.
+
+SOLUTION:
+  NO ACTION NEEDED. This is expected behavior.
+
+================================================================================
+  PRIORITY SUMMARY
+================================================================================
+
+  🔴 CRITICAL (Must Fix):
+    #1 - User Profile document missing in Firestore
+    #2 - Teams Firestore rules field name mismatch (memberIds vs members)
+
+  🔴 HIGH (Should Fix):
+    #3 - SHA-1 fingerprint not registered (DEVELOPER_ERROR)
+    #4 - Image decode failure (corrupted asset or missing error handler)
+
+  🟠 MEDIUM (Recommended):
+    #5 - Auth state flickering (sign-out/sign-in cycle)
+    #6 - DEX verification slowness (emulator only)
+
+  🟡 LOW (Optional):
+    #7 - GC pressure (emulator only)
+    #8 - Missing .env file
+    #9 - ProviderInstaller failure (emulator only)
+
+  ⚪ INFO:
+    #10 - Firestore idle stream disconnect (normal behavior)
+
+  OVERALL: 2 critical bugs require immediate code/config fixes.
+
+================================================================================

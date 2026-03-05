@@ -68,5 +68,14 @@
 			</array>
 		</dict>
 	</array>
+	<!-- Camera Permission (for business card scanning) -->
+	<key>NSCameraUsageDescription</key>
+	<string>This app uses the camera to scan business cards and extract contact information.</string>
+	<!-- Contacts Permission (for phone contact import) -->
+	<key>NSContactsUsageDescription</key>
+	<string>This app accesses your contacts to import them into your contact wallet.</string>
+	<!-- Photo Library Permission (for saving scanned images) -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app accesses photos to store scanned business card images.</string>
 </dict>
 </plist>

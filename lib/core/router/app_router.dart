@@ -4,11 +4,46 @@ import 'package:go_router/go_router.dart';
 
 import 'package:mobile_wallet/features/auth/presentation/providers/auth_provider.dart';
 import 'package:mobile_wallet/features/auth/presentation/screens/splash_screen.dart';
+import 'package:mobile_wallet/features/auth/presentation/screens/welcome_screen.dart';
 import 'package:mobile_wallet/features/auth/presentation/screens/login_screen.dart';
 import 'package:mobile_wallet/features/auth/presentation/screens/register_screen.dart';
 import 'package:mobile_wallet/features/auth/presentation/screens/phone_login_screen.dart';
+import 'package:mobile_wallet/features/auth/presentation/screens/onboarding/permission_screen.dart';
 import 'package:mobile_wallet/features/auth/presentation/screens/otp_verification_screen.dart';
 import 'package:mobile_wallet/features/auth/presentation/screens/forgot_password_screen.dart';
+
+import 'package:mobile_wallet/shared/presentation/widgets/bottom_nav_shell.dart';
+import 'package:mobile_wallet/features/home/presentation/home_screen.dart';
+import 'package:mobile_wallet/features/contacts/presentation/contact_list_screen.dart';
+import 'package:mobile_wallet/features/contacts/presentation/screens/contact_details_screen.dart';
+import 'package:mobile_wallet/features/contacts/presentation/screens/add_contact_screen.dart';
+import 'package:mobile_wallet/features/contacts/presentation/screens/edit_contact_screen.dart';
+import 'package:mobile_wallet/features/contacts/presentation/screens/add_contact_method_screen.dart';
+import 'package:mobile_wallet/features/contacts/presentation/screens/import_contacts_screen.dart';
+import 'package:mobile_wallet/features/contacts/presentation/screens/file_import_screen.dart';
+import 'package:mobile_wallet/features/scanning/presentation/screens/scan_card_screen.dart';
+import 'package:mobile_wallet/features/scanning/presentation/screens/ocr_preview_screen.dart';
+import 'package:mobile_wallet/features/scanning/presentation/screens/scan_history_screen.dart';
+import 'package:mobile_wallet/features/wallet/presentation/wallet_home_screen.dart';
+import 'package:mobile_wallet/features/wallet/presentation/screens/transaction_history_screen.dart';
+import 'package:mobile_wallet/features/settings/presentation/settings_screen.dart';
+import 'package:mobile_wallet/features/settings/presentation/screens/account_settings_screen.dart';
+import 'package:mobile_wallet/features/settings/presentation/screens/security_settings_screen.dart';
+import 'package:mobile_wallet/features/collaboration/presentation/screens/team_list_screen.dart';
+import 'package:mobile_wallet/features/collaboration/presentation/screens/create_team_screen.dart';
+import 'package:mobile_wallet/features/collaboration/presentation/screens/team_details_screen.dart';
+import 'package:mobile_wallet/features/collaboration/presentation/screens/invite_member_screen.dart';
+import 'package:mobile_wallet/features/digital_card/presentation/screens/my_digital_card_screen.dart';
+import 'package:mobile_wallet/features/digital_card/presentation/screens/card_editor_screen.dart';
+import 'package:mobile_wallet/features/digital_card/presentation/screens/template_gallery_screen.dart';
+import 'package:mobile_wallet/features/digital_card/presentation/screens/version_history_screen.dart';
+import 'package:mobile_wallet/features/digital_card/presentation/screens/digital_card_detail_screen.dart';
+import 'package:mobile_wallet/features/home/presentation/screens/notification_list_screen.dart';
+import 'package:mobile_wallet/features/settings/presentation/screens/edit_profile_screen.dart';
+import 'package:mobile_wallet/features/settings/presentation/screens/privacy_settings_screen.dart';
+import 'package:mobile_wallet/features/settings/presentation/screens/pin_management_screen.dart';
+import 'package:mobile_wallet/features/settings/presentation/screens/active_sessions_screen.dart';
+import 'package:mobile_wallet/features/settings/presentation/screens/analytics_dashboard_screen.dart';
 
 part 'routes.dart';
 
@@ -90,113 +125,6 @@ class RouterNotifier extends ChangeNotifier {
   ];
 }
 
-/// Temporary home screen placeholder.
-/// This will be replaced with the actual dashboard in Phase 6.
-class _HomeScreen extends ConsumerWidget {
-  const _HomeScreen();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Smart Wallet'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await ref.read(authenticationProvider.notifier).signOut();
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // User Avatar
-              CircleAvatar(
-                radius: 50,
-                backgroundColor: Theme.of(context).primaryColor,
-                backgroundImage: user?.photoUrl != null
-                    ? NetworkImage(user!.photoUrl!)
-                    : null,
-                child: user?.photoUrl == null
-                    ? Text(
-                        user?.initials ?? '?',
-                        style: const TextStyle(
-                          fontSize: 32,
-                          color: Colors.white,
-                        ),
-                      )
-                    : null,
-              ),
-              const SizedBox(height: 24),
-              // Welcome Message
-              Text(
-                'Welcome, ${user?.displayName ?? 'User'}!',
-                style: Theme.of(context).textTheme.headlineMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              if (user?.email != null)
-                Text(
-                  user!.email!,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
-                ),
-              if (user?.phoneNumber != null) ...[
-                const SizedBox(height: 4),
-                Text(
-                  user!.phoneNumber!,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
-                ),
-              ],
-              const SizedBox(height: 32),
-              // Dashboard placeholder
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  children: [
-                    const Icon(
-                      Icons.construction,
-                      size: 48,
-                      color: Colors.amber,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Dashboard Coming Soon',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Phase 2 Authentication is complete.\nPhase 6 Dashboard will be implemented next.',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 /// Error screen for handling navigation errors.
 class _ErrorScreen extends StatelessWidget {
   final Exception? error;
@@ -216,16 +144,7 @@ class _ErrorScreen extends StatelessWidget {
               const Icon(Icons.error_outline, size: 64, color: Colors.red),
               const SizedBox(height: 24),
               Text(
-                'Page not found',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                error?.toString() ??
-                    'The page you are looking for does not exist.',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                error?.toString() ?? 'An unexpected error occurred.',
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),

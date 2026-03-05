@@ -11,6 +11,8 @@ _$AuthUserImpl _$$AuthUserImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       email: json['email'] as String?,
       phoneNumber: json['phoneNumber'] as String?,
+      firstName: json['firstName'] as String?,
+      lastName: json['lastName'] as String?,
       displayName: json['displayName'] as String?,
       photoUrl: json['photoUrl'] as String?,
       emailVerified: json['emailVerified'] as bool? ?? false,
@@ -22,6 +24,7 @@ _$AuthUserImpl _$$AuthUserImplFromJson(Map<String, dynamic> json) =>
       customClaims: (json['customClaims'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      rawExtraData: json['rawExtraData'] as Map<String, dynamic>?,
     );
 
 Map<String, dynamic> _$$AuthUserImplToJson(_$AuthUserImpl instance) =>
@@ -29,6 +32,8 @@ Map<String, dynamic> _$$AuthUserImplToJson(_$AuthUserImpl instance) =>
       'id': instance.id,
       'email': instance.email,
       'phoneNumber': instance.phoneNumber,
+      'firstName': instance.firstName,
+      'lastName': instance.lastName,
       'displayName': instance.displayName,
       'photoUrl': instance.photoUrl,
       'emailVerified': instance.emailVerified,
@@ -36,4 +41,5 @@ Map<String, dynamic> _$$AuthUserImplToJson(_$AuthUserImpl instance) =>
       'provider': instance.provider,
       'isAnonymous': instance.isAnonymous,
       'customClaims': instance.customClaims,
+      'rawExtraData': instance.rawExtraData,
     };

@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'package:mobile_wallet/core/config/config_provider.dart';
 import 'package:mobile_wallet/features/auth/domain/entities/auth_user.dart';
 import 'package:mobile_wallet/features/auth/domain/repositories/auth_repository.dart';
 
@@ -13,9 +15,12 @@ class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
 
-  AuthRepositoryImpl({FirebaseAuth? firebaseAuth, GoogleSignIn? googleSignIn})
-    : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-      _googleSignIn = googleSignIn ?? GoogleSignIn();
+  AuthRepositoryImpl({
+    FirebaseAuth? firebaseAuth,
+    GoogleSignIn? googleSignIn,
+    String? webClientId,
+  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+       _googleSignIn = googleSignIn ?? _createGoogleSignIn(webClientId);
 
   @override
   AuthUser? get currentUser {
@@ -25,9 +30,12 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Stream<AuthUser?> get authStateChanges {
-    return _firebaseAuth.authStateChanges().map((user) {
-      return user != null ? _mapFirebaseUser(user) : null;
-    });
+    return _firebaseAuth
+        .authStateChanges()
+        .distinct((prev, next) => prev?.uid == next?.uid)
+        .map((user) {
+          return user != null ? _mapFirebaseUser(user) : null;
+        });
   }
 
   @override
@@ -40,7 +48,8 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
         password: password,
       );
-      return _mapFirebaseUser(result.user!);
+      final profile = result.additionalUserInfo?.profile;
+      return _mapFirebaseUser(result.user!, additionalProfile: profile);
     } on FirebaseAuthException catch (e) {
       throw AuthFailure.fromFirebaseCode(e.code, e.message);
     } catch (e) {
@@ -57,6 +66,8 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     String? displayName,
+    String? phoneNumber,
+    Map<String, dynamic>? metadata,
   }) async {
     try {
       final result = await _firebaseAuth.createUserWithEmailAndPassword(
@@ -73,7 +84,14 @@ class AuthRepositoryImpl implements AuthRepository {
       // Send email verification
       await result.user!.sendEmailVerification();
 
-      return _mapFirebaseUser(_firebaseAuth.currentUser!);
+      return _mapFirebaseUser(
+        result.user!,
+        additionalProfile: {
+          if (phoneNumber != null) 'phoneNumber': phoneNumber,
+          'manualRegistration': true,
+          if (metadata != null) ...metadata,
+        },
+      );
     } on FirebaseAuthException catch (e) {
       throw AuthFailure.fromFirebaseCode(e.code, e.message);
     } catch (e) {
@@ -103,7 +121,8 @@ class AuthRepositoryImpl implements AuthRepository {
       );
 
       final result = await _firebaseAuth.signInWithCredential(credential);
-      return _mapFirebaseUser(result.user!);
+      final profile = result.additionalUserInfo?.profile;
+      return _mapFirebaseUser(result.user!, additionalProfile: profile);
     } on FirebaseAuthException catch (e) {
       throw AuthFailure.fromFirebaseCode(e.code, e.message);
     } catch (e) {
@@ -128,7 +147,10 @@ class AuthRepositoryImpl implements AuthRepository {
       verificationCompleted: (PhoneAuthCredential credential) async {
         try {
           final result = await _firebaseAuth.signInWithCredential(credential);
-          onAutoVerified(_mapFirebaseUser(result.user!));
+          final profile = result.additionalUserInfo?.profile;
+          onAutoVerified(
+            _mapFirebaseUser(result.user!, additionalProfile: profile),
+          );
         } catch (e) {
           onError('Auto-verification failed: $e');
         }
@@ -158,7 +180,8 @@ class AuthRepositoryImpl implements AuthRepository {
         smsCode: smsCode,
       );
       final result = await _firebaseAuth.signInWithCredential(credential);
-      return _mapFirebaseUser(result.user!);
+      final profile = result.additionalUserInfo?.profile;
+      return _mapFirebaseUser(result.user!, additionalProfile: profile);
     } on FirebaseAuthException catch (e) {
       throw AuthFailure.fromFirebaseCode(e.code, e.message);
     } catch (e) {
@@ -174,7 +197,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AuthUser> signInAnonymously() async {
     try {
       final result = await _firebaseAuth.signInAnonymously();
-      return _mapFirebaseUser(result.user!);
+      final profile = result.additionalUserInfo?.profile;
+      return _mapFirebaseUser(result.user!, additionalProfile: profile);
     } on FirebaseAuthException catch (e) {
       throw AuthFailure.fromFirebaseCode(e.code, e.message);
     } catch (e) {
@@ -297,6 +321,108 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> updateEmail(String email) async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user == null) {
+        throw const AuthFailure(
+          type: AuthFailureType.userNotFound,
+          message: 'No user signed in.',
+        );
+      }
+      await user.verifyBeforeUpdateEmail(email);
+    } on FirebaseAuthException catch (e) {
+      throw AuthFailure.fromFirebaseCode(e.code, e.message);
+    } catch (e) {
+      throw AuthFailure(
+        type: AuthFailureType.unknown,
+        message: 'Update email failed: $e',
+        originalError: e,
+      );
+    }
+  }
+
+  @override
+  Future<void> updatePassword(String password) async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user == null) {
+        throw const AuthFailure(
+          type: AuthFailureType.userNotFound,
+          message: 'No user signed in.',
+        );
+      }
+      await user.updatePassword(password);
+    } on FirebaseAuthException catch (e) {
+      throw AuthFailure.fromFirebaseCode(e.code, e.message);
+    } catch (e) {
+      throw AuthFailure(
+        type: AuthFailureType.unknown,
+        message: 'Update password failed: $e',
+        originalError: e,
+      );
+    }
+  }
+
+  @override
+  Future<void> reauthenticateWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user == null) {
+        throw const AuthFailure(
+          type: AuthFailureType.userNotFound,
+          message: 'No user signed in.',
+        );
+      }
+      final credential = EmailAuthProvider.credential(
+        email: email,
+        password: password,
+      );
+      await user.reauthenticateWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      throw AuthFailure.fromFirebaseCode(e.code, e.message);
+    } catch (e) {
+      throw AuthFailure(
+        type: AuthFailureType.unknown,
+        message: 'Re-authentication failed: $e',
+        originalError: e,
+      );
+    }
+  }
+
+  @override
+  Future<void> updatePhoneNumber({
+    required String verificationId,
+    required String smsCode,
+  }) async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user == null) {
+        throw const AuthFailure(
+          type: AuthFailureType.userNotFound,
+          message: 'No user signed in.',
+        );
+      }
+      final credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: smsCode,
+      );
+      await user.updatePhoneNumber(credential);
+    } on FirebaseAuthException catch (e) {
+      throw AuthFailure.fromFirebaseCode(e.code, e.message);
+    } catch (e) {
+      throw AuthFailure(
+        type: AuthFailureType.unknown,
+        message: 'Update phone number failed: $e',
+        originalError: e,
+      );
+    }
+  }
+
+  @override
   Future<void> deleteAccount() async {
     try {
       final user = _firebaseAuth.currentUser;
@@ -319,8 +445,29 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  @override
+  Future<Map<String, String>?> get googleAuthHeaders async {
+    try {
+      // Check if already signed in
+      GoogleSignInAccount? googleUser = _googleSignIn.currentUser;
+
+      // If not, attempt silent sign-in
+      googleUser ??= await _googleSignIn.signInSilently();
+
+      if (googleUser == null) return null;
+
+      return await googleUser.authHeaders;
+    } catch (e) {
+      print('[AuthRepository] Error getting Google auth headers: $e');
+      return null;
+    }
+  }
+
   /// Maps Firebase User to domain AuthUser entity
-  AuthUser _mapFirebaseUser(User user) {
+  AuthUser _mapFirebaseUser(
+    User user, {
+    Map<String, dynamic>? additionalProfile,
+  }) {
     // Determine the auth provider
     String? provider;
     if (user.providerData.isNotEmpty) {
@@ -342,6 +489,8 @@ class AuthRepositoryImpl implements AuthRepository {
     return AuthUser(
       id: user.uid,
       email: user.email,
+      firstName: additionalProfile?['given_name'] as String?,
+      lastName: additionalProfile?['family_name'] as String?,
       phoneNumber: user.phoneNumber,
       displayName: user.displayName,
       photoUrl: user.photoURL,
@@ -349,12 +498,35 @@ class AuthRepositoryImpl implements AuthRepository {
       lastSignIn: user.metadata.lastSignInTime,
       provider: provider,
       isAnonymous: user.isAnonymous,
-      customClaims: null, // Custom claims require getIdTokenResult
+      rawExtraData: additionalProfile,
     );
   }
 }
 
+/// Creates GoogleSignIn instance with proper configuration for each platform.
+GoogleSignIn _createGoogleSignIn(String? webClientId) {
+  if (kIsWeb) {
+    // Web requires clientId to be passed explicitly
+    return GoogleSignIn(
+      clientId: webClientId,
+      scopes: [
+        'email',
+        'profile',
+        'https://www.googleapis.com/auth/drive.file',
+      ],
+    );
+  }
+  // Mobile platforms use configuration from google-services.json / GoogleService-Info.plist
+  return GoogleSignIn(
+    scopes: ['email', 'profile', 'https://www.googleapis.com/auth/drive.file'],
+  );
+}
+
 /// Provider for AuthRepository
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return AuthRepositoryImpl();
+  // Get web client ID from configuration for Google Sign-In on web
+  final googleAuthConfig = ref.read(googleAuthConfigProvider);
+  final webClientId = googleAuthConfig?.webClientId;
+
+  return AuthRepositoryImpl(webClientId: webClientId);
 });

@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mobile_wallet/core/services/firestore_service.dart';
@@ -36,15 +38,40 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
   @override
   Future<UserProfile?> getUserProfile(String uid) async {
     try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+
+      if (currentUser == null) {
+        throw UserProfileException(
+          'Failed to get user profile: User not authenticated',
+        );
+      }
+
+      if (currentUser.uid != uid) {
+        debugPrint(
+          '[UserProfileRepo] UID Mismatch: Current=${currentUser.uid}, Requested=$uid',
+        );
+        // We still request it if it's a mismatch, firestore rules should block it if unauthorized
+        // but it's helpful for debugging.
+      }
+
+      debugPrint('[UserProfileRepo] Fetching profile for UID: $uid');
       final doc = await _firestoreService.getUser(uid);
 
       if (!doc.exists || doc.data() == null) {
+        debugPrint('[UserProfileRepo] Profile not found for UID: $uid');
         return null;
       }
 
       return _documentToUserProfile(doc);
     } on FirebaseException catch (e) {
-      throw UserProfileException('Failed to get user profile: ${e.message}');
+      final msg =
+          'Failed to get user profile (UID: $uid): ${e.message} [Code: ${e.code}]';
+      debugPrint('[UserProfileRepo] $msg');
+      throw UserProfileException(msg);
+    } catch (e) {
+      final msg = 'Unexpected error getting user profile (UID: $uid): $e';
+      debugPrint('[UserProfileRepo] $msg');
+      throw UserProfileException(msg);
     }
   }
 
@@ -79,12 +106,29 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
   @override
   Stream<UserProfile?> watchUserProfile(String uid) {
-    return _firestoreService.watchUser(uid).map((doc) {
-      if (!doc.exists || doc.data() == null) {
-        return null;
-      }
-      return _documentToUserProfile(doc);
-    });
+    debugPrint('[UserProfileRepo] Watching profile for UID: $uid');
+    return _firestoreService
+        .watchUser(uid)
+        .handleError((error) {
+          debugPrint(
+            '[UserProfileRepo] Error watching profile for $uid: $error',
+          );
+          if (error is FirebaseException) {
+            throw UserProfileException(
+              'Failed to watch user profile: ${error.message} [Code: ${error.code}]',
+            );
+          }
+          throw UserProfileException('Failed to watch user profile: $error');
+        })
+        .map((doc) {
+          if (!doc.exists || doc.data() == null) {
+            debugPrint(
+              '[UserProfileRepo] Watched profile not found for UID: $uid',
+            );
+            return null;
+          }
+          return _documentToUserProfile(doc);
+        });
   }
 
   @override
@@ -122,6 +166,38 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     }
   }
 
+  @override
+  Future<List<UserProfile>> searchUsers(String query) async {
+    try {
+      if (query.isEmpty) return [];
+
+      // Search by email
+      final emailQuery = await _firestoreService.usersCollection
+          .where('email', isEqualTo: query)
+          .get();
+
+      // Search by phone
+      final phoneQuery = await _firestoreService.usersCollection
+          .where('phoneNumber', isEqualTo: query)
+          .get();
+
+      // Combine results using a Map to avoid duplicates
+      final Map<String, UserProfile> results = {};
+
+      for (var doc in emailQuery.docs) {
+        results[doc.id] = _documentToUserProfile(doc);
+      }
+
+      for (var doc in phoneQuery.docs) {
+        results[doc.id] = _documentToUserProfile(doc);
+      }
+
+      return results.values.toList();
+    } on FirebaseException catch (e) {
+      throw UserProfileException('Failed to search users: ${e.message}');
+    }
+  }
+
   /// Converts a Firestore document to UserProfile entity
   UserProfile _documentToUserProfile(
     DocumentSnapshot<Map<String, dynamic>> doc,
@@ -150,6 +226,10 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       deviceId: data['deviceId'] as String?,
       createdAt: _timestampToDateTime(createdAt) ?? DateTime.now(),
       updatedAt: _timestampToDateTime(updatedAt) ?? DateTime.now(),
+      email: data['email'] as String?,
+      firstName: data['firstName'] as String?,
+      lastName: data['lastName'] as String?,
+      phoneNumber: data['phoneNumber'] as String?,
     );
   }
 

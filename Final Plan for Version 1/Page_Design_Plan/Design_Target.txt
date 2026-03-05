@@ -1,0 +1,278 @@
+================================================================================
+DESIGN TARGET & OBJECTIVES - SMART CONTACT WALLET V1.0
+================================================================================
+Document Version: 1.0
+Last Updated: January 30, 2026
+Purpose: Define design goals, targets, and success criteria for V1 implementation
+
+================================================================================
+1. PROJECT VISION & CORE OBJECTIVE
+================================================================================
+
+PRIMARY OBJECTIVE:
+To build a "Basic Card System" - a modern, digital replacement for physical
+business cards (Roldex) with internal wallet bookkeeping capabilities.
+
+TARGET AUDIENCE:
+- Professionals (Business owners, Sales, Freelancers) 
+- Tech-savvy users in Bangladesh (primary market) and Global
+- Users who frequently exchange business cards and need organized contact management
+
+BRAND POSITIONING:
+- App Name: Smart Contact Wallet
+- Design Personality: Trustworthy, Professional, Clean, Fast, Accessible
+- Value Proposition: Scan → Save → Share → Pay (unified digital ecosystem)
+
+================================================================================
+2. DESIGN GOALS & PRINCIPLES
+================================================================================
+
+2.1 USER EXPERIENCE PRINCIPLES
+-------------------------------
+✓ CLARITY: Every screen has a single main goal; primary action is visually dominant
+✓ CONSISTENCY: Colors, typography, components, and patterns are consistent across modules
+✓ LOCAL RELEVANCE: Optimized for Bangladeshi users (langauge, formats, payment habits)
+✓ ACCESSIBILITY: Readable text, sufficient contrast, and touch-friendly controls  
+✓ PERFORMANCE: Fast feedback and minimal friction, especially on low-end devices
+
+2.2 VISUAL DESIGN TARGETS
+--------------------------
+PRIMARY COLOR SYSTEM:
+• Primary Green: #0BBF7D (Emerald Green - Action, Success, Brand)
+• Primary Green Dark: #099D66 (Hover states)
+• Primary Green Light: #4DCE9F (Success states, light backgrounds)
+• Accent/Action: #0BBF7D (Primary Action brand color)
+
+SC SECONDARY COLOR SYSTEM:
+• Deep Blue: #1A1F36 (Deep Midnight Blue - Headers, Primary Text)
+• Sky Blue: #4DABF7 (Information, Links, Interactive elements)
+• Warm Gold: #FFC107 (Favorites, Premium features, Ratings)
+• Coral Accent: #FF4D4F (Destructive actions, Errors, Alerts)
+
+TYPOGRAPHY:
+• Font Family: Inter (Google Fonts) - Clean, Modern, Highly legible
+• Fallback: Roboto, San Francisco (System default)
+• Headline 1: 24px Bold
+• Headline 2: 20px SemiBold
+• Body 1: 16px Regular
+• Body 2: 14px Regular
+• Caption: 12px Medium/Regular
+
+SPACING & LAYOUT:
+• Grid: 8px baseline grid (Everything divisible by 4 or 8)
+• Screen edge: 16px or 24px 
+• Card padding: 16px or 20px
+• Corner Radius: Small (4px), Medium (8px), Large (12px), Extra Large (16px/24px)
+
+================================================================================
+3. TECHNICAL TARGETS
+================================================================================
+
+3.1 PERFORMANCE GOALS
+---------------------
+• Startup Time: < 1.5s (Cold Start) on mid-range devices
+• UI Rendering: 60 FPS minimum
+• API Latency: < 300ms
+• Bundle Size: < 25MB initial download (Split APKs)
+
+3.2 DEVICE SUPPORT
+------------------
+• Android: 7.0 (API 24) and above
+• iOS: 12.0 and above
+• Screen sizes: 360×640px (small Android) to 414×896px (large iPhone)
+• RAM: Support for devices with 2GB+ RAM
+
+3.3 OFFLINE-FIRST TARGETS
+--------------------------
+• 100% functionality available offline for core features
+• Contact management fully functional without internet
+• Wallet viewing and history accessible offline
+• Auto-sync when connection restored
+
+================================================================================
+4. FEATURE SCOPE TARGETS (V1.0)
+================================================================================
+
+4.1 INCLUDED FEATURES (MUST HAVE)
+----------------------------------
+✓ Authentication & Onboarding
+  - Social login (Google, Facebook, Apple)
+  - OTP verification
+  - Intro carousel (3-4 slides)
+
+✓ Contact Management (Core)
+  - Smart scanning with OCR
+  - MFS Detection Icons (bKash, Nagad) (NEW)
+  - Manual entry with comprehensive form
+  - Verify Contact Validity Action (NEW)
+  - Categories, tags, favorites
+  - Edit, delete, merge duplicates
+  - Global search + filters
+
+✓ Digital Business Card & Creator  
+  - My Card Creator with customization controls (Color, Layout) (NEW)
+  - Upload logo, headshot, theme colors
+  - NFC exchange ("Bump" phones)
+  - QR code sharing (Static/Dynamic)
+  - vCard (.vcf) and PDF export
+
+✓ Global Intelligence & Sync
+  - Global directory (anonymized)
+  - Smart alerts for contact updates
+  - Identity verification badges
+  - AI fraud alerts
+
+✓ Internal Wallet (Bookkeeping Only)
+  - View balance & transactions
+  - Contextual "Pay" button on contact cards
+  - Send/receive money (simulation)
+  - Transaction history
+
+✓ Team & Collaboration (Basic)
+  - Create/join team
+  - Shared directory view
+
+✓ Settings & Security
+  - Profile management
+  - Biometric lock
+  - Backup & sync
+  - Light/dark mode
+
+4.2 EXCLUDED FEATURES (OUT OF SCOPE V1)
+----------------------------------------
+✗ Real-world payment integration (no bKash, Nagad, Rocket APIs)
+✗ Actual KYC verification (NID scanning)
+✗ Advanced team roles and permissions
+✗ Public directory/discovery
+
+================================================================================
+5. PAGE DESIGN TARGETS
+================================================================================
+
+TOTAL PAGES: 60 screens designed for V1.0
+
+MODULE BREAKDOWN:
+• Authentication Module: 6 pages (Splash, Welcome, Login, Register, Forgot Password, OTP)
+• Onboarding Module: 2 pages (Permissions, Intro Carousel)
+• Dashboard Module: 5 pages (Home, Contact List, Favorites, Recent Activity, Notifications)
+• Contact Management: 13 pages (Add methods, forms, scanning, editing, details, sharing)
+• Search Module: 3 pages (Search, Filters, Results)
+• Wallet Module: 8 pages (Home, Add Card, Send, Receive, QR Scan, History, etc.)
+• Share Module: 4 pages (Digital Card, QR, NFC, PDF Export)
+• Team Module: 4 pages (Dashboard, Directory, Invite, Roles)
+• Settings Module: 12 pages (Profile, Account, Security, Backup, Categories, Tags, etc.)
+• Help & Support: 3 pages (Help Center, FAQ, Contact Support)
+
+DESIGN CONSISTENCY TARGETS:
+✓ All pages follow common layout shell (Header, Body, Footer)
+✓ Bottom navigation consistent across all modules
+✓ Standardized component library (buttons, inputs, cards)
+✓ Uniform spacing, typography, and color usage
+
+================================================================================
+6. COMPONENT TARGETS
+================================================================================
+
+COMMON COMPONENTS TO DESIGN:
+✓ Primary Button (Filled, 48px height)
+✓ Secondary Button (Outlined, 48px height)
+✓ Text Button (Link style)
+✓ Floating Action Button (FAB, 56x56px)
+✓ Input Fields (56px height, multiple states)
+✓ Contact Card (Grid view, 165x200px)
+✓ Wallet Card (Payment method, full width x 200px)  
+✓ Navigation Bars (Top header 56px, Bottom nav 80px)
+✓ Search Bar (Sticky, with filter)
+✓ Category Pills (Active/Inactive states)
+✓ Alert Dialogs & Bottom Sheets
+✓ Skeleton Loaders (Shimmer effect)
+✓ Empty States (Illustrations + CTA)
+✓ Error States (Retry options)
+
+BOTTOM NAVIGATION SHELL (CRITICAL):
+• Fixed at bottom, 80px height
+• White background with subtle shadow
+• Three key elements:
+  1. Settings Button (Left) - Navigate to settings
+  2. FAB (Center) - Primary action, expands fan menu
+  3. Search Button (Right) - Navigate to search
+• Fan menu options: Add Contact, Scan Card, QR Code, Manual Add
+
+================================================================================
+7. SUCCESS METRICS & VALIDATION
+================================================================================
+
+7.1 DESIGN COMPLETION CRITERIA
+-------------------------------
+✓ All 60 pages documented with specifications
+✓ All common components catalogued
+✓ Consistent design system applied
+✓ Footer button design finalized
+✓ Demo images aligned with specifications
+
+7.2 USER EXPERIENCE METRICS
+----------------------------
+• Contact scanning accuracy: > 85% OCR field detection
+• Average time to add contact (manual): < 2 minutes
+• Average time to add contact (scan): < 30 seconds  
+• Search result speed: < 1 second
+• User satisfaction (design): > 4.0/5.0
+
+7.3 TECHNICAL VALIDATION
+------------------------
+• 100% of pages render at 60 FPS
+• All interactive elements have proper states (default, hover, pressed, disabled)
+• All forms have validation feedback
+• All transitions smooth (< 300ms)
+
+================================================================================
+8. LOCALIZATION TARGETS
+================================================================================
+
+LANGUAGES SUPPORTED:
+• Primary: English
+• Secondary: Bangla (Bengali)
+
+LOCALIZATION REQUIREMENTS:
+✓ Easy language toggle in settings
+✓ BDT currency formatting (৳1,00,000)
+✓ Bangladeshi date formats
+✓ UI layouts adapt to longer Bangla text
+✓ Minimum touch targets: 44x44px
+
+================================================================================
+9. ACCESSIBILITY TARGETS  
+================================================================================
+
+TEXT & CONTRAST:
+• Minimum font size: 14px (body), 12px (helper text only)
+• WCAG AA compliance for contrast ratios
+• Clear visual hierarchy
+
+TOUCH & INTERACTION:
+• Minimum touch target: 44x44px
+• Simple, discoverable gestures
+• Visual affordances for swipe actions
+• Haptic feedback for key interactions
+
+================================================================================
+10. NEXT STEPS & IMPLEMENTATION ROADMAP
+================================================================================
+
+IMMEDIATE PRIORITIES:
+1. Complete detailed specifications for all 60 pages
+2. Document all reusable components
+3. Create comprehensive widget library
+4. Finalize footer button interaction patterns
+5. Review demo images for alignment with specs
+
+FUTURE ENHANCEMENTS (V2 & Beyond):
+• BNR Integration (bKash, Nagad, Rocket) - V2
+• Full Banking Integration (5 Banks) - V3
+• Advanced analytics dashboard
+• Meeting scheduler integration
+• AI-powered contact insights
+
+================================================================================
+END OF DESIGN TARGET DOCUMENT
+================================================================================

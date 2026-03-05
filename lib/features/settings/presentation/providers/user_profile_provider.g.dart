@@ -139,8 +139,158 @@ final preferredLanguageProvider = AutoDisposeProvider<String>.internal(
 );
 
 typedef PreferredLanguageRef = AutoDisposeProviderRef<String>;
+String _$userProfileByIdHash() => r'ec7626436abed012847c9fda2a724376b57e5066';
+
+/// Copied from Dart SDK
+class _SystemHash {
+  _SystemHash._();
+
+  static int combine(int hash, int value) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + value);
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    return hash ^ (hash >> 6);
+  }
+
+  static int finish(int hash) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    // ignore: parameter_assignments
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+  }
+}
+
+/// See also [userProfileById].
+@ProviderFor(userProfileById)
+const userProfileByIdProvider = UserProfileByIdFamily();
+
+/// See also [userProfileById].
+class UserProfileByIdFamily extends Family<AsyncValue<UserProfile?>> {
+  /// See also [userProfileById].
+  const UserProfileByIdFamily();
+
+  /// See also [userProfileById].
+  UserProfileByIdProvider call(
+    String uid,
+  ) {
+    return UserProfileByIdProvider(
+      uid,
+    );
+  }
+
+  @override
+  UserProfileByIdProvider getProviderOverride(
+    covariant UserProfileByIdProvider provider,
+  ) {
+    return call(
+      provider.uid,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'userProfileByIdProvider';
+}
+
+/// See also [userProfileById].
+class UserProfileByIdProvider extends AutoDisposeFutureProvider<UserProfile?> {
+  /// See also [userProfileById].
+  UserProfileByIdProvider(
+    String uid,
+  ) : this._internal(
+          (ref) => userProfileById(
+            ref as UserProfileByIdRef,
+            uid,
+          ),
+          from: userProfileByIdProvider,
+          name: r'userProfileByIdProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$userProfileByIdHash,
+          dependencies: UserProfileByIdFamily._dependencies,
+          allTransitiveDependencies:
+              UserProfileByIdFamily._allTransitiveDependencies,
+          uid: uid,
+        );
+
+  UserProfileByIdProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.uid,
+  }) : super.internal();
+
+  final String uid;
+
+  @override
+  Override overrideWith(
+    FutureOr<UserProfile?> Function(UserProfileByIdRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: UserProfileByIdProvider._internal(
+        (ref) => create(ref as UserProfileByIdRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        uid: uid,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<UserProfile?> createElement() {
+    return _UserProfileByIdProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is UserProfileByIdProvider && other.uid == uid;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, uid.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin UserProfileByIdRef on AutoDisposeFutureProviderRef<UserProfile?> {
+  /// The parameter `uid` of this provider.
+  String get uid;
+}
+
+class _UserProfileByIdProviderElement
+    extends AutoDisposeFutureProviderElement<UserProfile?>
+    with UserProfileByIdRef {
+  _UserProfileByIdProviderElement(super.provider);
+
+  @override
+  String get uid => (origin as UserProfileByIdProvider).uid;
+}
+
 String _$userProfileNotifierHash() =>
-    r'f31fe2f5a7cc0401f294b3c2d196ba02feee681f';
+    r'4930ed60aed0ac15e5a781cd7bd33a7bdada5c60';
 
 /// User profile state provider.
 ///

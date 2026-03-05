@@ -26,6 +26,18 @@ mixin _$UserProfile {
   /// User's full name
   String get fullName => throw _privateConstructorUsedError;
 
+  /// User's email address (for search and notifications)
+  String? get email => throw _privateConstructorUsedError;
+
+  /// User's first name
+  String? get firstName => throw _privateConstructorUsedError;
+
+  /// User's last name
+  String? get lastName => throw _privateConstructorUsedError;
+
+  /// User's phone number (for team addition)
+  String? get phoneNumber => throw _privateConstructorUsedError;
+
   /// User's job title or position
   String? get jobTitle => throw _privateConstructorUsedError;
 
@@ -83,6 +95,10 @@ abstract class $UserProfileCopyWith<$Res> {
   $Res call(
       {String uid,
       String fullName,
+      String? email,
+      String? firstName,
+      String? lastName,
+      String? phoneNumber,
       String? jobTitle,
       String? companyName,
       String? bio,
@@ -114,6 +130,10 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
   $Res call({
     Object? uid = null,
     Object? fullName = null,
+    Object? email = freezed,
+    Object? firstName = freezed,
+    Object? lastName = freezed,
+    Object? phoneNumber = freezed,
     Object? jobTitle = freezed,
     Object? companyName = freezed,
     Object? bio = freezed,
@@ -138,6 +158,22 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
           ? _value.fullName
           : fullName // ignore: cast_nullable_to_non_nullable
               as String,
+      email: freezed == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String?,
+      firstName: freezed == firstName
+          ? _value.firstName
+          : firstName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      lastName: freezed == lastName
+          ? _value.lastName
+          : lastName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      phoneNumber: freezed == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
       jobTitle: freezed == jobTitle
           ? _value.jobTitle
           : jobTitle // ignore: cast_nullable_to_non_nullable
@@ -209,6 +245,10 @@ abstract class _$$UserProfileImplCopyWith<$Res>
   $Res call(
       {String uid,
       String fullName,
+      String? email,
+      String? firstName,
+      String? lastName,
+      String? phoneNumber,
       String? jobTitle,
       String? companyName,
       String? bio,
@@ -238,6 +278,10 @@ class __$$UserProfileImplCopyWithImpl<$Res>
   $Res call({
     Object? uid = null,
     Object? fullName = null,
+    Object? email = freezed,
+    Object? firstName = freezed,
+    Object? lastName = freezed,
+    Object? phoneNumber = freezed,
     Object? jobTitle = freezed,
     Object? companyName = freezed,
     Object? bio = freezed,
@@ -262,6 +306,22 @@ class __$$UserProfileImplCopyWithImpl<$Res>
           ? _value.fullName
           : fullName // ignore: cast_nullable_to_non_nullable
               as String,
+      email: freezed == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String?,
+      firstName: freezed == firstName
+          ? _value.firstName
+          : firstName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      lastName: freezed == lastName
+          ? _value.lastName
+          : lastName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      phoneNumber: freezed == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
       jobTitle: freezed == jobTitle
           ? _value.jobTitle
           : jobTitle // ignore: cast_nullable_to_non_nullable
@@ -328,6 +388,10 @@ class _$UserProfileImpl extends _UserProfile {
   const _$UserProfileImpl(
       {required this.uid,
       required this.fullName,
+      this.email,
+      this.firstName,
+      this.lastName,
+      this.phoneNumber,
       this.jobTitle,
       this.companyName,
       this.bio,
@@ -355,6 +419,22 @@ class _$UserProfileImpl extends _UserProfile {
   /// User's full name
   @override
   final String fullName;
+
+  /// User's email address (for search and notifications)
+  @override
+  final String? email;
+
+  /// User's first name
+  @override
+  final String? firstName;
+
+  /// User's last name
+  @override
+  final String? lastName;
+
+  /// User's phone number (for team addition)
+  @override
+  final String? phoneNumber;
 
   /// User's job title or position
   @override
@@ -424,7 +504,7 @@ class _$UserProfileImpl extends _UserProfile {
 
   @override
   String toString() {
-    return 'UserProfile(uid: $uid, fullName: $fullName, jobTitle: $jobTitle, companyName: $companyName, bio: $bio, avatarUrl: $avatarUrl, preferences: $preferences, personalCardId: $personalCardId, accountStatus: $accountStatus, kycTier: $kycTier, timeZone: $timeZone, defaultLanguage: $defaultLanguage, lastActiveAt: $lastActiveAt, deviceId: $deviceId, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'UserProfile(uid: $uid, fullName: $fullName, email: $email, firstName: $firstName, lastName: $lastName, phoneNumber: $phoneNumber, jobTitle: $jobTitle, companyName: $companyName, bio: $bio, avatarUrl: $avatarUrl, preferences: $preferences, personalCardId: $personalCardId, accountStatus: $accountStatus, kycTier: $kycTier, timeZone: $timeZone, defaultLanguage: $defaultLanguage, lastActiveAt: $lastActiveAt, deviceId: $deviceId, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -435,6 +515,13 @@ class _$UserProfileImpl extends _UserProfile {
             (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.fullName, fullName) ||
                 other.fullName == fullName) &&
+            (identical(other.email, email) || other.email == email) &&
+            (identical(other.firstName, firstName) ||
+                other.firstName == firstName) &&
+            (identical(other.lastName, lastName) ||
+                other.lastName == lastName) &&
+            (identical(other.phoneNumber, phoneNumber) ||
+                other.phoneNumber == phoneNumber) &&
             (identical(other.jobTitle, jobTitle) ||
                 other.jobTitle == jobTitle) &&
             (identical(other.companyName, companyName) ||
@@ -465,24 +552,29 @@ class _$UserProfileImpl extends _UserProfile {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      uid,
-      fullName,
-      jobTitle,
-      companyName,
-      bio,
-      avatarUrl,
-      const DeepCollectionEquality().hash(_preferences),
-      personalCardId,
-      accountStatus,
-      kycTier,
-      timeZone,
-      defaultLanguage,
-      lastActiveAt,
-      deviceId,
-      createdAt,
-      updatedAt);
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        uid,
+        fullName,
+        email,
+        firstName,
+        lastName,
+        phoneNumber,
+        jobTitle,
+        companyName,
+        bio,
+        avatarUrl,
+        const DeepCollectionEquality().hash(_preferences),
+        personalCardId,
+        accountStatus,
+        kycTier,
+        timeZone,
+        defaultLanguage,
+        lastActiveAt,
+        deviceId,
+        createdAt,
+        updatedAt
+      ]);
 
   @JsonKey(ignore: true)
   @override
@@ -502,6 +594,10 @@ abstract class _UserProfile extends UserProfile {
   const factory _UserProfile(
       {required final String uid,
       required final String fullName,
+      final String? email,
+      final String? firstName,
+      final String? lastName,
+      final String? phoneNumber,
       final String? jobTitle,
       final String? companyName,
       final String? bio,
@@ -529,6 +625,22 @@ abstract class _UserProfile extends UserProfile {
 
   /// User's full name
   String get fullName;
+  @override
+
+  /// User's email address (for search and notifications)
+  String? get email;
+  @override
+
+  /// User's first name
+  String? get firstName;
+  @override
+
+  /// User's last name
+  String? get lastName;
+  @override
+
+  /// User's phone number (for team addition)
+  String? get phoneNumber;
   @override
 
   /// User's job title or position

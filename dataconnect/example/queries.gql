@@ -1,0 +1,8 @@
+query GetUserAccounts @auth(level: USER) {
+      accounts(where: {userId: {eq_expr: "auth.uid"}}) {
+        id
+        name
+        balance
+        currency
+      }
+    }

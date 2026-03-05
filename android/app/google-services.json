@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "343204336259-9vlp8k03jummfm6jufsak26gpmgd7eb2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mobilewallet.v1",
+            "certificate_hash": "8502c0331f11627972ede29d3f48f04d94f0d26c"
+          }
+        },
+        {
           "client_id": "343204336259-h879t1i3neaibh9r2se82iihm7i1sel1.apps.googleusercontent.com",
           "client_type": 3
         }
