@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_wallet/core/theme/app_colors.dart';
 import 'package:mobile_wallet/features/collaboration/domain/entities/team.dart';
 import 'package:mobile_wallet/features/collaboration/presentation/providers/team_provider.dart';
 import 'package:mobile_wallet/features/auth/presentation/providers/auth_provider.dart';
@@ -34,7 +35,7 @@ class _TeamListScreenState extends ConsumerState<TeamListScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.primaryIndigo,
         foregroundColor: Colors.white,
         title: Text(
           _isDiscoverMode ? 'Discover Teams' : 'My Teams',
@@ -55,7 +56,7 @@ class _TeamListScreenState extends ConsumerState<TeamListScreen> {
         children: [
           // --- Search Bar ---
           Container(
-            color: Colors.green,
+            color: AppColors.primaryIndigo,
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: TextField(
               controller: _searchController,
@@ -205,7 +206,7 @@ class _TeamListScreenState extends ConsumerState<TeamListScreen> {
                         return const SizedBox.shrink();
                       }
                       return RefreshIndicator(
-                        color: Colors.green,
+                        color: AppColors.primaryIndigo,
                         onRefresh: () async {
                           ref.invalidate(userTeamsProvider);
                           ref.invalidate(pendingInvitesProvider);
@@ -238,7 +239,7 @@ class _TeamListScreenState extends ConsumerState<TeamListScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.primaryIndigo,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
         label: const Text('New Team'),
@@ -440,7 +441,7 @@ class _TeamCard extends StatelessWidget {
                 FilledButton(
                   onPressed: onJoin,
                   style: FilledButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: AppColors.primaryIndigo,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     minimumSize: const Size(0, 32),
@@ -478,7 +479,7 @@ class _RolePill extends StatelessWidget {
         color = Colors.blue;
         break;
       default:
-        color = Colors.green;
+        color = AppColors.primaryIndigo;
     }
 
     return Container(
@@ -518,15 +519,18 @@ class _EmptyTeamsState extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  color: Colors.green.shade50,
+                  color: AppColors.primaryIndigoLight.withOpacity(0.2),
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.green.shade100, width: 2),
+                  border: Border.all(
+                    color: AppColors.primaryIndigoLight,
+                    width: 2,
+                  ),
                 ),
                 child: Icon(
                   Icons
                       .hub_outlined, // Changed to a more "team/network" focused icon
                   size: 80,
-                  color: Colors.green.shade400,
+                  color: AppColors.primaryIndigo,
                 ),
               ),
               const SizedBox(height: 32),
@@ -557,7 +561,7 @@ class _EmptyTeamsState extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
                 style: FilledButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: AppColors.primaryIndigo,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -705,7 +709,7 @@ class _PendingInviteCard extends ConsumerWidget {
                         .read(teamNotifierProvider.notifier)
                         .respondToInvite(team.id, true),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: AppColors.primaryIndigo,
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(

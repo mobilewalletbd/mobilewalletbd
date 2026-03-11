@@ -7,31 +7,40 @@ part of 'team.dart';
 // **************************************************************************
 
 _$TeamImpl _$$TeamImplFromJson(Map<String, dynamic> json) => _$TeamImpl(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String?,
-      category: json['category'] as String?,
-      photoUrl: json['photoUrl'] as String?,
-      ownerId: json['ownerId'] as String,
-      members: (json['members'] as List<dynamic>?)
-              ?.map((e) => TeamMember.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
-      totalExpenses: (json['totalExpenses'] as num?)?.toDouble(),
-      sharedContactsCount: (json['sharedContactsCount'] as num?)?.toInt() ?? 0,
-      inviteCode: json['inviteCode'] as String?,
-      invitedEmails: (json['invitedEmails'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          const [],
-      invitedPhones: (json['invitedPhones'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          const [],
-      visibility: json['visibility'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-    );
+  id: json['id'] as String,
+  name: json['name'] as String,
+  description: json['description'] as String?,
+  category: json['category'] as String?,
+  photoUrl: json['photoUrl'] as String?,
+  ownerId: json['ownerId'] as String,
+  members:
+      (json['members'] as List<dynamic>?)
+          ?.map((e) => TeamMember.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  totalExpenses: (json['totalExpenses'] as num?)?.toDouble(),
+  sharedContactsCount: (json['sharedContactsCount'] as num?)?.toInt() ?? 0,
+  inviteCode: json['inviteCode'] as String?,
+  invitedEmails:
+      (json['invitedEmails'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [],
+  invitedPhones:
+      (json['invitedPhones'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [],
+  visibility: json['visibility'] as String?,
+  permMembersCanAddContacts: json['permMembersCanAddContacts'] as bool? ?? true,
+  permMembersCanShareCards: json['permMembersCanShareCards'] as bool? ?? true,
+  permMembersCanInvite: json['permMembersCanInvite'] as bool? ?? false,
+  permMembersCanViewExpenses:
+      json['permMembersCanViewExpenses'] as bool? ?? true,
+  permAdminsCanAddExpenses: json['permAdminsCanAddExpenses'] as bool? ?? true,
+  createdAt: DateTime.parse(json['createdAt'] as String),
+  updatedAt: DateTime.parse(json['updatedAt'] as String),
+);
 
 Map<String, dynamic> _$$TeamImplToJson(_$TeamImpl instance) =>
     <String, dynamic>{
@@ -48,6 +57,11 @@ Map<String, dynamic> _$$TeamImplToJson(_$TeamImpl instance) =>
       'invitedEmails': instance.invitedEmails,
       'invitedPhones': instance.invitedPhones,
       'visibility': instance.visibility,
+      'permMembersCanAddContacts': instance.permMembersCanAddContacts,
+      'permMembersCanShareCards': instance.permMembersCanShareCards,
+      'permMembersCanInvite': instance.permMembersCanInvite,
+      'permMembersCanViewExpenses': instance.permMembersCanViewExpenses,
+      'permAdminsCanAddExpenses': instance.permAdminsCanAddExpenses,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
     };

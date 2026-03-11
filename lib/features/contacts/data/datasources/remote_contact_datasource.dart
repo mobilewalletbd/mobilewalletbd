@@ -266,6 +266,7 @@ class RemoteContactDataSource {
       fraudScore: contact.fraudScore,
       createdBy: contact.createdBy,
       sharedWith: contact.sharedWith,
+      sharedWithTeams: contact.sharedWithTeams,
       createdAt: contact.createdAt,
       updatedAt: contact.updatedAt,
     );
@@ -328,6 +329,9 @@ class RemoteContactDataSource {
       sharedWith: data['sharedWith'] != null
           ? List<String>.from(data['sharedWith'])
           : null,
+      sharedWithTeams: data['sharedWithTeams'] != null
+          ? List<String>.from(data['sharedWithTeams'])
+          : [],
     );
   }
 }

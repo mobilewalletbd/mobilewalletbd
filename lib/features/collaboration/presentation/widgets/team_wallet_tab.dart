@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_wallet/core/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_wallet/features/collaboration/domain/entities/team.dart';
@@ -19,6 +20,7 @@ class TeamWalletTab extends ConsumerWidget {
     final sharedContactsAsync = ref.watch(
       sharedContactsProvider({'teamId': team.id}),
     );
+    final expensesLimit = ref.watch(expensesLimitProvider(team.id));
 
     return ListView(
       children: [
@@ -41,7 +43,7 @@ class TeamWalletTab extends ConsumerWidget {
         _buildExpensesHeader(context),
 
         // Expenses List
-        _buildExpensesList(expensesAsync),
+        _buildExpensesList(context, ref, expensesAsync, expensesLimit),
       ],
     );
   }
@@ -50,8 +52,8 @@ class TeamWalletTab extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(24.0),
       decoration: BoxDecoration(
-        color: Colors.green.shade50,
-        border: Border(bottom: BorderSide(color: Colors.green.shade200)),
+        color: AppColors.primaryIndigoLight.withOpacity(0.1),
+        border: Border(bottom: BorderSide(color: AppColors.primaryIndigoLight)),
       ),
       child: Column(
         children: [
@@ -69,7 +71,7 @@ class TeamWalletTab extends ConsumerWidget {
             style: const TextStyle(
               fontSize: 36,
               fontWeight: FontWeight.bold,
-              color: Colors.green,
+              color: AppColors.primaryIndigo,
             ),
           ),
           const SizedBox(height: 24),
@@ -228,7 +230,12 @@ class TeamWalletTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildExpensesList(AsyncValue<List<dynamic>> expensesAsync) {
+  Widget _buildExpensesList(
+    BuildContext context,
+    WidgetRef ref,
+    AsyncValue<List<dynamic>> expensesAsync,
+    int currentLimit,
+  ) {
     return expensesAsync.when(
       data: (expenses) {
         if (expenses.isEmpty) {
@@ -242,46 +249,67 @@ class TeamWalletTab extends ConsumerWidget {
             ),
           );
         }
-        return ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: expenses.length,
-          separatorBuilder: (context, index) => const Divider(height: 1),
-          itemBuilder: (context, index) {
-            final expense = expenses[index];
-            return ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
-              ),
-              leading: CircleAvatar(
-                backgroundColor: Colors.grey.shade200,
-                child: Icon(
-                  _getCategoryIcon(expense.category),
-                  color: Colors.grey.shade700,
+        return Column(
+          children: [
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: expenses.length,
+              separatorBuilder: (context, index) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                final expense = expenses[index];
+                return ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.grey.shade200,
+                    child: Icon(
+                      _getCategoryIcon(expense.category),
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+                  title: Text(
+                    expense.title,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: Text(
+                    'Added by ${expense.addedByUserId.substring(0, 5)}... • ${DateFormat.yMMMd().format(expense.date)}',
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  trailing: Text(
+                    '-\$${expense.amount.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.red,
+                    ),
+                  ),
+                );
+              },
+            ),
+            if (expenses.length >= currentLimit)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextButton(
+                  onPressed: () {
+                    ref
+                        .read(teamNotifierProvider.notifier)
+                        .loadMoreExpenses(team.id);
+                  },
+                  child: const Text('Load More Expenses'),
                 ),
               ),
-              title: Text(
-                expense.title,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              subtitle: Text(
-                'Added by ${expense.addedByUserId.substring(0, 5)}... • ${DateFormat.yMMMd().format(expense.date)}',
-                style: const TextStyle(fontSize: 12),
-              ),
-              trailing: Text(
-                '-\$${expense.amount.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.red,
-                ),
-              ),
-            );
-          },
+          ],
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: CircularProgressIndicator(),
+        ),
+      ),
       error: (e, st) => Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(child: Text('Error: $e')),
@@ -340,10 +368,13 @@ class _SharedCardItem extends StatelessWidget {
                 height: 40,
                 width: 40,
                 decoration: BoxDecoration(
-                  color: Colors.green.shade100,
+                  color: AppColors.primaryIndigoLight.withOpacity(0.3),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.credit_card, color: Colors.green),
+                child: const Icon(
+                  Icons.credit_card,
+                  color: AppColors.primaryIndigo,
+                ),
               ),
               const Spacer(),
               Text(
@@ -444,7 +475,7 @@ class _WalletActionButton extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Icon(icon, color: Colors.green),
+              child: Icon(icon, color: AppColors.primaryIndigo),
             ),
             const SizedBox(height: 8),
             Text(

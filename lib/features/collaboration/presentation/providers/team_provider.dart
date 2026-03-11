@@ -52,25 +52,39 @@ final teamMembersProvider = StreamProvider.autoDispose
           .map((team) => team?.members ?? []);
     });
 
-// State for Team Expenses
+// Pagination limits
+final expensesLimitProvider = StateProvider.family<int, String>(
+  (ref, teamId) => 20,
+);
+final chatLimitProvider = StateProvider.family<int, String>(
+  (ref, teamId) => 50,
+);
+final activityLimitProvider = StateProvider.family<int, String>(
+  (ref, teamId) => 20,
+);
+
+// State for Team Expenses (Paginated)
 final teamExpensesProvider = StreamProvider.autoDispose
     .family<List<TeamExpense>, String>((ref, teamId) {
       final repository = ref.watch(teamRepositoryProvider);
-      return repository.getTeamExpensesStream(teamId);
+      final limit = ref.watch(expensesLimitProvider(teamId));
+      return repository.getTeamExpensesStream(teamId, limit: limit);
     });
 
-// State for Team Chat
+// State for Team Chat (Paginated)
 final teamChatProvider = StreamProvider.autoDispose
     .family<List<TeamChatMessage>, String>((ref, teamId) {
       final repository = ref.watch(teamRepositoryProvider);
-      return repository.getTeamChatStream(teamId);
+      final limit = ref.watch(chatLimitProvider(teamId));
+      return repository.getTeamChatStream(teamId, limit: limit);
     });
 
-// State for Team Activity
+// State for Team Activity (Paginated)
 final teamActivityProvider = StreamProvider.autoDispose
     .family<List<TeamActivityLog>, String>((ref, teamId) {
       final repository = ref.watch(teamRepositoryProvider);
-      return repository.getTeamActivityStream(teamId);
+      final limit = ref.watch(activityLimitProvider(teamId));
+      return repository.getTeamActivityStream(teamId, limit: limit);
     });
 
 // State for Public Team Discovery
@@ -328,6 +342,51 @@ class TeamNotifier extends StateNotifier<AsyncValue<void>> {
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
+  }
+
+  /// Persists the five permission flags to Firestore (task 7.4 / settings tab TODO).
+  Future<void> savePermissions(
+    String teamId, {
+    required bool membersCanAddContacts,
+    required bool membersCanShareCards,
+    required bool membersCanInvite,
+    required bool membersCanViewExpenses,
+    required bool adminsCanAddExpenses,
+  }) async {
+    state = const AsyncValue.loading();
+    try {
+      final current = await _repository.getTeam(teamId);
+      if (current == null) throw Exception('Team not found');
+      final updated = current.copyWith(
+        permMembersCanAddContacts: membersCanAddContacts,
+        permMembersCanShareCards: membersCanShareCards,
+        permMembersCanInvite: membersCanInvite,
+        permMembersCanViewExpenses: membersCanViewExpenses,
+        permAdminsCanAddExpenses: adminsCanAddExpenses,
+      );
+      await _repository.updateTeam(updated);
+      _ref.invalidate(teamDetailsProvider(teamId));
+      state = const AsyncValue.data(null);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  /// Paginated helpers
+  void loadMoreExpenses(String teamId) {
+    _ref
+        .read(expensesLimitProvider(teamId).notifier)
+        .update((state) => state + 20);
+  }
+
+  void loadMoreChat(String teamId) {
+    _ref.read(chatLimitProvider(teamId).notifier).update((state) => state + 50);
+  }
+
+  void loadMoreActivity(String teamId) {
+    _ref
+        .read(activityLimitProvider(teamId).notifier)
+        .update((state) => state + 20);
   }
 }
 

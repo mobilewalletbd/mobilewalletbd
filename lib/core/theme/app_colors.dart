@@ -12,6 +12,11 @@ class AppColors {
   static const Color warmGold = Color(0xFFFFC107);
   static const Color coralAccent = Color(0xFFFF4D4F);
 
+  // Team/Collaboration Colors (Professional Indigo)
+  static const Color primaryIndigo = Color(0xFF3F51B5);
+  static const Color primaryIndigoDark = Color(0xFF303F9F);
+  static const Color primaryIndigoLight = Color(0xFFC5CAE9);
+
   // Neutral Colors
   static const Color black = Color(0xFF1A1A2E);
   static const Color darkGray = Color(0xFF4A4A5A);

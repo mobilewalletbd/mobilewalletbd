@@ -16,8 +16,9 @@ import 'package:mobile_wallet/core/database/isar_schemas.dart';
 
 class TeamRepositoryImpl implements TeamRepository {
   final FirestoreService _firestoreService;
+  final FirebaseAuth _firebaseAuth;
 
-  TeamRepositoryImpl(this._firestoreService);
+  TeamRepositoryImpl(this._firestoreService, this._firebaseAuth);
 
   @override
   Future<Team> createTeam(Team team) async {
@@ -339,16 +340,22 @@ class TeamRepositoryImpl implements TeamRepository {
   }
 
   @override
-  Stream<List<TeamExpense>> getTeamExpensesStream(String teamId) {
+  Stream<List<TeamExpense>> getTeamExpensesStream(
+    String teamId, {
+    int limit = 20,
+  }) {
     return _firestoreService.instance
         .collection('team_expenses')
         .where('teamId', isEqualTo: teamId)
         .orderBy('createdAt', descending: true)
+        .limit(limit)
         .snapshots()
         .map(
           (snapshot) => snapshot.docs.map((doc) {
             final data = doc.data();
-            data['createdAt'] = _timestampToString(data['createdAt']);
+            data['date'] = _timestampToString(
+              data['date'] ?? data['createdAt'],
+            );
             data['id'] = doc.id;
             return TeamExpense.fromJson(data);
           }).toList(),
@@ -373,28 +380,43 @@ class TeamRepositoryImpl implements TeamRepository {
   }
 
   @override
-  Stream<List<TeamChatMessage>> getTeamChatStream(String teamId) {
+  Stream<List<TeamChatMessage>> getTeamChatStream(
+    String teamId, {
+    int limit = 50,
+  }) {
     return _firestoreService.instance
         .collection('team_chat_messages')
         .where('teamId', isEqualTo: teamId)
-        .orderBy('createdAt', descending: false) // Older first
+        .orderBy(
+          'createdAt',
+          descending: true,
+        ) // Changed to descending for pagination
+        .limit(limit)
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs.map((doc) {
+        .map((snapshot) {
+          final messages = snapshot.docs.map((doc) {
             final data = doc.data();
-            data['createdAt'] = _timestampToString(data['createdAt']);
+            data['timestamp'] = _timestampToString(
+              data['timestamp'] ?? data['createdAt'],
+            );
             data['id'] = doc.id;
             return TeamChatMessage.fromJson(data);
-          }).toList(),
-        );
+          }).toList();
+          // Reverse back to ascending for UI (older first)
+          return messages.reversed.toList();
+        });
   }
 
   @override
-  Stream<List<TeamActivityLog>> getTeamActivityStream(String teamId) {
+  Stream<List<TeamActivityLog>> getTeamActivityStream(
+    String teamId, {
+    int limit = 20,
+  }) {
     return _firestoreService.instance
         .collection('team_activity_logs')
         .where('teamId', isEqualTo: teamId)
         .orderBy('timestamp', descending: true)
+        .limit(limit)
         .snapshots()
         .map(
           (snapshot) => snapshot.docs.map((doc) {
@@ -461,7 +483,7 @@ class TeamRepositoryImpl implements TeamRepository {
       });
 
       // 3. Activity Log — use the actual inviting user's UID, not 'system'
-      final actingUserId = FirebaseAuth.instance.currentUser?.uid ?? 'unknown';
+      final actingUserId = _firebaseAuth.currentUser?.uid ?? 'unknown';
       await _addActivityLog(
         teamId: teamId,
         userId: actingUserId,
@@ -740,5 +762,6 @@ class TeamRepositoryImpl implements TeamRepository {
 
 final teamRepositoryProvider = Provider<TeamRepository>((ref) {
   final firestoreService = ref.watch(firestoreServiceProvider);
-  return TeamRepositoryImpl(firestoreService);
+  final firebaseAuth = FirebaseAuth.instance;
+  return TeamRepositoryImpl(firestoreService, firebaseAuth);
 });

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_wallet/core/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_wallet/features/collaboration/domain/entities/team.dart';
 import 'package:mobile_wallet/features/collaboration/presentation/providers/team_provider.dart';
@@ -50,7 +51,7 @@ Color _roleBadgeColor(String role) {
     case 'viewer':
       return Colors.grey;
     default:
-      return Colors.green;
+      return AppColors.primaryIndigo;
   }
 }
 
@@ -182,7 +183,10 @@ class _TeamDirectoryTabState extends ConsumerState<TeamDirectoryTab> {
                     const SizedBox(width: 8),
                     // Filter button
                     PopupMenuButton<String>(
-                      icon: const Icon(Icons.filter_list, color: Colors.green),
+                      icon: const Icon(
+                        Icons.filter_list,
+                        color: AppColors.primaryIndigo,
+                      ),
                       tooltip: 'Filter by role',
                       initialValue: _roleFilter,
                       onSelected: (v) => setState(() => _roleFilter = v),
@@ -235,7 +239,7 @@ class _TeamDirectoryTabState extends ConsumerState<TeamDirectoryTab> {
                     icon: const Icon(Icons.person_add),
                     label: const Text('+ Add Member'),
                     style: FilledButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: AppColors.primaryIndigo,
                       shape: const StadiumBorder(),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
@@ -294,7 +298,7 @@ class _TeamDirectoryTabState extends ConsumerState<TeamDirectoryTab> {
           child: FloatingActionButton(
             heroTag: 'team_directory_search_fab',
             onPressed: () => setState(() => _showSearch = !_showSearch),
-            backgroundColor: Colors.green,
+            backgroundColor: AppColors.primaryIndigo,
             child: Icon(
               _showSearch ? Icons.close : Icons.search,
               color: Colors.white,
@@ -427,7 +431,9 @@ class _MemberTile extends ConsumerWidget {
               width: 13,
               height: 13,
               decoration: BoxDecoration(
-                color: isOnline ? Colors.green : Colors.grey.shade400,
+                color: isOnline
+                    ? AppColors.primaryIndigo
+                    : Colors.grey.shade400,
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 2),
               ),
@@ -444,7 +450,7 @@ class _MemberTile extends ConsumerWidget {
                   : _getDisplayName(profileAsync.value, member.userId),
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: isCurrentUser ? Colors.green : null,
+                color: isCurrentUser ? AppColors.primaryIndigo : null,
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -761,7 +767,7 @@ class _TeamDirectoryAddMemberSheetState
                             if (context.mounted) Navigator.pop(context);
                           },
                           style: FilledButton.styleFrom(
-                            backgroundColor: Colors.green,
+                            backgroundColor: AppColors.primaryIndigo,
                             shape: const StadiumBorder(),
                           ),
                           child: const Text('Add'),

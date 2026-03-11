@@ -13,6 +13,7 @@ class TeamActivityTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activityAsync = ref.watch(teamActivityProvider(team.id));
+    final currentLimit = ref.watch(activityLimitProvider(team.id));
 
     return activityAsync.when(
       data: (logs) {
@@ -38,8 +39,23 @@ class TeamActivityTab extends ConsumerWidget {
 
         return ListView.builder(
           padding: const EdgeInsets.symmetric(vertical: 16),
-          itemCount: logs.length,
+          itemCount: logs.length + (logs.length >= currentLimit ? 1 : 0),
           itemBuilder: (context, index) {
+            if (index == logs.length) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Center(
+                  child: TextButton(
+                    onPressed: () {
+                      ref
+                          .read(teamNotifierProvider.notifier)
+                          .loadMoreActivity(team.id);
+                    },
+                    child: const Text('Load More Activity'),
+                  ),
+                ),
+              );
+            }
             final log = logs[index];
             return _ActivityLogItem(log: log);
           },

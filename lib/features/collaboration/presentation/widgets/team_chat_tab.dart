@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_wallet/core/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_wallet/features/auth/presentation/providers/auth_provider.dart';
@@ -21,10 +22,24 @@ class _TeamChatTabState extends ConsumerState<TeamChatTab> {
   bool _isSending = false;
 
   @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    // When scrolling to top, load older messages
+    if (_scrollController.position.pixels <= 0) {
+      ref.read(teamNotifierProvider.notifier).loadMoreChat(widget.team.id);
+    }
   }
 
   void _scrollToBottom() {
@@ -78,9 +93,13 @@ class _TeamChatTabState extends ConsumerState<TeamChatTab> {
               if (messages.isEmpty) {
                 return const _EmptyChatState();
               }
-              WidgetsBinding.instance.addPostFrameCallback(
-                (_) => _scrollToBottom(),
-              );
+              if (_scrollController.hasClients &&
+                  _scrollController.position.pixels >
+                      _scrollController.position.maxScrollExtent - 100) {
+                WidgetsBinding.instance.addPostFrameCallback(
+                  (_) => _scrollToBottom(),
+                );
+              }
               return ListView.builder(
                 controller: _scrollController,
                 padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
@@ -147,7 +166,7 @@ class _TeamChatTabState extends ConsumerState<TeamChatTab> {
                 GestureDetector(
                   onTap: _isSending ? null : _sendMessage,
                   child: CircleAvatar(
-                    backgroundColor: Colors.green,
+                    backgroundColor: AppColors.primaryIndigo,
                     radius: 22,
                     child: _isSending
                         ? const SizedBox(
@@ -189,7 +208,7 @@ class _MessageBubble extends ConsumerWidget {
         ? profileAsync.value!.fullName
         : 'Member';
 
-    final bubbleColor = isMe ? Colors.green : Colors.grey.shade200;
+    final bubbleColor = isMe ? AppColors.primaryIndigo : Colors.grey.shade200;
     final textColor = isMe ? Colors.white : Colors.black87;
     final timeStr = DateFormat('HH:mm').format(message.timestamp);
 
@@ -232,7 +251,7 @@ class _MessageBubble extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: Colors.green.shade700,
+                  color: AppColors.primaryIndigoDark,
                 ),
               ),
             Text(

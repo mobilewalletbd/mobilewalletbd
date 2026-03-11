@@ -7,6 +7,7 @@ import 'package:mobile_wallet/features/contacts/data/repositories/contact_reposi
 import 'package:mobile_wallet/features/contacts/domain/entities/contact.dart';
 import 'package:mobile_wallet/features/contacts/domain/repositories/contact_repository.dart';
 import 'package:mobile_wallet/features/contacts/presentation/providers/contact_filter_state.dart';
+import 'package:mobile_wallet/features/collaboration/presentation/providers/team_provider.dart';
 
 part 'contact_provider.g.dart';
 
@@ -98,6 +99,22 @@ class ContactsNotifier extends _$ContactsNotifier {
 
   /// Shares a contact with a team
   Future<void> shareContact(String contactId, String teamId) async {
+    // Check permission (6.12)
+    final teamState = ref.read(teamDetailsProvider(teamId));
+    final team = teamState.valueOrNull;
+    final user = ref.read(currentUserProvider);
+
+    if (team != null && user != null) {
+      final isOwner = team.ownerId == user.id;
+      final canAdd = team.permMembersCanAddContacts;
+
+      if (!isOwner && !canAdd) {
+        throw Exception(
+          'You do not have permission to share contacts with this team',
+        );
+      }
+    }
+
     await _repository.shareContactWithTeam(contactId, teamId);
   }
 

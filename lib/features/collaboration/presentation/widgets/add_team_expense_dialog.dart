@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_wallet/core/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_wallet/features/collaboration/domain/entities/team_expense.dart';
 import 'package:mobile_wallet/features/collaboration/presentation/providers/team_provider.dart';
@@ -150,7 +151,9 @@ class _AddTeamExpenseDialogState extends ConsumerState<AddTeamExpenseDialog> {
         ),
         FilledButton.tonal(
           onPressed: isLoading ? null : _submit,
-          style: FilledButton.styleFrom(backgroundColor: Colors.green.shade100),
+          style: FilledButton.styleFrom(
+            backgroundColor: AppColors.primaryIndigoLight.withOpacity(0.3),
+          ),
           child: isLoading
               ? const SizedBox(
                   width: 20,
@@ -159,7 +162,7 @@ class _AddTeamExpenseDialogState extends ConsumerState<AddTeamExpenseDialog> {
                 )
               : const Text(
                   'Add Expense',
-                  style: TextStyle(color: Colors.green),
+                  style: TextStyle(color: AppColors.primaryIndigo),
                 ),
         ),
       ],

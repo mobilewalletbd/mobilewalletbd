@@ -8,6 +8,7 @@ import 'package:mobile_wallet/features/collaboration/presentation/widgets/team_s
 import 'package:mobile_wallet/features/collaboration/presentation/widgets/team_chat_tab.dart';
 import 'package:mobile_wallet/features/collaboration/presentation/widgets/team_activity_tab.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_wallet/core/theme/app_colors.dart';
 
 class TeamDetailsScreen extends ConsumerStatefulWidget {
   final String teamId;
@@ -28,7 +29,7 @@ class _TeamDetailsScreenState extends ConsumerState<TeamDetailsScreen> {
       length: 5,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.green,
+          backgroundColor: AppColors.primaryIndigo,
           foregroundColor: Colors.white,
           title: teamAsync.when(
             data: (team) {
@@ -214,7 +215,7 @@ class _TeamDetailsScreenState extends ConsumerState<TeamDetailsScreen> {
                     ElevatedButton(
                       onPressed: () => context.go('/settings/teams'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: AppColors.primaryIndigo,
                         foregroundColor: Colors.white,
                       ),
                       child: const Text('Go Back'),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_wallet/core/theme/app_colors.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_wallet/features/collaboration/domain/entities/team.dart';
@@ -14,12 +16,22 @@ class TeamSettingsTab extends ConsumerStatefulWidget {
 }
 
 class _TeamSettingsTabState extends ConsumerState<TeamSettingsTab> {
-  // --- Permission toggles (local state; persist with updateTeam in real flow) ---
-  bool _membersCanAddContacts = true;
-  bool _membersCanShareCards = true;
-  bool _membersCanInvite = false;
-  bool _membersCanViewExpenses = true;
-  bool _adminsCanAddExpenses = true;
+  // --- Permission toggles (loaded from team model, persisted to Firestore) ---
+  late bool _membersCanAddContacts;
+  late bool _membersCanShareCards;
+  late bool _membersCanInvite;
+  late bool _membersCanViewExpenses;
+  late bool _adminsCanAddExpenses;
+
+  @override
+  void initState() {
+    super.initState();
+    _membersCanAddContacts = widget.team.permMembersCanAddContacts;
+    _membersCanShareCards = widget.team.permMembersCanShareCards;
+    _membersCanInvite = widget.team.permMembersCanInvite;
+    _membersCanViewExpenses = widget.team.permMembersCanViewExpenses;
+    _adminsCanAddExpenses = widget.team.permAdminsCanAddExpenses;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,21 +57,60 @@ class _TeamSettingsTabState extends ConsumerState<TeamSettingsTab> {
               label: 'Invite Code',
               value: widget.team.inviteCode ?? '—',
               trailing: IconButton(
-                icon: const Icon(Icons.copy, size: 18, color: Colors.green),
+                icon: const Icon(
+                  Icons.copy,
+                  size: 18,
+                  color: AppColors.primaryIndigo,
+                ),
                 onPressed: widget.team.inviteCode != null
-                    ? () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Invite code copied: ${widget.team.inviteCode}',
-                            ),
-                            duration: const Duration(seconds: 2),
-                          ),
+                    ? () async {
+                        await Clipboard.setData(
+                          ClipboardData(text: widget.team.inviteCode!),
                         );
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Invite code copied: ${widget.team.inviteCode}',
+                              ),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        }
                       }
                     : null,
               ),
             ),
+            // --- Share invite link (task 8.6) ---
+            if (widget.team.inviteCode != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.share, size: 16),
+                    label: const Text('Share Invite Link'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.primaryIndigo,
+                      side: const BorderSide(color: AppColors.primaryIndigo),
+                    ),
+                    onPressed: () async {
+                      final link =
+                          'https://mobilewallet.bd/join?code=${widget.team.inviteCode}';
+                      await Clipboard.setData(ClipboardData(text: link));
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Invite link copied to clipboard!'),
+                            backgroundColor: AppColors.primaryIndigo,
+                            duration: Duration(seconds: 3),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ),
             _InfoRow(
               label: 'Total Members',
               value: widget.team.members.length.toString(),
@@ -72,8 +123,8 @@ class _TeamSettingsTabState extends ConsumerState<TeamSettingsTab> {
                   icon: const Icon(Icons.edit_outlined, size: 16),
                   label: const Text('Edit Team Info'),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.green,
-                    side: const BorderSide(color: Colors.green),
+                    foregroundColor: AppColors.primaryIndigo,
+                    side: const BorderSide(color: AppColors.primaryIndigo),
                   ),
                   onPressed: () => _showEditTeamDialog(context),
                 ),
@@ -139,13 +190,26 @@ class _TeamSettingsTabState extends ConsumerState<TeamSettingsTab> {
               SizedBox(
                 width: double.infinity,
                 child: FilledButton.tonal(
-                  onPressed: () {
-                    // TODO: persist to Firestore via updateTeam
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Permissions saved (coming soon)'),
-                      ),
-                    );
+                  onPressed: () async {
+                    await ref
+                        .read(teamNotifierProvider.notifier)
+                        .savePermissions(
+                          widget.team.id,
+                          membersCanAddContacts: _membersCanAddContacts,
+                          membersCanShareCards: _membersCanShareCards,
+                          membersCanInvite: _membersCanInvite,
+                          membersCanViewExpenses: _membersCanViewExpenses,
+                          adminsCanAddExpenses: _adminsCanAddExpenses,
+                        );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Permissions saved!'),
+                          backgroundColor: AppColors.primaryIndigo,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
                   },
                   child: const Text('Save Permissions'),
                 ),
@@ -172,11 +236,13 @@ class _TeamSettingsTabState extends ConsumerState<TeamSettingsTab> {
                 contentPadding: EdgeInsets.zero,
                 leading: CircleAvatar(
                   radius: 18,
-                  backgroundColor: Colors.green.shade100,
+                  backgroundColor: AppColors.primaryIndigoLight.withOpacity(
+                    0.3,
+                  ),
                   child: Text(
                     m.userId.substring(0, 1).toUpperCase(),
                     style: const TextStyle(
-                      color: Colors.green,
+                      color: AppColors.primaryIndigo,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -222,7 +288,7 @@ class _TeamSettingsTabState extends ConsumerState<TeamSettingsTab> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('Role updated to $newRole'),
-                                backgroundColor: Colors.green,
+                                backgroundColor: AppColors.primaryIndigo,
                               ),
                             );
                           }
@@ -370,7 +436,9 @@ class _TeamSettingsTabState extends ConsumerState<TeamSettingsTab> {
             child: const Text('Cancel'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.green),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.primaryIndigo,
+            ),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Save'),
           ),
@@ -394,7 +462,7 @@ class _TeamSettingsTabState extends ConsumerState<TeamSettingsTab> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Team updated successfully'),
-          backgroundColor: Colors.green,
+          backgroundColor: AppColors.primaryIndigo,
         ),
       );
     }
@@ -431,7 +499,7 @@ class _SectionCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, size: 18, color: Colors.green),
+                Icon(icon, size: 18, color: AppColors.primaryIndigo),
                 const SizedBox(width: 8),
                 Text(
                   title,
@@ -509,7 +577,7 @@ class _PermissionTile extends StatelessWidget {
         style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
       ),
       value: value,
-      activeColor: Colors.green,
+      activeColor: AppColors.primaryIndigo,
       onChanged: enabled ? onChanged : null,
     );
   }

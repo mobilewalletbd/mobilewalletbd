@@ -12,7 +12,8 @@ part of 'team.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 Team _$TeamFromJson(Map<String, dynamic> json) {
   return _Team.fromJson(json);
@@ -36,6 +37,12 @@ mixin _$Team {
       throw _privateConstructorUsedError; // Added for mobile number invites
   String? get visibility =>
       throw _privateConstructorUsedError; // 'public', 'private' (default)
+  // Permission flags
+  bool get permMembersCanAddContacts => throw _privateConstructorUsedError;
+  bool get permMembersCanShareCards => throw _privateConstructorUsedError;
+  bool get permMembersCanInvite => throw _privateConstructorUsedError;
+  bool get permMembersCanViewExpenses => throw _privateConstructorUsedError;
+  bool get permAdminsCanAddExpenses => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -49,22 +56,28 @@ abstract class $TeamCopyWith<$Res> {
   factory $TeamCopyWith(Team value, $Res Function(Team) then) =
       _$TeamCopyWithImpl<$Res, Team>;
   @useResult
-  $Res call(
-      {String id,
-      String name,
-      String? description,
-      String? category,
-      String? photoUrl,
-      String ownerId,
-      List<TeamMember> members,
-      double? totalExpenses,
-      int sharedContactsCount,
-      String? inviteCode,
-      List<String> invitedEmails,
-      List<String> invitedPhones,
-      String? visibility,
-      DateTime createdAt,
-      DateTime updatedAt});
+  $Res call({
+    String id,
+    String name,
+    String? description,
+    String? category,
+    String? photoUrl,
+    String ownerId,
+    List<TeamMember> members,
+    double? totalExpenses,
+    int sharedContactsCount,
+    String? inviteCode,
+    List<String> invitedEmails,
+    List<String> invitedPhones,
+    String? visibility,
+    bool permMembersCanAddContacts,
+    bool permMembersCanShareCards,
+    bool permMembersCanInvite,
+    bool permMembersCanViewExpenses,
+    bool permAdminsCanAddExpenses,
+    DateTime createdAt,
+    DateTime updatedAt,
+  });
 }
 
 /// @nodoc
@@ -93,97 +106,132 @@ class _$TeamCopyWithImpl<$Res, $Val extends Team>
     Object? invitedEmails = null,
     Object? invitedPhones = null,
     Object? visibility = freezed,
+    Object? permMembersCanAddContacts = null,
+    Object? permMembersCanShareCards = null,
+    Object? permMembersCanInvite = null,
+    Object? permMembersCanViewExpenses = null,
+    Object? permAdminsCanAddExpenses = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      description: freezed == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String?,
-      category: freezed == category
-          ? _value.category
-          : category // ignore: cast_nullable_to_non_nullable
-              as String?,
-      photoUrl: freezed == photoUrl
-          ? _value.photoUrl
-          : photoUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      ownerId: null == ownerId
-          ? _value.ownerId
-          : ownerId // ignore: cast_nullable_to_non_nullable
-              as String,
-      members: null == members
-          ? _value.members
-          : members // ignore: cast_nullable_to_non_nullable
-              as List<TeamMember>,
-      totalExpenses: freezed == totalExpenses
-          ? _value.totalExpenses
-          : totalExpenses // ignore: cast_nullable_to_non_nullable
-              as double?,
-      sharedContactsCount: null == sharedContactsCount
-          ? _value.sharedContactsCount
-          : sharedContactsCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      inviteCode: freezed == inviteCode
-          ? _value.inviteCode
-          : inviteCode // ignore: cast_nullable_to_non_nullable
-              as String?,
-      invitedEmails: null == invitedEmails
-          ? _value.invitedEmails
-          : invitedEmails // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      invitedPhones: null == invitedPhones
-          ? _value.invitedPhones
-          : invitedPhones // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      visibility: freezed == visibility
-          ? _value.visibility
-          : visibility // ignore: cast_nullable_to_non_nullable
-              as String?,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updatedAt: null == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            description: freezed == description
+                ? _value.description
+                : description // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            category: freezed == category
+                ? _value.category
+                : category // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            photoUrl: freezed == photoUrl
+                ? _value.photoUrl
+                : photoUrl // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            ownerId: null == ownerId
+                ? _value.ownerId
+                : ownerId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            members: null == members
+                ? _value.members
+                : members // ignore: cast_nullable_to_non_nullable
+                      as List<TeamMember>,
+            totalExpenses: freezed == totalExpenses
+                ? _value.totalExpenses
+                : totalExpenses // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            sharedContactsCount: null == sharedContactsCount
+                ? _value.sharedContactsCount
+                : sharedContactsCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            inviteCode: freezed == inviteCode
+                ? _value.inviteCode
+                : inviteCode // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            invitedEmails: null == invitedEmails
+                ? _value.invitedEmails
+                : invitedEmails // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            invitedPhones: null == invitedPhones
+                ? _value.invitedPhones
+                : invitedPhones // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            visibility: freezed == visibility
+                ? _value.visibility
+                : visibility // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            permMembersCanAddContacts: null == permMembersCanAddContacts
+                ? _value.permMembersCanAddContacts
+                : permMembersCanAddContacts // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            permMembersCanShareCards: null == permMembersCanShareCards
+                ? _value.permMembersCanShareCards
+                : permMembersCanShareCards // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            permMembersCanInvite: null == permMembersCanInvite
+                ? _value.permMembersCanInvite
+                : permMembersCanInvite // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            permMembersCanViewExpenses: null == permMembersCanViewExpenses
+                ? _value.permMembersCanViewExpenses
+                : permMembersCanViewExpenses // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            permAdminsCanAddExpenses: null == permAdminsCanAddExpenses
+                ? _value.permAdminsCanAddExpenses
+                : permAdminsCanAddExpenses // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            updatedAt: null == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$TeamImplCopyWith<$Res> implements $TeamCopyWith<$Res> {
   factory _$$TeamImplCopyWith(
-          _$TeamImpl value, $Res Function(_$TeamImpl) then) =
-      __$$TeamImplCopyWithImpl<$Res>;
+    _$TeamImpl value,
+    $Res Function(_$TeamImpl) then,
+  ) = __$$TeamImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String id,
-      String name,
-      String? description,
-      String? category,
-      String? photoUrl,
-      String ownerId,
-      List<TeamMember> members,
-      double? totalExpenses,
-      int sharedContactsCount,
-      String? inviteCode,
-      List<String> invitedEmails,
-      List<String> invitedPhones,
-      String? visibility,
-      DateTime createdAt,
-      DateTime updatedAt});
+  $Res call({
+    String id,
+    String name,
+    String? description,
+    String? category,
+    String? photoUrl,
+    String ownerId,
+    List<TeamMember> members,
+    double? totalExpenses,
+    int sharedContactsCount,
+    String? inviteCode,
+    List<String> invitedEmails,
+    List<String> invitedPhones,
+    String? visibility,
+    bool permMembersCanAddContacts,
+    bool permMembersCanShareCards,
+    bool permMembersCanInvite,
+    bool permMembersCanViewExpenses,
+    bool permAdminsCanAddExpenses,
+    DateTime createdAt,
+    DateTime updatedAt,
+  });
 }
 
 /// @nodoc
@@ -191,7 +239,7 @@ class __$$TeamImplCopyWithImpl<$Res>
     extends _$TeamCopyWithImpl<$Res, _$TeamImpl>
     implements _$$TeamImplCopyWith<$Res> {
   __$$TeamImplCopyWithImpl(_$TeamImpl _value, $Res Function(_$TeamImpl) _then)
-      : super(_value, _then);
+    : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -209,97 +257,129 @@ class __$$TeamImplCopyWithImpl<$Res>
     Object? invitedEmails = null,
     Object? invitedPhones = null,
     Object? visibility = freezed,
+    Object? permMembersCanAddContacts = null,
+    Object? permMembersCanShareCards = null,
+    Object? permMembersCanInvite = null,
+    Object? permMembersCanViewExpenses = null,
+    Object? permAdminsCanAddExpenses = null,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
-    return _then(_$TeamImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      description: freezed == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String?,
-      category: freezed == category
-          ? _value.category
-          : category // ignore: cast_nullable_to_non_nullable
-              as String?,
-      photoUrl: freezed == photoUrl
-          ? _value.photoUrl
-          : photoUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      ownerId: null == ownerId
-          ? _value.ownerId
-          : ownerId // ignore: cast_nullable_to_non_nullable
-              as String,
-      members: null == members
-          ? _value._members
-          : members // ignore: cast_nullable_to_non_nullable
-              as List<TeamMember>,
-      totalExpenses: freezed == totalExpenses
-          ? _value.totalExpenses
-          : totalExpenses // ignore: cast_nullable_to_non_nullable
-              as double?,
-      sharedContactsCount: null == sharedContactsCount
-          ? _value.sharedContactsCount
-          : sharedContactsCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      inviteCode: freezed == inviteCode
-          ? _value.inviteCode
-          : inviteCode // ignore: cast_nullable_to_non_nullable
-              as String?,
-      invitedEmails: null == invitedEmails
-          ? _value._invitedEmails
-          : invitedEmails // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      invitedPhones: null == invitedPhones
-          ? _value._invitedPhones
-          : invitedPhones // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      visibility: freezed == visibility
-          ? _value.visibility
-          : visibility // ignore: cast_nullable_to_non_nullable
-              as String?,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updatedAt: null == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-    ));
+    return _then(
+      _$TeamImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        name: null == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        description: freezed == description
+            ? _value.description
+            : description // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        category: freezed == category
+            ? _value.category
+            : category // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        photoUrl: freezed == photoUrl
+            ? _value.photoUrl
+            : photoUrl // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        ownerId: null == ownerId
+            ? _value.ownerId
+            : ownerId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        members: null == members
+            ? _value._members
+            : members // ignore: cast_nullable_to_non_nullable
+                  as List<TeamMember>,
+        totalExpenses: freezed == totalExpenses
+            ? _value.totalExpenses
+            : totalExpenses // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        sharedContactsCount: null == sharedContactsCount
+            ? _value.sharedContactsCount
+            : sharedContactsCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        inviteCode: freezed == inviteCode
+            ? _value.inviteCode
+            : inviteCode // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        invitedEmails: null == invitedEmails
+            ? _value._invitedEmails
+            : invitedEmails // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        invitedPhones: null == invitedPhones
+            ? _value._invitedPhones
+            : invitedPhones // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        visibility: freezed == visibility
+            ? _value.visibility
+            : visibility // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        permMembersCanAddContacts: null == permMembersCanAddContacts
+            ? _value.permMembersCanAddContacts
+            : permMembersCanAddContacts // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        permMembersCanShareCards: null == permMembersCanShareCards
+            ? _value.permMembersCanShareCards
+            : permMembersCanShareCards // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        permMembersCanInvite: null == permMembersCanInvite
+            ? _value.permMembersCanInvite
+            : permMembersCanInvite // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        permMembersCanViewExpenses: null == permMembersCanViewExpenses
+            ? _value.permMembersCanViewExpenses
+            : permMembersCanViewExpenses // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        permAdminsCanAddExpenses: null == permAdminsCanAddExpenses
+            ? _value.permAdminsCanAddExpenses
+            : permAdminsCanAddExpenses // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        updatedAt: null == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$TeamImpl extends _Team {
-  const _$TeamImpl(
-      {required this.id,
-      required this.name,
-      this.description,
-      this.category,
-      this.photoUrl,
-      required this.ownerId,
-      final List<TeamMember> members = const [],
-      this.totalExpenses,
-      this.sharedContactsCount = 0,
-      this.inviteCode,
-      final List<String> invitedEmails = const [],
-      final List<String> invitedPhones = const [],
-      this.visibility,
-      required this.createdAt,
-      required this.updatedAt})
-      : _members = members,
-        _invitedEmails = invitedEmails,
-        _invitedPhones = invitedPhones,
-        super._();
+  const _$TeamImpl({
+    required this.id,
+    required this.name,
+    this.description,
+    this.category,
+    this.photoUrl,
+    required this.ownerId,
+    final List<TeamMember> members = const [],
+    this.totalExpenses,
+    this.sharedContactsCount = 0,
+    this.inviteCode,
+    final List<String> invitedEmails = const [],
+    final List<String> invitedPhones = const [],
+    this.visibility,
+    this.permMembersCanAddContacts = true,
+    this.permMembersCanShareCards = true,
+    this.permMembersCanInvite = false,
+    this.permMembersCanViewExpenses = true,
+    this.permAdminsCanAddExpenses = true,
+    required this.createdAt,
+    required this.updatedAt,
+  }) : _members = members,
+       _invitedEmails = invitedEmails,
+       _invitedPhones = invitedPhones,
+       super._();
 
   factory _$TeamImpl.fromJson(Map<String, dynamic> json) =>
       _$$TeamImplFromJson(json);
@@ -341,9 +421,9 @@ class _$TeamImpl extends _Team {
     return EqualUnmodifiableListView(_invitedEmails);
   }
 
-// Added for easy querying of invites
+  // Added for easy querying of invites
   final List<String> _invitedPhones;
-// Added for easy querying of invites
+  // Added for easy querying of invites
   @override
   @JsonKey()
   List<String> get invitedPhones {
@@ -352,10 +432,25 @@ class _$TeamImpl extends _Team {
     return EqualUnmodifiableListView(_invitedPhones);
   }
 
-// Added for mobile number invites
+  // Added for mobile number invites
   @override
   final String? visibility;
-// 'public', 'private' (default)
+  // 'public', 'private' (default)
+  @override
+  @JsonKey(defaultValue: true)
+  final bool permMembersCanAddContacts;
+  @override
+  @JsonKey(defaultValue: true)
+  final bool permMembersCanShareCards;
+  @override
+  @JsonKey(defaultValue: false)
+  final bool permMembersCanInvite;
+  @override
+  @JsonKey(defaultValue: true)
+  final bool permMembersCanViewExpenses;
+  @override
+  @JsonKey(defaultValue: true)
+  final bool permAdminsCanAddExpenses;
   @override
   final DateTime createdAt;
   @override
@@ -363,7 +458,7 @@ class _$TeamImpl extends _Team {
 
   @override
   String toString() {
-    return 'Team(id: $id, name: $name, description: $description, category: $category, photoUrl: $photoUrl, ownerId: $ownerId, members: $members, totalExpenses: $totalExpenses, sharedContactsCount: $sharedContactsCount, inviteCode: $inviteCode, invitedEmails: $invitedEmails, invitedPhones: $invitedPhones, visibility: $visibility, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Team(id: $id, name: $name, description: $description, category: $category, photoUrl: $photoUrl, ownerId: $ownerId, members: $members, totalExpenses: $totalExpenses, sharedContactsCount: $sharedContactsCount, inviteCode: $inviteCode, invitedEmails: $invitedEmails, invitedPhones: $invitedPhones, visibility: $visibility, permMembersCanAddContacts: $permMembersCanAddContacts, permMembersCanShareCards: $permMembersCanShareCards, permMembersCanInvite: $permMembersCanInvite, permMembersCanViewExpenses: $permMembersCanViewExpenses, permAdminsCanAddExpenses: $permAdminsCanAddExpenses, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -387,12 +482,39 @@ class _$TeamImpl extends _Team {
                 other.sharedContactsCount == sharedContactsCount) &&
             (identical(other.inviteCode, inviteCode) ||
                 other.inviteCode == inviteCode) &&
-            const DeepCollectionEquality()
-                .equals(other._invitedEmails, _invitedEmails) &&
-            const DeepCollectionEquality()
-                .equals(other._invitedPhones, _invitedPhones) &&
+            const DeepCollectionEquality().equals(
+              other._invitedEmails,
+              _invitedEmails,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._invitedPhones,
+              _invitedPhones,
+            ) &&
             (identical(other.visibility, visibility) ||
                 other.visibility == visibility) &&
+            (identical(
+                  other.permMembersCanAddContacts,
+                  permMembersCanAddContacts,
+                ) ||
+                other.permMembersCanAddContacts == permMembersCanAddContacts) &&
+            (identical(
+                  other.permMembersCanShareCards,
+                  permMembersCanShareCards,
+                ) ||
+                other.permMembersCanShareCards == permMembersCanShareCards) &&
+            (identical(other.permMembersCanInvite, permMembersCanInvite) ||
+                other.permMembersCanInvite == permMembersCanInvite) &&
+            (identical(
+                  other.permMembersCanViewExpenses,
+                  permMembersCanViewExpenses,
+                ) ||
+                other.permMembersCanViewExpenses ==
+                    permMembersCanViewExpenses) &&
+            (identical(
+                  other.permAdminsCanAddExpenses,
+                  permAdminsCanAddExpenses,
+                ) ||
+                other.permAdminsCanAddExpenses == permAdminsCanAddExpenses) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -401,23 +523,29 @@ class _$TeamImpl extends _Team {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      name,
-      description,
-      category,
-      photoUrl,
-      ownerId,
-      const DeepCollectionEquality().hash(_members),
-      totalExpenses,
-      sharedContactsCount,
-      inviteCode,
-      const DeepCollectionEquality().hash(_invitedEmails),
-      const DeepCollectionEquality().hash(_invitedPhones),
-      visibility,
-      createdAt,
-      updatedAt);
+  int get hashCode => Object.hashAll([
+    runtimeType,
+    id,
+    name,
+    description,
+    category,
+    photoUrl,
+    ownerId,
+    const DeepCollectionEquality().hash(_members),
+    totalExpenses,
+    sharedContactsCount,
+    inviteCode,
+    const DeepCollectionEquality().hash(_invitedEmails),
+    const DeepCollectionEquality().hash(_invitedPhones),
+    visibility,
+    permMembersCanAddContacts,
+    permMembersCanShareCards,
+    permMembersCanInvite,
+    permMembersCanViewExpenses,
+    permAdminsCanAddExpenses,
+    createdAt,
+    updatedAt,
+  ]);
 
   @JsonKey(ignore: true)
   @override
@@ -427,29 +555,33 @@ class _$TeamImpl extends _Team {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$TeamImplToJson(
-      this,
-    );
+    return _$$TeamImplToJson(this);
   }
 }
 
 abstract class _Team extends Team {
-  const factory _Team(
-      {required final String id,
-      required final String name,
-      final String? description,
-      final String? category,
-      final String? photoUrl,
-      required final String ownerId,
-      final List<TeamMember> members,
-      final double? totalExpenses,
-      final int sharedContactsCount,
-      final String? inviteCode,
-      final List<String> invitedEmails,
-      final List<String> invitedPhones,
-      final String? visibility,
-      required final DateTime createdAt,
-      required final DateTime updatedAt}) = _$TeamImpl;
+  const factory _Team({
+    required final String id,
+    required final String name,
+    final String? description,
+    final String? category,
+    final String? photoUrl,
+    required final String ownerId,
+    final List<TeamMember> members,
+    final double? totalExpenses,
+    final int sharedContactsCount,
+    final String? inviteCode,
+    final List<String> invitedEmails,
+    final List<String> invitedPhones,
+    final String? visibility,
+    final bool permMembersCanAddContacts,
+    final bool permMembersCanShareCards,
+    final bool permMembersCanInvite,
+    final bool permMembersCanViewExpenses,
+    final bool permAdminsCanAddExpenses,
+    required final DateTime createdAt,
+    required final DateTime updatedAt,
+  }) = _$TeamImpl;
   const _Team._() : super._();
 
   factory _Team.fromJson(Map<String, dynamic> json) = _$TeamImpl.fromJson;
@@ -481,6 +613,16 @@ abstract class _Team extends Team {
   @override // Added for mobile number invites
   String? get visibility;
   @override // 'public', 'private' (default)
+  bool get permMembersCanAddContacts;
+  @override
+  bool get permMembersCanShareCards;
+  @override
+  bool get permMembersCanInvite;
+  @override
+  bool get permMembersCanViewExpenses;
+  @override
+  bool get permAdminsCanAddExpenses;
+  @override
   DateTime get createdAt;
   @override
   DateTime get updatedAt;
@@ -515,17 +657,19 @@ mixin _$TeamMember {
 /// @nodoc
 abstract class $TeamMemberCopyWith<$Res> {
   factory $TeamMemberCopyWith(
-          TeamMember value, $Res Function(TeamMember) then) =
-      _$TeamMemberCopyWithImpl<$Res, TeamMember>;
+    TeamMember value,
+    $Res Function(TeamMember) then,
+  ) = _$TeamMemberCopyWithImpl<$Res, TeamMember>;
   @useResult
-  $Res call(
-      {String userId,
-      String? email,
-      String? phoneNumber,
-      String role,
-      String? jobTitle,
-      DateTime joinedAt,
-      String? status});
+  $Res call({
+    String userId,
+    String? email,
+    String? phoneNumber,
+    String role,
+    String? jobTitle,
+    DateTime joinedAt,
+    String? status,
+  });
 }
 
 /// @nodoc
@@ -549,36 +693,39 @@ class _$TeamMemberCopyWithImpl<$Res, $Val extends TeamMember>
     Object? joinedAt = null,
     Object? status = freezed,
   }) {
-    return _then(_value.copyWith(
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String,
-      email: freezed == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phoneNumber: freezed == phoneNumber
-          ? _value.phoneNumber
-          : phoneNumber // ignore: cast_nullable_to_non_nullable
-              as String?,
-      role: null == role
-          ? _value.role
-          : role // ignore: cast_nullable_to_non_nullable
-              as String,
-      jobTitle: freezed == jobTitle
-          ? _value.jobTitle
-          : jobTitle // ignore: cast_nullable_to_non_nullable
-              as String?,
-      joinedAt: null == joinedAt
-          ? _value.joinedAt
-          : joinedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      status: freezed == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            userId: null == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            email: freezed == email
+                ? _value.email
+                : email // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            phoneNumber: freezed == phoneNumber
+                ? _value.phoneNumber
+                : phoneNumber // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            role: null == role
+                ? _value.role
+                : role // ignore: cast_nullable_to_non_nullable
+                      as String,
+            jobTitle: freezed == jobTitle
+                ? _value.jobTitle
+                : jobTitle // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            joinedAt: null == joinedAt
+                ? _value.joinedAt
+                : joinedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            status: freezed == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -586,18 +733,20 @@ class _$TeamMemberCopyWithImpl<$Res, $Val extends TeamMember>
 abstract class _$$TeamMemberImplCopyWith<$Res>
     implements $TeamMemberCopyWith<$Res> {
   factory _$$TeamMemberImplCopyWith(
-          _$TeamMemberImpl value, $Res Function(_$TeamMemberImpl) then) =
-      __$$TeamMemberImplCopyWithImpl<$Res>;
+    _$TeamMemberImpl value,
+    $Res Function(_$TeamMemberImpl) then,
+  ) = __$$TeamMemberImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String userId,
-      String? email,
-      String? phoneNumber,
-      String role,
-      String? jobTitle,
-      DateTime joinedAt,
-      String? status});
+  $Res call({
+    String userId,
+    String? email,
+    String? phoneNumber,
+    String role,
+    String? jobTitle,
+    DateTime joinedAt,
+    String? status,
+  });
 }
 
 /// @nodoc
@@ -605,8 +754,9 @@ class __$$TeamMemberImplCopyWithImpl<$Res>
     extends _$TeamMemberCopyWithImpl<$Res, _$TeamMemberImpl>
     implements _$$TeamMemberImplCopyWith<$Res> {
   __$$TeamMemberImplCopyWithImpl(
-      _$TeamMemberImpl _value, $Res Function(_$TeamMemberImpl) _then)
-      : super(_value, _then);
+    _$TeamMemberImpl _value,
+    $Res Function(_$TeamMemberImpl) _then,
+  ) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -619,50 +769,53 @@ class __$$TeamMemberImplCopyWithImpl<$Res>
     Object? joinedAt = null,
     Object? status = freezed,
   }) {
-    return _then(_$TeamMemberImpl(
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String,
-      email: freezed == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phoneNumber: freezed == phoneNumber
-          ? _value.phoneNumber
-          : phoneNumber // ignore: cast_nullable_to_non_nullable
-              as String?,
-      role: null == role
-          ? _value.role
-          : role // ignore: cast_nullable_to_non_nullable
-              as String,
-      jobTitle: freezed == jobTitle
-          ? _value.jobTitle
-          : jobTitle // ignore: cast_nullable_to_non_nullable
-              as String?,
-      joinedAt: null == joinedAt
-          ? _value.joinedAt
-          : joinedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      status: freezed == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+    return _then(
+      _$TeamMemberImpl(
+        userId: null == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        email: freezed == email
+            ? _value.email
+            : email // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        phoneNumber: freezed == phoneNumber
+            ? _value.phoneNumber
+            : phoneNumber // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        role: null == role
+            ? _value.role
+            : role // ignore: cast_nullable_to_non_nullable
+                  as String,
+        jobTitle: freezed == jobTitle
+            ? _value.jobTitle
+            : jobTitle // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        joinedAt: null == joinedAt
+            ? _value.joinedAt
+            : joinedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        status: freezed == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$TeamMemberImpl implements _TeamMember {
-  const _$TeamMemberImpl(
-      {required this.userId,
-      this.email,
-      this.phoneNumber,
-      required this.role,
-      this.jobTitle,
-      required this.joinedAt,
-      this.status});
+  const _$TeamMemberImpl({
+    required this.userId,
+    this.email,
+    this.phoneNumber,
+    required this.role,
+    this.jobTitle,
+    required this.joinedAt,
+    this.status,
+  });
 
   factory _$TeamMemberImpl.fromJson(Map<String, dynamic> json) =>
       _$$TeamMemberImplFromJson(json);
@@ -673,10 +826,10 @@ class _$TeamMemberImpl implements _TeamMember {
   final String? email;
   @override
   final String? phoneNumber;
-// Added for mobile number support
+  // Added for mobile number support
   @override
   final String role;
-// 'owner', 'admin', 'co-admin', 'member', 'viewer'
+  // 'owner', 'admin', 'co-admin', 'member', 'viewer'
   @override
   final String? jobTitle;
   @override
@@ -708,8 +861,16 @@ class _$TeamMemberImpl implements _TeamMember {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, userId, email, phoneNumber, role,
-      jobTitle, joinedAt, status);
+  int get hashCode => Object.hash(
+    runtimeType,
+    userId,
+    email,
+    phoneNumber,
+    role,
+    jobTitle,
+    joinedAt,
+    status,
+  );
 
   @JsonKey(ignore: true)
   @override
@@ -719,21 +880,20 @@ class _$TeamMemberImpl implements _TeamMember {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$TeamMemberImplToJson(
-      this,
-    );
+    return _$$TeamMemberImplToJson(this);
   }
 }
 
 abstract class _TeamMember implements TeamMember {
-  const factory _TeamMember(
-      {required final String userId,
-      final String? email,
-      final String? phoneNumber,
-      required final String role,
-      final String? jobTitle,
-      required final DateTime joinedAt,
-      final String? status}) = _$TeamMemberImpl;
+  const factory _TeamMember({
+    required final String userId,
+    final String? email,
+    final String? phoneNumber,
+    required final String role,
+    final String? jobTitle,
+    required final DateTime joinedAt,
+    final String? status,
+  }) = _$TeamMemberImpl;
 
   factory _TeamMember.fromJson(Map<String, dynamic> json) =
       _$TeamMemberImpl.fromJson;

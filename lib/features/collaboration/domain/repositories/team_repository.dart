@@ -47,17 +47,26 @@ abstract class TeamRepository {
   /// Adds a new expense to the team.
   Future<void> addTeamExpense(String teamId, TeamExpense expense);
 
-  /// Gets a stream of expenses for a team.
-  Stream<List<TeamExpense>> getTeamExpensesStream(String teamId);
+  /// Gets a stream of expenses for a team. Supports pagination via limit.
+  Stream<List<TeamExpense>> getTeamExpensesStream(
+    String teamId, {
+    int limit = 20,
+  });
 
   /// Sends a chat message to the team group chat.
   Future<void> sendTeamChatMessage(String teamId, TeamChatMessage message);
 
-  /// Gets a stream of chat messages for a team.
-  Stream<List<TeamChatMessage>> getTeamChatStream(String teamId);
+  /// Gets a stream of chat messages for a team. Supports pagination via limit.
+  Stream<List<TeamChatMessage>> getTeamChatStream(
+    String teamId, {
+    int limit = 50,
+  });
 
-  /// Gets a stream of activity logs for a team.
-  Stream<List<TeamActivityLog>> getTeamActivityStream(String teamId);
+  /// Gets a stream of activity logs for a team. Supports pagination via limit.
+  Stream<List<TeamActivityLog>> getTeamActivityStream(
+    String teamId, {
+    int limit = 20,
+  });
 
   /// Invites a member to a team by email or phone number.
   Future<void> inviteMember(

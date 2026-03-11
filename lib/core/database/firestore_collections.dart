@@ -140,6 +140,7 @@ class FirestoreContact {
     Map<String, dynamic>? rawExtraData,
     String? createdBy,
     List<String>? sharedWith,
+    List<String>? sharedWithTeams,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -173,6 +174,7 @@ class FirestoreContact {
       'rawExtraData': rawExtraData,
       'createdBy': createdBy,
       'sharedWith': sharedWith ?? [],
+      'sharedWithTeams': sharedWithTeams ?? [],
       'createdAt': createdAt ?? FieldValue.serverTimestamp(),
       'updatedAt': updatedAt ?? FieldValue.serverTimestamp(),
     };
